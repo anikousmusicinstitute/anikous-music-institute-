@@ -18,15 +18,18 @@
 <h1>🎹 Piano Live Class</h1>
 
 
-<button>
+<button onclick="joinVideo()">
 🎥 Join Video Call
 </button>
 
 
-<br><br>
+<div id="jitsi-container"></div>
 
 
-<button>
+<br>
+
+
+<button onclick="connectMIDI()">
 🎹 Connect MIDI Keyboard
 </button>
 
@@ -39,44 +42,37 @@ Select Octave:
 </label>
 
 
-<select>
+<select id="octave" onchange="createPiano()">
 
-<option>Octave 1</option>
-<option>Octave 2</option>
-<option selected>Octave 3</option>
-<option>Octave 4</option>
-<option>Octave 5</option>
+<option value="1">Octave 1</option>
+<option value="2">Octave 2</option>
+<option value="3" selected>Octave 3</option>
+<option value="4">Octave 4</option>
+<option value="5">Octave 5</option>
+<option value="6">Octave 6</option>
+<option value="7">Octave 7</option>
 
 </select>
 
 
 
-<h2>
-🎹 Piano Keyboard
-</h2>
+<h2>🎹 Piano Keyboard</h2>
 
 
-
-<div id="piano">
-
-<button class="key">C</button>
-<button class="key">D</button>
-<button class="key">E</button>
-<button class="key">F</button>
-<button class="key">G</button>
-<button class="key">A</button>
-<button class="key">B</button>
-
-</div>
-
+<div id="piano"></div>
 
 
 <div id="note">
-
 Waiting...
-
 </div>
 
+
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script src="https://meet.jit.si/external_api.js"></script>
+
+<script src="script.js"></script>
 
 
 </body>
