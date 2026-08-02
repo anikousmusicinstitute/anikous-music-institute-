@@ -1,37 +1,43 @@
 const loginBtn = document.getElementById("loginBtn");
-const role = document.getElementById("role");
-const userid = document.getElementById("userid");
-const password = document.getElementById("password");
 const message = document.getElementById("message");
 
-loginBtn.onclick = () => {
+loginBtn.onclick = async () => {
 
-    const user = userid.value.trim();
-    const pass = password.value.trim();
-    const userRole = role.value;
+    const role = document.getElementById("role").value;
+    const username = document.getElementById("userid").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    if (!user || !pass) {
+    if (!username || !password) {
         message.innerText = "Enter User ID and Password";
         return;
     }
 
-    // Demo Login
-    if (userRole === "teacher" &&
-        user === "teacher" &&
-        pass === "1234") {
+    const res = await fetch("/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username,
+            password
+        })
+    });
 
-        window.location.href = "index.html";
+    const data = await res.json();
+
+    if (!data.success) {
+        message.innerText = data.message;
         return;
     }
 
-    if (userRole === "student" &&
-        user === "student1" &&
-        pass === "1234") {
-
-        window.location.href = "index.html";
+    if (role !== data.role) {
+        message.innerText = "Wrong Role Selected";
         return;
     }
 
-    message.innerText = "Invalid User ID or Password";
+    localStorage.setItem("username", username);
+    localStorage.setItem("role", data.role);
+    localStorage.setItem("name", data.name);
 
+    window.location.href = "index.html";
 };
