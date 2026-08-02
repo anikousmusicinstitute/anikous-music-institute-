@@ -42,3 +42,18 @@ server.listen(3000, () => {
     console.log("Server running on 3000");
 
 });
+window.onload = function(){
+
+    let piano = document.getElementById("piano");
+
+    piano.innerHTML = `
+        <div class="white">C1</div>
+        <div class="white">D1</div>
+        <div class="white">E1</div>
+        <div class="white">F1</div>
+        <div class="white">G1</div>
+        <div class="white">A1</div>
+        <div class="white">B1</div>
+    `;
+
+};
