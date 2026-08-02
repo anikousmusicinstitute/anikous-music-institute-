@@ -1,33 +1,18 @@
 let audioContext;
 
-let showKeys = true;
+let showKeys=true;
 
-let showChords = true;
+let showChords=true;
 
-let pressedNotes = [];
-
-let zoom = 1;
+let pressed=[];
 
 
 
-const noteNames = [
-
-"C",
-"C#",
-"D",
-"D#",
-"E",
-"F",
-"F#",
-"G",
-"G#",
-"A",
-"A#",
-"B"
-
+let names=[
+"C","C#","D","D#",
+"E","F","F#","G",
+"G#","A","A#","B"
 ];
-
-
 
 
 
@@ -39,18 +24,18 @@ let piano=document.getElementById("piano");
 piano.innerHTML="";
 
 
-let whiteCount=0;
+let white=0;
 
 
 
 for(let midi=21;midi<=108;midi++){
 
 
-let name =
-noteNames[midi%12];
+let name=
+names[midi%12];
 
 
-let octave =
+let octave=
 Math.floor(midi/12)-1;
 
 
@@ -60,8 +45,12 @@ let key=document.createElement("div");
 
 key.dataset.note=midi;
 
-
 key.dataset.name=name+octave;
+
+
+
+key.innerHTML=
+showKeys ? name+octave:"";
 
 
 
@@ -72,7 +61,7 @@ key.className="black";
 
 
 key.style.left=
-(whiteCount*55-18)+"px";
+(white*55-17)+"px";
 
 
 }
@@ -84,35 +73,28 @@ key.className="white";
 
 
 key.style.left=
-(whiteCount*55)+"px";
+(white*55)+"px";
 
 
-whiteCount++;
-
+white++;
 
 }
-
-
-
-key.innerHTML =
-showKeys ? name+octave : "";
-
 
 
 
 key.onpointerdown=function(){
 
 
-let note=Number(this.dataset.note);
+let n=Number(this.dataset.note);
 
 
-pressedNotes.push(note);
-
-
-playSound(note);
+playSound(n);
 
 
 this.style.background="yellow";
+
+
+pressed.push(n);
 
 
 detectChord();
@@ -125,14 +107,11 @@ detectChord();
 key.onpointerup=function(){
 
 
+pressed=
+pressed.filter(x=>x!==Number(this.dataset.note));
+
+
 this.style.background="";
-
-
-pressedNotes =
-pressedNotes.filter(
-n=>n!==Number(this.dataset.note)
-);
-
 
 };
 
@@ -146,7 +125,7 @@ piano.appendChild(key);
 
 
 piano.style.width=
-(whiteCount*55)+"px";
+white*55+"px";
 
 
 }
@@ -174,16 +153,16 @@ let gain=
 audioContext.createGain();
 
 
-
-osc.frequency.value =
+osc.frequency.value=
 440*Math.pow(2,(note-69)/12);
 
 
 
 osc.connect(gain);
 
-gain.connect(audioContext.destination);
-
+gain.connect(
+audioContext.destination
+);
 
 
 gain.gain.value=.3;
@@ -205,78 +184,6 @@ audioContext.currentTime+1
 
 
 
-
-function detectChord(){
-
-
-if(!showChords)
-return;
-
-
-
-let notes =
-pressedNotes.map(
-n=>n%12
-);
-
-
-
-notes.sort(
-(a,b)=>a-b
-);
-
-
-
-let chord="None";
-
-
-
-let chords={
-
-
-"0,4,7":"C Major",
-
-"0,3,7":"C Minor",
-
-"2,6,9":"D Major",
-
-"4,8,11":"E Major",
-
-"5,9,0":"F Major",
-
-"7,11,2":"G Major",
-
-"9,1,4":"A Major"
-
-
-};
-
-
-
-let key =
-notes.join(",");
-
-
-
-if(chords[key])
-
-chord=chords[key];
-
-
-
-document.getElementById("chordDisplay").innerHTML=
-"Chord: "+chord;
-
-
-}
-
-
-
-
-
-
-
-
 function toggleKeys(){
 
 
@@ -286,11 +193,8 @@ showKeys=!showKeys;
 document.querySelectorAll(".white,.black")
 .forEach(k=>{
 
-k.innerHTML =
-showKeys ?
-k.dataset.name :
-"";
-
+k.innerHTML=
+showKeys?k.dataset.name:"";
 
 });
 
@@ -311,7 +215,7 @@ showChords=!showChords;
 if(!showChords)
 
 document.getElementById("chordDisplay")
-.innerHTML="Chord: OFF";
+.innerHTML="Chord OFF";
 
 
 }
@@ -322,37 +226,79 @@ document.getElementById("chordDisplay")
 
 
 
-
-function zoomIn(){
-
-
-zoom+=0.1;
+function detectChord(){
 
 
-document.getElementById("piano")
-.style.transform=
-"scale("+zoom+")";
+if(!showChords)
+return;
+
+
+let n=
+pressed.map(x=>x%12)
+.sort()
+.join(",");
+
+
+
+let list={
+
+"0,4,7":"C Major",
+
+"0,3,7":"C Minor",
+
+"7,11,2":"G Major",
+
+"9,0,4":"A Minor"
+
+};
+
+
+
+document.getElementById("chordDisplay")
+.innerHTML=
+"Chord : "+(list[n]||"");
 
 
 }
 
 
 
-function zoomOut(){
-
-
-zoom-=0.1;
-
-
-if(zoom<0.5)
-
-zoom=.5;
 
 
 
-document.getElementById("piano")
-.style.transform=
-"scale("+zoom+")";
+
+async function connectMIDI(){
+
+
+let midi=
+await navigator.requestMIDIAccess();
+
+
+alert("MIDI Connected 🎹");
+
+
+
+midi.inputs.forEach(input=>{
+
+
+input.onmidimessage=function(e){
+
+
+let note=e.data[1];
+
+let velocity=e.data[2];
+
+
+if(velocity>0){
+
+playSound(note);
+
+}
+
+};
+
+
+});
 
 
 }
@@ -367,38 +313,3 @@ window.onload=function(){
 createPiano();
 
 };
-function highlightMIDI(note){
-
-
-let key=document.querySelector(
-'[data-note="'+note+'"]'
-);
-
-
-
-if(key){
-
-
-key.style.background="yellow";
-
-
-setTimeout(()=>{
-
-
-if(key.className==="white")
-
-key.style.background="white";
-
-else
-
-key.style.background="black";
-
-
-},200);
-
-
-}
-
-
-
-}
