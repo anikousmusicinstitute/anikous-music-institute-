@@ -15,195 +15,540 @@ let peerConnection;
 let room;
 
 const servers = {
-    iceServers: [
-        {
-            urls: "stun:stun.l.google.com:19302"
-        }
-    ]
+  iceServers: [
+    {
+      urls: [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302"
+      ]
+    }
+  ]
 };
 
-
-// Camera + Mic
-async function startCamera(){
-
+async function startCamera() {
+  try {
     localStream = await navigator.mediaDevices.getUserMedia({
-        video:true,
-        audio:true
+      video: true,
+      audio: true
     });
 
     localVideo.srcObject = localStream;
+  } catch (err) {
+    console.error(err);
+    alert("Camera / Microphone Permission Denied");
+  }
 }
 
 startCamera();
-
-
-// Join Room
-joinBtn.onclick = () => {
-
-    room = roomInput.value.trim();
-
-    if(!room){
-        alert("Enter Class ID");
-        return;
-    }
-
-    socket.emit("join-room", room);
-
-    alert("Joined Class: " + room);
-};
-
-
-// Create Peer
-function createPeer(){
+function createPeer() {
 
     peerConnection = new RTCPeerConnection(servers);
 
-
-    localStream.getTracks().forEach(track=>{
-        peerConnection.addTrack(
-            track,
-            localStream
-        );
+    localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
     });
 
-
-    peerConnection.ontrack = event => {
-
+    peerConnection.ontrack = (event) => {
         remoteVideo.srcObject = event.streams[0];
-
     };
 
-
-    peerConnection.onicecandidate = event=>{
-
-        if(event.candidate){
-
-            socket.emit("signal",{
-                room:room,
-                signal:{
-                    candidate:event.candidate
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            socket.emit("signal", {
+                room: room,
+                signal: {
+                    candidate: event.candidate
                 }
             });
-
         }
-
     };
 
+    peerConnection.onconnectionstatechange = () => {
+        console.log("Connection State:", peerConnection.connectionState);
+    };
+
+    peerConnection.oniceconnectionstatechange = () => {
+        console.log("ICE State:", peerConnection.iceConnectionState);
+    };
 }
-
-
 // User Joined
-socket.on("user-joined", async ()=>{
+socket.on("user-joined", async (id) => {
 
-    createPeer();
-
+    if (!peerConnection) {
+        createPeer();
+    }
 
     const offer = await peerConnection.createOffer();
 
     await peerConnection.setLocalDescription(offer);
 
-
-    socket.emit("signal",{
-
-        room:room,
-
-        signal:{
-            offer:offer
+    socket.emit("signal", {
+        room: room,
+        signal: {
+            offer: offer
         }
-
     });
 
 });
 
 
 // Receive Signal
-socket.on("signal", async(signal)=>{
+socket.on("signal", async (data) => {
 
+    const signal = data.signal;
 
-    if(!peerConnection){
-
+    if (!peerConnection) {
         createPeer();
-
     }
 
-
-    if(signal.offer){
+    if (signal.offer) {
 
         await peerConnection.setRemoteDescription(
-            signal.offer
+            new RTCSessionDescription(signal.offer)
         );
 
+        const answer = await peerConnection.createAnswer();
 
-        const answer =
-        await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
 
-
-        await peerConnection.setLocalDescription(
-            answer
-        );
-
-
-        socket.emit("signal",{
-
-            room:room,
-
-            signal:{
-                answer:answer
+        socket.emit("signal", {
+            room: room,
+            signal: {
+                answer: answer
             }
-
         });
 
     }
 
-
-    if(signal.answer){
+    else if (signal.answer) {
 
         await peerConnection.setRemoteDescription(
-            signal.answer
+            new RTCSessionDescription(signal.answer)
         );
 
     }
 
+    else if (signal.candidate) {
 
-    if(signal.candidate){
-
-        await peerConnection.addIceCandidate(
-            signal.candidate
-        );
+        try {
+            await peerConnection.addIceCandidate(
+                new RTCIceCandidate(signal.candidate)
+            );
+        } catch (err) {
+            console.error("ICE Error:", err);
+        }
 
     }
 
+});
+// ======================
+// USER JOINED
+// ======================
+socket.on("user-joined", async () => {
+
+    if (!peerConnection) {
+        createPeer();
+    }
+
+    try {
+
+        const offer = await peerConnection.createOffer();
+
+        await peerConnection.setLocalDescription(offer);
+
+        socket.emit("signal", {
+            room: room,
+            signal: {
+                offer: offer
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
 
 });
 
 
-// Mic Button
-micBtn.onclick = ()=>{
+// ======================
+// RECEIVE SIGNAL
+// ======================
+socket.on("signal", async (data) => {
 
-    let audio =
-    localStream.getAudioTracks()[0];
+    const signal = data.signal;
 
-    audio.enabled =
-    !audio.enabled;
+    if (!peerConnection) {
+        createPeer();
+    }
 
-};
+    try {
+
+        if (signal.offer) {
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(signal.offer)
+            );
+
+            const answer = await peerConnection.createAnswer();
+
+            await peerConnection.setLocalDescription(answer);
+
+            socket.emit("signal", {
+                room: room,
+                signal: {
+                    answer: answer
+                }
+            });
+
+        }
+
+        else if (signal.answer) {
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(signal.answer)
+            );
+
+        }
+
+        else if (signal.candidate) {
+
+            await peerConnection.addIceCandidate(
+                new RTCIceCandidate(signal.candidate)
+            );
+
+        }
+
+    } catch (err) {
+        console.error("Signal Error:", err);
+    }
+
+});
+// ======================
+// USER JOINED
+// ======================
+socket.on("user-joined", async () => {
+
+    if (!peerConnection) {
+        createPeer();
+    }
+
+    try {
+
+        const offer = await peerConnection.createOffer();
+
+        await peerConnection.setLocalDescription(offer);
+
+        socket.emit("signal", {
+            room: room,
+            signal: {
+                offer: offer
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
+
+});
 
 
-// Camera Button
-cameraBtn.onclick = ()=>{
+// ======================
+// RECEIVE SIGNAL
+// ======================
+socket.on("signal", async (data) => {
 
-    let video =
-    localStream.getVideoTracks()[0];
+    const signal = data.signal;
 
-    video.enabled =
-    !video.enabled;
+    if (!peerConnection) {
+        createPeer();
+    }
 
-};
+    try {
+
+        if (signal.offer) {
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(signal.offer)
+            );
+
+            const answer = await peerConnection.createAnswer();
+
+            await peerConnection.setLocalDescription(answer);
+
+            socket.emit("signal", {
+                room: room,
+                signal: {
+                    answer: answer
+                }
+            });
+
+        }
+
+        else if (signal.answer) {
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(signal.answer)
+            );
+
+        }
+
+        else if (signal.candidate) {
+
+            await peerConnection.addIceCandidate(
+                new RTCIceCandidate(signal.candidate)
+            );
+
+        }
+
+    } catch (err) {
+        console.error("Signal Error:", err);
+    }
+
+});
+// ======================
+// USER JOINED
+// ======================
+socket.on("user-joined", async () => {
+
+    if (!peerConnection) {
+        createPeer();
+    }
+
+    try {
+
+        const offer = await peerConnection.createOffer();
+
+        await peerConnection.setLocalDescription(offer);
+
+        socket.emit("signal", {
+            room: room,
+            signal: {
+                offer: offer
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
+
+});
 
 
-// Leave
-leaveBtn.onclick = ()=>{
+// ======================
+// RECEIVE SIGNAL
+// ======================
+socket.on("signal", async (data) => {
 
-    location.reload();
+    const signal = data.signal;
 
-};
+    if (!peerConnection) {
+        createPeer();
+    }
+
+    try {
+
+        if (signal.offer) {
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(signal.offer)
+            );
+
+            const answer = await peerConnection.createAnswer();
+
+            await peerConnection.setLocalDescription(answer);
+
+            socket.emit("signal", {
+                room: room,
+                signal: {
+                    answer: answer
+                }
+            });
+
+        }
+
+        else if (signal.answer) {
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(signal.answer)
+            );
+
+        }
+
+        else if (signal.candidate) {
+
+            await peerConnection.addIceCandidate(
+                new RTCIceCandidate(signal.candidate)
+            );
+
+        }
+
+    } catch (err) {
+        console.error("Signal Error:", err);
+    }
+
+});
+
+// ======================
+// USER JOINED
+// ======================
+socket.on("user-joined", async () => {
+
+    if (!peerConnection) {
+        createPeer();
+    }
+
+    try {
+
+        const offer = await peerConnection.createOffer();
+
+        await peerConnection.setLocalDescription(offer);
+
+        socket.emit("signal", {
+            room: room,
+            signal: {
+                offer: offer
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
+
+});
+
+
+// ======================
+// RECEIVE SIGNAL
+// ======================
+socket.on("signal", async (data) => {
+
+    const signal = data.signal;
+
+    if (!peerConnection) {
+        createPeer();
+    }
+
+    try {
+
+        if (signal.offer) {
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(signal.offer)
+            );
+
+            const answer = await peerConnection.createAnswer();
+
+            await peerConnection.setLocalDescription(answer);
+
+            socket.emit("signal", {
+                room: room,
+                signal: {
+                    answer: answer
+                }
+            });
+
+        }
+
+        else if (signal.answer) {
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(signal.answer)
+            );
+
+        }
+
+        else if (signal.candidate) {
+
+            await peerConnection.addIceCandidate(
+                new RTCIceCandidate(signal.candidate)
+            );
+
+        }
+
+    } catch (err) {
+        console.error("Signal Error:", err);
+    }
+
+});
+// ======================
+// USER JOINED
+// ======================
+socket.on("user-joined", async () => {
+
+    if (!peerConnection) {
+        createPeer();
+    }
+
+    try {
+
+        const offer = await peerConnection.createOffer();
+
+        await peerConnection.setLocalDescription(offer);
+
+        socket.emit("signal", {
+            room: room,
+            signal: {
+                offer: offer
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
+
+});
+
+
+// ======================
+// RECEIVE SIGNAL
+// ======================
+socket.on("signal", async (data) => {
+
+    const signal = data.signal;
+
+    if (!peerConnection) {
+        createPeer();
+    }
+
+    try {
+
+        if (signal.offer) {
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(signal.offer)
+            );
+
+            const answer = await peerConnection.createAnswer();
+
+            await peerConnection.setLocalDescription(answer);
+
+            socket.emit("signal", {
+                room: room,
+                signal: {
+                    answer: answer
+                }
+            });
+
+        }
+
+        else if (signal.answer) {
+
+            await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(signal.answer)
+            );
+
+        }
+
+        else if (signal.candidate) {
+
+            await peerConnection.addIceCandidate(
+                new RTCIceCandidate(signal.candidate)
+            );
+
+        }
+
+    } catch (err) {
+        console.error("Signal Error:", err);
+    }
+
+});
