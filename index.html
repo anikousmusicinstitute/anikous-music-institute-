@@ -3,7 +3,7 @@
 
 <head>
 
-<title>Professional Digital Piano</title>
+<title>Professional Piano</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -15,31 +15,30 @@
 <body>
 
 
-<div class="piano-app">
-
-
 <h1>🎹 Digital Piano</h1>
 
 
 <div class="controls">
 
 <button onclick="toggleKeys()">
-Keys
+Keys ON/OFF
 </button>
+
 
 <button onclick="toggleChords()">
-Chords
+Chords ON/OFF
 </button>
 
+
 <button onclick="connectMIDI()">
-MIDI
+🎹 MIDI
 </button>
 
 </div>
 
 
 
-<div class="piano-frame">
+<div id="pianoBox">
 
 <div id="piano"></div>
 
@@ -49,9 +48,6 @@ MIDI
 
 <div id="display">
 Ready 🎵
-</div>
-
-
 </div>
 
 
