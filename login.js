@@ -39,5 +39,9 @@ loginBtn.onclick = async () => {
     localStorage.setItem("role", data.role);
     localStorage.setItem("name", data.name);
 
-    window.location.href = "index.html";
+    if (data.role === "teacher") {
+        window.location.href = "teacher.html";
+    } else {
+        window.location.href = "student.html";
+    }
 };
