@@ -5,33 +5,57 @@ body{
     color:white;
 }
 
+
 button{
     padding:15px;
     margin:10px;
     font-size:18px;
 }
 
+
+
 #piano{
+
     display:flex;
+
+    justify-content:center;
+
     position:relative;
+
     height:220px;
+
+    margin-top:20px;
+
 }
 
 
-.white{
+
+.key{
+
     width:60px;
+
     height:220px;
+
     background:white;
+
     border:1px solid black;
+
     color:black;
+
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:center;
+
+    padding-bottom:10px;
+
 }
 
 
-.black{
-    width:35px;
-    height:130px;
-    background:black;
-    color:white;
-    margin-left:-18px;
-    z-index:2;
+
+.key:hover{
+
+    background:yellow;
+
 }
