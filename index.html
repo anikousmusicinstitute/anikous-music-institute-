@@ -1,91 +1,93 @@
+<!-- public/index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Anikous Music Institute</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 
 </head>
 
 <body>
 
 <header>
+    <h1>🎵 Anikous Music Institute</h1>
 
-<h1>Anikous Music Institute</h1>
-
-<h2 id="welcomeText"></h2>
-
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="login.html">Login</a>
+        <a href="register.html">Register</a>
+    </nav>
 </header>
 
-<main>
 
-<div class="video-container">
+<section class="hero">
 
-<div class="video-box">
+<h2>Learn Music Online</h2>
 
-<h3>Your Camera</h3>
+<p>
+Piano | Keyboard | Vocal | MIDI | Live Classes
+</p>
 
-<video
-id="localVideo"
-autoplay
-playsinline
-muted>
-</video>
-
-</div>
-
-<div class="video-box">
-
-<h3>Live Class</h3>
-
-<video
-id="remoteVideo"
-autoplay
-playsinline>
-</video>
-
-</div>
-
-</div>
-
-<div class="controls">
-
-<button id="micBtn">
-🎤 Mic On
+<button onclick="location.href='register.html'">
+Join Now
 </button>
 
-<button id="cameraBtn">
-📷 Camera On
-</button>
+</section>
 
-<button id="leaveBtn">
-❌ Leave Class
-</button>
 
-<button id="logoutBtn">
-🚪 Logout
-</button>
+<section class="courses">
 
+<h2>Our Courses</h2>
+
+<div class="card">
+<h3>🎹 Piano</h3>
+<p>Learn beginner to advanced piano skills.</p>
 </div>
 
-</main>
 
-<script>
+<div class="card">
+<h3>🎤 Vocal</h3>
+<p>Improve singing techniques and voice control.</p>
+</div>
 
-const name = localStorage.getItem("name") || "User";
-const role = localStorage.getItem("role") || "";
 
-document.getElementById("welcomeText").innerHTML =
-`Welcome <b>${name}</b> (${role})`;
+<div class="card">
+<h3>🎧 MIDI Production</h3>
+<p>Create music using digital instruments.</p>
+</div>
 
-</script>
+</section>
 
-<script src="/socket.io/socket.io.js"></script>
-<script src="app.js"></script>
+
+<section class="features">
+
+<h2>Features</h2>
+
+<ul>
+<li>Live Video Classes</li>
+<li>Virtual Piano</li>
+<li>MIDI Keyboard Support</li>
+<li>Teacher & Student Dashboard</li>
+</ul>
+
+</section>
+
+
+<footer>
+
+<p>
+© 2026 Anikous Music Institute
+</p>
+
+</footer>
+
+
+<script src="js/app.js"></script>
 
 </body>
 </html>
