@@ -18,62 +18,44 @@
 <h1>🎹 Premium Piano Studio</h1>
 
 
-
 <div class="controls">
 
-
 <button onclick="toggleKeys()">
-🎼 Keys Name ON/OFF
+🎼 Keys Name
 </button>
 
 
 <button onclick="toggleChords()">
-🎵 Chords Name ON/OFF
+🎵 Chords Name
 </button>
 
 
-<button onclick="zoomOut()">
-➖
+<button onclick="connectMIDI()">
+🎹 MIDI
 </button>
-
-
-<button onclick="zoomIn()">
-➕
-</button>
-
 
 </div>
 
 
 
-
-<div id="piano-wrapper">
-
+<div id="pianoBox">
 
 <div id="piano"></div>
 
-
 </div>
 
 
 
-<h2 id="chordDisplay">
-Chord: None
-</h2>
+<div id="display">
 
-
-
-<div id="note">
 Ready 🎹
-</div>
 
+</div>
 
 
 
 <script src="script.js"></script>
-<button onclick="connectMIDI()">
-🎹 Connect MIDI
-</button>
+
 
 </body>
 
