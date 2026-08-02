@@ -1,21 +1,4 @@
-let socket;
-
-try {
-
-    socket = io("https://pianobackend.onrender.com");
-
-    console.log("Socket connected");
-
-} catch(error) {
-
-    console.log("Socket Error:", error);
-
-}
-
-
-
-console.log("script loaded");
-
+let socket = io("https://pianobackend.onrender.com");
 
 let audioContext;
 let midiAccess;
@@ -23,14 +6,11 @@ let jitsiApi;
 
 
 
-// Jitsi Video Call
+// Video Call
 
 function joinVideo(){
 
-    const domain = "meet.jit.si";
-
-
-    const options = {
+    const options={
 
         roomName:"PianoLiveClassRoom",
 
@@ -39,8 +19,7 @@ function joinVideo(){
         height:600,
 
         parentNode:
-        document.querySelector("#jitsi-container"),
-
+        document.getElementById("jitsi-container"),
 
         userInfo:{
 
@@ -53,153 +32,10 @@ function joinVideo(){
 
 
     jitsiApi =
-    new JitsiMeetExternalAPI(domain, options);
-
-}
-
-
-
-
-// MIDI Connect
-
-async function connectMIDI(){
-
-    try{
-
-
-        audioContext = new AudioContext();
-
-
-        if(navigator.requestMIDIAccess){
-
-
-            midiAccess =
-            await navigator.requestMIDIAccess();
-
-
-            alert("MIDI Connected 🎹");
-
-
-            midiAccess.inputs.forEach(input=>{
-
-
-                input.onmidimessage = playPiano;
-
-
-            });
-
-
-        }
-
-        else{
-
-
-            alert("MIDI not supported");
-
-
-        }
-
-
-    }
-
-    catch(error){
-
-
-        console.log(error);
-
-        alert("MIDI Connection Failed");
-
-
-    }
-
-}
-
-
-
-
-// MIDI Play
-
-function playPiano(event){
-
-
-    let command = event.data[0];
-
-    let note = event.data[1];
-
-    let velocity = event.data[2];
-
-
-
-    if(command === 144 && velocity > 0){
-
-
-        document.getElementById("note").innerHTML =
-        "Playing Note : " + note;
-
-
-
-        playSound(note);
-
-
-
-        if(socket){
-
-            socket.emit("midiNote",{
-
-                note:note
-
-            });
-
-        }
-
-
-        lightKey(note);
-
-
-    }
-
-}
-
-
-
-
-// Sound
-
-function playSound(note){
-
-
-    let oscillator =
-    audioContext.createOscillator();
-
-
-    let gain =
-    audioContext.createGain();
-
-
-
-    oscillator.frequency.value =
-    440 * Math.pow(2,(note-69)/12);
-
-
-
-    oscillator.connect(gain);
-
-
-    gain.connect(
-    audioContext.destination
+    new JitsiMeetExternalAPI(
+        "meet.jit.si",
+        options
     );
-
-
-    gain.gain.value=0.3;
-
-
-    oscillator.start();
-
-
-    oscillator.stop(
-        audioContext.currentTime + 0.5
-    );
-
 
 }
 
@@ -216,20 +52,11 @@ function createPiano(){
     document.getElementById("piano");
 
 
-    if(!piano) return;
-
-
-
     piano.innerHTML="";
 
 
-
     let octave =
-    document.getElementById("octave")
-    ?
-    document.getElementById("octave").value
-    :
-    1;
+    document.getElementById("octave").value;
 
 
 
@@ -247,7 +74,7 @@ function createPiano(){
 
 
 
-    notes.forEach(note=>{
+    notes.forEach((note,index)=>{
 
 
         let key =
@@ -259,6 +86,39 @@ function createPiano(){
 
         key.innerHTML =
         note + octave;
+
+
+
+        key.dataset.note =
+        60 + index;
+
+
+
+        key.onclick=function(){
+
+
+            let midiNote =
+            Number(this.dataset.note);
+
+
+
+            playPianoSound(midiNote);
+
+
+            lightKey(this);
+
+
+
+            socket.emit(
+                "midiNote",
+                {
+                    note:midiNote
+                }
+            );
+
+
+        };
+
 
 
         piano.appendChild(key);
@@ -273,39 +133,155 @@ function createPiano(){
 
 
 
-// Light Key
-
-function lightKey(note){
 
 
-    let keys =
-    document.querySelectorAll(".key");
+// Sound
+
+function playPianoSound(note){
 
 
-    let key =
-    keys[note % 7];
+    if(!audioContext)
+
+    audioContext =
+    new AudioContext();
 
 
 
-    if(key){
+    let oscillator =
+    audioContext.createOscillator();
 
 
-        key.style.background="yellow";
+
+    let gain =
+    audioContext.createGain();
 
 
-        setTimeout(()=>{
+
+    oscillator.type="sine";
 
 
-            key.style.background="white";
+    oscillator.frequency.value =
+    440 * Math.pow(
+        2,
+        (note-69)/12
+    );
 
 
-        },200);
+
+    oscillator.connect(gain);
 
 
-    }
+    gain.connect(
+        audioContext.destination
+    );
+
+
+    gain.gain.value=0.3;
+
+
+
+    oscillator.start();
+
+
+    oscillator.stop(
+        audioContext.currentTime+0.5
+    );
 
 
 }
+
+
+
+
+
+
+// MIDI Connect
+
+async function connectMIDI(){
+
+
+    audioContext =
+    new AudioContext();
+
+
+
+    midiAccess =
+    await navigator.requestMIDIAccess();
+
+
+
+    alert("MIDI Connected 🎹");
+
+
+
+    midiAccess.inputs.forEach(input=>{
+
+
+        input.onmidimessage =
+        function(event){
+
+
+            let note =
+            event.data[1];
+
+
+            let velocity =
+            event.data[2];
+
+
+
+            if(velocity>0){
+
+
+                playPianoSound(note);
+
+
+                socket.emit(
+                    "midiNote",
+                    {
+                        note:note
+                    }
+                );
+
+
+            }
+
+
+        };
+
+
+    });
+
+
+}
+
+
+
+
+
+
+
+// Highlight
+
+function lightKey(key){
+
+
+    key.classList.add("active");
+
+
+
+    setTimeout(()=>{
+
+
+        key.classList.remove("active");
+
+
+    },200);
+
+
+}
+
+
 
 
 
@@ -313,35 +289,49 @@ function lightKey(note){
 
 // Student Receive
 
-if(socket){
-
-socket.on("studentNote",(data)=>{
-
-
-    document.getElementById("note").innerHTML =
-    "Teacher Playing : " + data.note;
+socket.on(
+"studentNote",
+(data)=>{
 
 
-    lightKey(data.note);
+    let keys =
+    document.querySelectorAll(".key");
+
+
+
+    keys.forEach(key=>{
+
+
+        if(
+        Number(key.dataset.note)
+        ===
+        data.note
+        ){
+
+
+            playPianoSound(data.note);
+
+
+            lightKey(key);
+
+
+        }
+
+
+    });
 
 
 });
 
-}
 
 
 
 
 
-// Page Load
+// Start
 
 window.onload=function(){
 
-
-    console.log("Page loaded");
-
-
     createPiano();
-
 
 };
