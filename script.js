@@ -1,5 +1,4 @@
-const socket = io("YOUR_BACKEND_URL");
-
+const socket = io("https://pianobackend.onrender.com");
 let audioContext;
 let midiAccess;
 let jitsiApi;
