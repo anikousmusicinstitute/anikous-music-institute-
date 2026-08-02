@@ -1,233 +1,116 @@
-let audioContext;
+let pressedNotes = new Set();
 
-let showKeys=true;
-
-let showChords=true;
-
-
-const notes=[
+const NOTE_NAMES = [
 "C","C#","D","D#",
 "E","F","F#","G",
 "G#","A","A#","B"
 ];
+pressedNotes.add(note);
 
+updateDisplay();
 
+setTimeout(() => {
 
+    pressedNotes.delete(note);
 
-function createPiano(){
+    updateDisplay();
 
+},1000);
+function updateDisplay(){
 
-let piano=document.getElementById("piano");
+    let list = [...pressedNotes].sort((a,b)=>a-b);
 
-piano.innerHTML="";
+    let keyNames = list.map(n=>{
 
+        let note = NOTE_NAMES[n % 12];
 
-let white=0;
+        let octave = Math.floor(n/12)-1;
 
+        return note + octave;
 
+    });
 
-for(let midi=21;midi<=108;midi++){
+    document.getElementById("keysPressed").innerHTML =
+    keyNames.length ? keyNames.join("  ") : "-";
 
-
-let name=notes[midi%12];
-
-
-let octave=Math.floor(midi/12)-1;
-
-
-
-let key=document.createElement("div");
-
-
-key.dataset.note=midi;
-
-
-key.dataset.name=name+octave;
-
-
-key.innerHTML =
-showKeys ? name+octave:"";
-
-
-
-if(name.includes("#")){
-
-
-key.className="black";
-
-
-key.style.left=
-(white*54-17)+"px";
-
+    document.getElementById("notesName").innerHTML =
+    keyNames.length ? keyNames.join("  ") : "-";
 
 }
+const CHORDS = {
 
-else{
+"0,4,7":"Major",
 
+"0,3,7":"Minor",
 
-key.className="white";
+"0,3,6":"Dim",
 
+"0,4,8":"Aug",
 
-key.style.left=
-(white*54)+"px";
+"0,5,7":"Sus4",
 
+"0,2,7":"Sus2",
 
-white++;
+"0,4,7,10":"7",
 
-}
+"0,4,7,11":"Maj7",
 
+"0,3,7,10":"m7",
 
+"0,3,6,9":"Dim7",
 
-key.onclick=function(){
+"0,3,6,10":"m7♭5",
 
-playSound(Number(this.dataset.note));
+"0,4,7,10,2":"9",
+
+"0,3,7,10,2":"m9",
+
+"0,4,7,11,2":"Maj9",
+
+"0,4,7,10,2,5":"11",
+
+"0,4,7,10,2,5,9":"13"
 
 };
+detectChord(list);
+function detectChord(notes){
 
+    if(notes.length<3){
 
-piano.appendChild(key);
+        document.getElementById("chordName").innerHTML="-";
 
+        document.getElementById("rootName").innerHTML="-";
 
-}
+        return;
 
+    }
 
+    let root = notes[0] % 12;
 
-piano.style.width=
-white*54+"px";
+    let intervals = notes
+    .map(n => (n % 12 - root + 12) % 12)
+    .sort((a,b)=>a-b);
 
+    let key = intervals.join(",");
 
-}
+    let chord = CHORDS[key];
 
+    if(chord){
 
+        document.getElementById("rootName").innerHTML =
+        NOTE_NAMES[root];
 
+        document.getElementById("chordName").innerHTML =
+        NOTE_NAMES[root] + " " + chord;
 
+    }else{
 
+        document.getElementById("rootName").innerHTML =
+        NOTE_NAMES[root];
 
+        document.getElementById("chordName").innerHTML =
+        "Unknown";
 
-function playSound(note){
-
-
-if(!audioContext)
-
-audioContext=new AudioContext();
-
-
-
-let osc=
-audioContext.createOscillator();
-
-
-let gain=
-audioContext.createGain();
-
-
-osc.frequency.value=
-440*Math.pow(2,(note-69)/12);
-
-
-
-osc.connect(gain);
-
-gain.connect(
-audioContext.destination
-);
-
-
-gain.gain.value=.3;
-
-
-osc.start();
-
-
-osc.stop(
-audioContext.currentTime+1
-);
-
+    }
 
 }
-
-
-
-
-
-function toggleKeys(){
-
-
-showKeys=!showKeys;
-
-
-document.querySelectorAll(".white,.black")
-.forEach(k=>{
-
-
-k.innerHTML=
-showKeys?k.dataset.name:"";
-
-
-});
-
-
-}
-
-
-
-
-
-function toggleChords(){
-
-
-showChords=!showChords;
-
-
-document.getElementById("display")
-.innerHTML=
-showChords?
-"Chord ON":
-"Chord OFF";
-
-
-}
-
-
-
-
-
-async function connectMIDI(){
-
-
-let midi=
-await navigator.requestMIDIAccess();
-
-
-alert("MIDI Connected 🎹");
-
-
-midi.inputs.forEach(input=>{
-
-
-input.onmidimessage=function(e){
-
-
-if(e.data[2]>0){
-
-playSound(e.data[1]);
-
-}
-
-};
-
-
-});
-
-
-}
-
-
-
-
-
-window.onload=function(){
-
-createPiano();
-
-};
