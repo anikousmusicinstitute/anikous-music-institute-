@@ -3,9 +3,11 @@
 
 <head>
 
-    <title>Piano Live Class</title>
+<title>Piano Live Class</title>
 
-    <link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -16,8 +18,6 @@
 <h1>🎹 Piano Live Class</h1>
 
 
-<!-- Video Call -->
-
 <button onclick="joinVideo()">
 🎥 Join Video Call
 </button>
@@ -27,7 +27,8 @@
 
 
 
-<!-- MIDI -->
+<br>
+
 
 <button onclick="connectMIDI()">
 🎹 Connect MIDI Keyboard
@@ -38,8 +39,6 @@
 <br><br>
 
 
-<!-- Octave -->
-
 <label>
 Select Octave:
 </label>
@@ -47,19 +46,13 @@ Select Octave:
 
 <select id="octave" onchange="createPiano()">
 
-    <option value="1">Octave 1</option>
-
-    <option value="2">Octave 2</option>
-
-    <option value="3" selected>Octave 3</option>
-
-    <option value="4">Octave 4</option>
-
-    <option value="5">Octave 5</option>
-
-    <option value="6">Octave 6</option>
-
-    <option value="7">Octave 7</option>
+<option value="1">Octave 1</option>
+<option value="2">Octave 2</option>
+<option value="3" selected>Octave 3</option>
+<option value="4">Octave 4</option>
+<option value="5">Octave 5</option>
+<option value="6">Octave 6</option>
+<option value="7">Octave 7</option>
 
 </select>
 
@@ -71,7 +64,9 @@ Select Octave:
 
 
 
-<div id="piano"></div>
+<div id="piano">
+
+</div>
 
 
 
@@ -81,19 +76,11 @@ Waiting...
 
 
 
-<!-- Socket.io -->
-
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
 
-
-<!-- Jitsi -->
-
 <script src="https://meet.jit.si/external_api.js"></script>
 
-
-
-<!-- Main JS -->
 
 <script src="script.js"></script>
 
