@@ -79,3 +79,97 @@ function createPeer() {
     console.log("Connection:", peerConnection.connectionState);
   };
 }
+socket.on("user-joined", async () => {
+
+  if (!peerConnection) {
+    createPeer();
+  }
+
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
+
+  socket.emit("signal", {
+    room: room,
+    signal: {
+      offer: offer
+    }
+  });
+
+});
+
+socket.on("signal", async (data) => {
+
+  const signal = data.signal;
+
+  if (!peerConnection) {
+    createPeer();
+  }
+
+  if (signal.offer) {
+
+    await peerConnection.setRemoteDescription(
+      new RTCSessionDescription(signal.offer)
+    );
+
+    const answer = await peerConnection.createAnswer();
+
+    await peerConnection.setLocalDescription(answer);
+
+    socket.emit("signal", {
+      room: room,
+      signal: {
+        answer: answer
+      }
+    });
+
+  } else if (signal.answer) {
+
+    await peerConnection.setRemoteDescription(
+      new RTCSessionDescription(signal.answer)
+    );
+
+  } else if (signal.candidate) {
+
+    await peerConnection.addIceCandidate(
+      new RTCIceCandidate(signal.candidate)
+    );
+
+  }
+
+});
+// Mic Button
+micBtn.onclick = () => {
+  if (!localStream) return;
+
+  const audioTrack = localStream.getAudioTracks()[0];
+  audioTrack.enabled = !audioTrack.enabled;
+
+  micBtn.innerText = audioTrack.enabled ? "🎤 Mic On" : "🔇 Mic Off";
+};
+
+// Camera Button
+cameraBtn.onclick = () => {
+  if (!localStream) return;
+
+  const videoTrack = localStream.getVideoTracks()[0];
+  videoTrack.enabled = !videoTrack.enabled;
+
+  cameraBtn.innerText = videoTrack.enabled ? "📷 Camera On" : "🚫 Camera Off";
+};
+
+// Leave Button
+leaveBtn.onclick = () => {
+
+  if (peerConnection) {
+    peerConnection.close();
+    peerConnection = null;
+  }
+
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+  }
+
+  socket.disconnect();
+
+  location.reload();
+};
