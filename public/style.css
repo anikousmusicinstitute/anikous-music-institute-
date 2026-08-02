@@ -1,81 +1,123 @@
-body{
+/* public/css/style.css */
+
+*{
     margin:0;
-    background:#111;
-    color:#fff;
-    font-family:Arial,sans-serif;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
 }
+
+body{
+    background:#f5f5f5;
+    color:#222;
+}
+
 
 header{
+    background:#111;
+    color:white;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+
+nav a{
+    color:white;
+    text-decoration:none;
+    margin:10px;
+}
+
+
+.hero{
     text-align:center;
-    padding:20px;
-    background:#1b1b1b;
-}
-
-.join-box{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    padding:20px;
-    flex-wrap:wrap;
-}
-
-.join-box input{
-    padding:12px;
-    width:250px;
-    border:none;
-    border-radius:8px;
-}
-
-.join-box button{
-    padding:12px 20px;
-    border:none;
-    border-radius:8px;
-    background:#00b894;
-    color:#fff;
-    cursor:pointer;
-}
-
-.videos{
-    display:flex;
-    justify-content:center;
-    gap:20px;
-    flex-wrap:wrap;
-    padding:20px;
-}
-
-.video-box{
-    width:320px;
+    padding:80px 20px;
     background:#222;
-    padding:10px;
-    border-radius:12px;
-}
-
-video{
-    width:100%;
-    background:#000;
-    border-radius:10px;
-}
-
-.controls{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    flex-wrap:wrap;
-    padding:20px;
-}
-
-.controls button{
-    padding:12px 18px;
-    border:none;
-    border-radius:8px;
-    background:#444;
     color:white;
 }
 
-#piano{
-    margin:20px;
-    padding:20px;
-    background:#1b1b1b;
-    border-radius:12px;
+
+.hero h2{
+    font-size:40px;
+    margin-bottom:20px;
+}
+
+
+button{
+    padding:12px 25px;
+    margin-top:20px;
+    border:none;
+    cursor:pointer;
+    background:#ffcc00;
+    border-radius:5px;
+}
+
+
+.courses{
+    padding:40px;
     text-align:center;
+}
+
+
+.card{
+    display:inline-block;
+    width:280px;
+    margin:15px;
+    padding:25px;
+    background:white;
+    border-radius:10px;
+    box-shadow:0 0 10px #ccc;
+}
+
+
+.features{
+    padding:40px;
+    background:white;
+}
+
+
+.features li{
+    margin:15px;
+}
+
+
+footer{
+    text-align:center;
+    padding:20px;
+    background:#111;
+    color:white;
+}
+
+
+input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+}
+
+
+.form-box{
+    width:350px;
+    margin:50px auto;
+    padding:30px;
+    background:white;
+    border-radius:10px;
+}
+
+
+.dashboard{
+    padding:30px;
+}
+
+
+.video-box{
+    display:flex;
+    gap:20px;
+}
+
+
+video{
+    width:45%;
+    background:black;
 }
