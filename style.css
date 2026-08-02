@@ -13,15 +13,25 @@ button{
 
 #piano{
     display:flex;
-    justify-content:center;
-    margin-top:40px;
+    position:relative;
+    height:220px;
 }
 
-.key{
-    width:50px;
-    height:180px;
+
+.white{
+    width:60px;
+    height:220px;
     background:white;
-    color:black;
     border:1px solid black;
-    margin:2px;
+    color:black;
+}
+
+
+.black{
+    width:35px;
+    height:130px;
+    background:black;
+    color:white;
+    margin-left:-18px;
+    z-index:2;
 }
