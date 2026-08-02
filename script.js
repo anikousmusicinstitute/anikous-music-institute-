@@ -1,4 +1,47 @@
-function buildPiano(){
+let audio;
+
+
+function sound(note){
+
+
+if(!audio){
+
+audio=new AudioContext();
+
+}
+
+
+let osc=audio.createOscillator();
+
+let gain=audio.createGain();
+
+
+osc.frequency.value =
+440 * Math.pow(2,(note-69)/12);
+
+
+osc.connect(gain);
+
+gain.connect(audio.destination);
+
+
+gain.gain.value=0.3;
+
+
+osc.start();
+
+
+osc.stop(
+audio.currentTime+0.5
+);
+
+
+}
+
+
+
+function createPiano(){
+
 
 let piano=document.getElementById("piano");
 
@@ -10,54 +53,104 @@ Number(document.getElementById("octave").value);
 
 
 
+let start =
+(octave+1)*12;
+
+
+
 let white=[
+
 "C","D","E","F","G","A","B"
+
 ];
 
 
-white.forEach((n,i)=>{
+let whiteMidi=[
 
-let key=document.createElement("div");
+0,2,4,5,7,9,11
 
-key.className="white";
-
-key.innerHTML=n+octave;
-
-key.style.left=(i*60)+"px";
+];
 
 
-piano.appendChild(key);
+
+white.forEach((key,i)=>{
+
+
+let div=document.createElement("div");
+
+
+div.className="white";
+
+
+div.innerHTML=key+octave;
+
+
+div.style.left=(i*70)+"px";
+
+
+
+div.onclick=function(){
+
+sound(start+whiteMidi[i]);
+
+document.getElementById("note").innerHTML=
+"Playing "+key+octave;
+
+};
+
+
+
+piano.appendChild(div);
+
 
 
 });
 
 
 
+
+
 let black=[
 
-["C#",45],
-["D#",105],
-["F#",225],
-["G#",285],
-["A#",345]
+["C#",45,1],
+["D#",115,2],
+["F#",255,4],
+["G#",325,5],
+["A#",395,6]
 
 ];
 
 
-black.forEach(k=>{
+
+black.forEach(item=>{
 
 
-let key=document.createElement("div");
+let div=document.createElement("div");
 
 
-key.className="black";
-
-key.innerHTML=k[0];
-
-key.style.left=k[1]+"px";
+div.className="black";
 
 
-piano.appendChild(key);
+div.innerHTML=item[0];
+
+
+div.style.left=item[1]+"px";
+
+
+
+div.onclick=function(){
+
+sound(start+item[2]);
+
+document.getElementById("note").innerHTML=
+"Playing "+item[0];
+
+};
+
+
+
+piano.appendChild(div);
+
 
 
 });
@@ -67,8 +160,8 @@ piano.appendChild(key);
 
 
 
-window.onload=()=>{
+window.onload=function(){
 
-buildPiano();
+createPiano();
 
 };
