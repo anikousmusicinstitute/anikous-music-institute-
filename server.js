@@ -79,12 +79,10 @@ app.post("/login", async (req, res) => {
         });
 
         if (!user) {
-
             return res.json({
                 success: false,
                 message: "Invalid Username or Password"
             });
-
         }
 
         res.json({
@@ -109,13 +107,14 @@ app.post("/login", async (req, res) => {
 // Socket.IO
 io.on("connection", (socket) => {
 
-    console.log("User connected:", socket.id);
+    console.log("✅ User Connected:", socket.id);
 
     socket.on("join-room", (room) => {
 
         socket.join(room);
+        socket.room = room;
 
-        console.log(`${socket.id} joined room ${room}`);
+        console.log(`${socket.id} joined ${room}`);
 
         socket.to(room).emit("user-joined", socket.id);
 
@@ -125,14 +124,18 @@ io.on("connection", (socket) => {
 
         socket.to(room).emit("signal", {
             sender: socket.id,
-            signal: signal
+            signal
         });
 
     });
 
     socket.on("disconnect", () => {
 
-        console.log("User disconnected:", socket.id);
+        console.log("❌ User Disconnected:", socket.id);
+
+        if (socket.room) {
+            socket.to(socket.room).emit("user-left", socket.id);
+        }
 
     });
 
@@ -141,7 +144,5 @@ io.on("connection", (socket) => {
 const PORT = process.env.PORT || 3000;
 
 http.listen(PORT, () => {
-
     console.log(`🚀 Server Running on Port ${PORT}`);
-
 });
