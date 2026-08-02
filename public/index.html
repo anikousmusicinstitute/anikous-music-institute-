@@ -5,51 +5,89 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ANIKOUS Live Class</title>
 
-<style>
-body{
-    margin:0;
-    background:#111;
-    color:#fff;
-    font-family:Arial,sans-serif;
-    text-align:center;
-}
-video{
-    width:90%;
-    max-width:500px;
-    border-radius:12px;
-    margin:20px auto;
-    background:#000;
-}
-button{
-    padding:12px 20px;
-    margin:10px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-}
-</style>
+<link rel="stylesheet" href="style.css">
 
+<script src="/socket.io/socket.io.js"></script>
 </head>
+
 <body>
 
-<h2>ANIKOUS Live Class</h2>
+<header>
+<h1>🎵 ANIKOUS Music Institute</h1>
+<p>Professional Live Class</p>
+</header>
 
-<video id="localVideo" autoplay playsinline muted></video>
+<div class="join-box">
 
-<br>
+<input
+type="text"
+id="roomId"
+placeholder="Enter Class ID">
 
-<button onclick="startCamera()">Start Camera</button>
+<button id="joinBtn">
+Join Class
+</button>
 
-<script>
-async function startCamera(){
-    const stream = await navigator.mediaDevices.getUserMedia({
-        video:true,
-        audio:true
-    });
+</div>
 
-    document.getElementById("localVideo").srcObject = stream;
-}
-</script>
+<div class="videos">
+
+<div class="video-box">
+
+<h3>Teacher</h3>
+
+<video
+id="remoteVideo"
+autoplay
+playsinline>
+</video>
+
+</div>
+
+<div class="video-box">
+
+<h3>You</h3>
+
+<video
+id="localVideo"
+autoplay
+playsinline
+muted>
+</video>
+
+</div>
+
+</div>
+
+<div class="controls">
+
+<button id="micBtn">
+🎤 Mic
+</button>
+
+<button id="cameraBtn">
+📷 Camera
+</button>
+
+<button id="switchBtn">
+🔄 Switch Camera
+</button>
+
+<button id="leaveBtn">
+❌ Leave
+</button>
+
+</div>
+
+<div id="piano">
+
+<h2>🎹 Piano Area</h2>
+
+<p>MIDI Keyboard will appear here.</p>
+
+</div>
+
+<script src="app.js"></script>
 
 </body>
 </html>
