@@ -1,30 +1,56 @@
 body{
+
     text-align:center;
+
     font-family:Arial;
+
     background:#111;
+
     color:white;
+
 }
 
 
+
 button{
+
     padding:15px;
+
     margin:10px;
+
     font-size:18px;
+
+    border-radius:10px;
+
+}
+
+
+
+select{
+
+    padding:10px;
+
+    font-size:16px;
+
 }
 
 
 
 #piano{
 
+    position:relative;
+
     display:flex;
 
     justify-content:center;
 
-    position:relative;
+    margin:30px auto;
 
     height:220px;
 
-    margin-top:20px;
+    max-width:100%;
+
+    overflow-x:auto;
 
 }
 
@@ -32,13 +58,13 @@ button{
 
 .key{
 
-    width:60px;
+    width:50px;
 
     height:220px;
 
     background:white;
 
-    border:1px solid black;
+    border:2px solid black;
 
     color:black;
 
@@ -48,14 +74,42 @@ button{
 
     justify-content:center;
 
-    padding-bottom:10px;
+    padding-bottom:15px;
+
+    user-select:none;
+
+    cursor:pointer;
 
 }
 
 
 
-.key:hover{
+.key.active{
 
     background:yellow;
+
+}
+
+
+
+@media(max-width:600px){
+
+
+    .key{
+
+        width:40px;
+
+        height:180px;
+
+        font-size:12px;
+
+    }
+
+
+    #piano{
+
+        height:180px;
+
+    }
 
 }
