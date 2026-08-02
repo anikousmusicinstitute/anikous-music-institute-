@@ -1,189 +1,108 @@
-const socket = io();
+// public/js/app.js
 
-const localVideo = document.getElementById("localVideo");
-const remoteVideo = document.getElementById("remoteVideo");
+document.addEventListener("DOMContentLoaded", () => {
 
-const micBtn = document.getElementById("micBtn");
-const cameraBtn = document.getElementById("cameraBtn");
-const leaveBtn = document.getElementById("leaveBtn");
+    console.log("Anikous Music Institute Loaded");
 
-let localStream = null;
-let peerConnection = null;
 
-const ROOM_ID = "anikous-live-class";
+    // Join Now Button
+    const joinBtn = document.querySelector(".hero button");
 
-const servers = {
-    iceServers: [
-        {
-            urls: [
-                "stun:stun.l.google.com:19302",
-                "stun:stun1.l.google.com:19302"
-            ]
-        }
-    ]
-};
+    if (joinBtn) {
 
-async function startCamera() {
-
-    try {
-
-        localStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
+        joinBtn.addEventListener("click", () => {
+            window.location.href = "register.html";
         });
 
-        localVideo.srcObject = localStream;
+    }
 
-        socket.emit("join-room", ROOM_ID);
 
-    } catch (err) {
+    // Login Check
+    const user = localStorage.getItem("user");
 
-        console.log(err);
-        alert("Camera / Microphone Permission Denied");
+    if (user) {
+        console.log("User Logged In:", user);
+    }
+
+
+    // Logout Function
+    const logoutBtn = document.getElementById("logout");
+
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener("click", () => {
+
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+
+            window.location.href = "login.html";
+
+        });
 
     }
 
-}
 
-startCamera();
+    // Navigation Protection
+    const dashboardPages = [
+        "teacher.html",
+        "student.html"
+    ];
 
-function createPeer() {
+    const currentPage = window.location.pathname;
 
-    peerConnection = new RTCPeerConnection(servers);
+    dashboardPages.forEach(page => {
 
-    localStream.getTracks().forEach(track => {
+        if (currentPage.includes(page)) {
 
-        peerConnection.addTrack(track, localStream);
+            if (!localStorage.getItem("token")) {
 
-    });
+                window.location.href = "login.html";
 
-    peerConnection.ontrack = (event) => {
-
-        remoteVideo.srcObject = event.streams[0];
-
-    };
-
-    peerConnection.onicecandidate = (event) => {
-
-        if (event.candidate) {
-
-            socket.emit("signal", {
-
-                room: ROOM_ID,
-
-                signal: {
-                    candidate: event.candidate
-                }
-
-            });
-
-        }
-
-    };
-
-}
-socket.on("user-joined", async () => {
-
-    if (!peerConnection) {
-        createPeer();
-    }
-
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-
-    socket.emit("signal", {
-        room: ROOM_ID,
-        signal: {
-            offer: offer
-        }
-    });
-
-});
-
-socket.on("signal", async (data) => {
-
-    const signal = data.signal;
-
-    if (!peerConnection) {
-        createPeer();
-    }
-
-    if (signal.offer) {
-
-        await peerConnection.setRemoteDescription(
-            new RTCSessionDescription(signal.offer)
-        );
-
-        const answer = await peerConnection.createAnswer();
-
-        await peerConnection.setLocalDescription(answer);
-
-        socket.emit("signal", {
-            room: ROOM_ID,
-            signal: {
-                answer: answer
             }
-        });
 
-    } else if (signal.answer) {
+        }
 
-        await peerConnection.setRemoteDescription(
-            new RTCSessionDescription(signal.answer)
-        );
+    });
 
-    } else if (signal.candidate) {
-
-        await peerConnection.addIceCandidate(
-            new RTCIceCandidate(signal.candidate)
-        );
-
-    }
 
 });
 
-micBtn.onclick = () => {
 
-    if (!localStream) return;
+// Save User Login Data
 
-    const audioTrack = localStream.getAudioTracks()[0];
+function saveUser(user, token){
 
-    audioTrack.enabled = !audioTrack.enabled;
+    localStorage.setItem(
+        "user",
+        JSON.stringify(user)
+    );
 
-    micBtn.innerText = audioTrack.enabled
-        ? "🎤 Mic On"
-        : "🔇 Mic Off";
+    localStorage.setItem(
+        "token",
+        token
+    );
 
-};
+}
 
-cameraBtn.onclick = () => {
 
-    if (!localStream) return;
+// Get Current User
 
-    const videoTrack = localStream.getVideoTracks()[0];
+function getUser(){
 
-    videoTrack.enabled = !videoTrack.enabled;
+    return JSON.parse(
+        localStorage.getItem("user")
+    );
 
-    cameraBtn.innerText = videoTrack.enabled
-        ? "📷 Camera On"
-        : "🚫 Camera Off";
+}
 
-};
 
-leaveBtn.onclick = () => {
+// Logout
 
-    if (peerConnection) {
-        peerConnection.close();
-        peerConnection = null;
-    }
+function logout(){
 
-    if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-    }
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
 
-    socket.disconnect();
+    window.location.href="login.html";
 
-    localStorage.clear();
-
-    window.location.href = "login.html";
-
-};
+}
