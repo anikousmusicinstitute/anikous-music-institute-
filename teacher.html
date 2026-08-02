@@ -16,21 +16,29 @@ type="text"
 id="roomId"
 placeholder="Enter Class ID">
 
-<button id="startClassBtn">
-Start Class
+<!-- Changed button to trigger a JavaScript function instead of a static link -->
+<button onclick="startClass()">
+Start / Open Video Class
 </button>
-
-<br><br>
-
-<a href="index.html">
-<button>
-Open Video Class
-</button>
-</a>
 
 <script>
+// Display teacher name from localStorage
 document.getElementById("teacherName").innerText =
-"Welcome " + localStorage.getItem("name");
+"Welcome " + (localStorage.getItem("name") || "Teacher");
+
+function startClass() {
+    const roomId = document.getElementById("roomId").value.trim();
+    if (!roomId) {
+        alert("Please enter a Class ID!");
+        return;
+    }
+    
+    // Room ID-a localStorage-la save panrom
+    localStorage.setItem("currentRoomId", roomId);
+    
+    // Neraya munnadi create panna live.html page-ku redirect panrom
+    window.location.href = "live.html";
+}
 </script>
 
 </body>
