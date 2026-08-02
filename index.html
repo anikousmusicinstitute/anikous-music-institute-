@@ -3,7 +3,7 @@
 
 <head>
 
-<title>Professional Piano</title>
+<title>Piano Live Class</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -17,13 +17,15 @@
 <h1>🎹 Piano Live Class</h1>
 
 
-<select id="octave" onchange="buildPiano()">
+<select id="octave" onchange="createPiano()">
 
 <option value="1">Octave 1</option>
-<option value="2" selected>Octave 2</option>
-<option value="3">Octave 3</option>
+<option value="2">Octave 2</option>
+<option value="3" selected>Octave 3</option>
 <option value="4">Octave 4</option>
 <option value="5">Octave 5</option>
+<option value="6">Octave 6</option>
+<option value="7">Octave 7</option>
 
 </select>
 
@@ -31,9 +33,9 @@
 <div id="piano"></div>
 
 
-<div id="display">
-Ready
-</div>
+<h3 id="note">
+Ready 🎹
+</h3>
 
 
 <script src="script.js"></script>
