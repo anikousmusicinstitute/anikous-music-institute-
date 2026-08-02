@@ -1,91 +1,74 @@
-function createPiano(){
+function buildPiano(){
 
-    let piano = document.getElementById("piano");
+let piano=document.getElementById("piano");
 
-    piano.innerHTML = "";
-
-
-    let octave = document.getElementById("octave").value;
+piano.innerHTML="";
 
 
-    let whiteKeys = [
-        {name:"C", note:60},
-        {name:"D", note:62},
-        {name:"E", note:64},
-        {name:"F", note:65},
-        {name:"G", note:67},
-        {name:"A", note:69},
-        {name:"B", note:71}
-    ];
+let octave =
+Number(document.getElementById("octave").value);
 
 
 
-    let blackKeys = [
-        {name:"C#", left:42},
-        {name:"D#", left:102},
-        {name:"F#", left:222},
-        {name:"G#", left:282},
-        {name:"A#", left:342}
-    ];
+let white=[
+"C","D","E","F","G","A","B"
+];
+
+
+white.forEach((n,i)=>{
+
+let key=document.createElement("div");
+
+key.className="white";
+
+key.innerHTML=n+octave;
+
+key.style.left=(i*60)+"px";
+
+
+piano.appendChild(key);
+
+
+});
 
 
 
-    // White keys
+let black=[
 
-    whiteKeys.forEach(function(item,index){
+["C#",45],
+["D#",105],
+["F#",225],
+["G#",285],
+["A#",345]
 
-
-        let key=document.createElement("div");
-
-        key.className="white";
-
-        key.innerHTML =
-        item.name + octave;
+];
 
 
-        key.style.order=index;
+black.forEach(k=>{
 
 
-        piano.appendChild(key);
+let key=document.createElement("div");
 
 
-    });
+key.className="black";
+
+key.innerHTML=k[0];
+
+key.style.left=k[1]+"px";
 
 
+piano.appendChild(key);
 
 
-
-    // Black keys
-
-    blackKeys.forEach(function(item){
-
-
-        let key=document.createElement("div");
-
-
-        key.className="black";
-
-
-        key.innerHTML=item.name;
-
-
-        key.style.left=item.left+"px";
-
-
-        piano.appendChild(key);
-
-
-    });
+});
 
 
 }
 
 
 
-// page load
+window.onload=()=>{
 
-window.onload=function(){
-
-    createPiano();
+buildPiano();
 
 };
