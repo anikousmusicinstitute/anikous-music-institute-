@@ -44,3 +44,20 @@ function playNote(message){
         },200);
     }
 }
+function joinVideo(){
+
+const domain = "meet.jit.si";
+
+const options = {
+    roomName: "PianoLiveClassRoom",
+    width: "100%",
+    height: 600,
+    parentNode: document.querySelector("#jitsi-container"),
+    userInfo:{
+        displayName:"Student"
+    }
+};
+
+const api = new JitsiMeetExternalAPI(domain, options);
+
+}
