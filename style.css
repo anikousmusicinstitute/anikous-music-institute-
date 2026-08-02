@@ -1,0 +1,16 @@
+body{
+    text-align:center;
+    font-family:Arial;
+    background:#111;
+    color:white;
+}
+
+button{
+    padding:15px;
+    margin:10px;
+    font-size:18px;
+}
+
+#piano{
+    margin-top:30px;
+}
