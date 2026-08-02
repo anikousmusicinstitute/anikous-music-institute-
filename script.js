@@ -1,167 +1,232 @@
-let audio;
+let audioContext;
+
+let zoom = 1;
 
 
-function sound(note){
+
+// Piano notes
+
+const notes = [
+
+"C",
+"C#",
+"D",
+"D#",
+"E",
+"F",
+"F#",
+"G",
+"G#",
+"A",
+"A#",
+"B"
+
+];
 
 
-if(!audio){
 
-audio=new AudioContext();
-
-}
-
-
-let osc=audio.createOscillator();
-
-let gain=audio.createGain();
-
-
-osc.frequency.value =
-440 * Math.pow(2,(note-69)/12);
-
-
-osc.connect(gain);
-
-gain.connect(audio.destination);
-
-
-gain.gain.value=0.3;
-
-
-osc.start();
-
-
-osc.stop(
-audio.currentTime+0.5
-);
-
-
-}
-
-
+// Create 88 Keys
 
 function createPiano(){
 
 
-let piano=document.getElementById("piano");
+    let piano = document.getElementById("piano");
 
-piano.innerHTML="";
+    piano.innerHTML="";
 
 
-let octave =
-Number(document.getElementById("octave").value);
+    let whiteIndex = 0;
 
 
+    // A0 to C8 = 88 keys
 
-let start =
-(octave+1)*12;
+    for(let midi = 21; midi <=108; midi++){
 
 
+        let noteName =
+        notes[midi % 12];
 
-let white=[
 
-"C","D","E","F","G","A","B"
+        let octave =
+        Math.floor(midi / 12) - 1;
 
-];
 
 
-let whiteMidi=[
+        let key =
+        document.createElement("div");
 
-0,2,4,5,7,9,11
 
-];
 
+        key.innerHTML =
+        noteName + octave;
 
 
-white.forEach((key,i)=>{
 
+        key.dataset.note=midi;
 
-let div=document.createElement("div");
 
 
-div.className="white";
+        if(noteName.includes("#")){
 
 
-div.innerHTML=key+octave;
+            key.className="black";
 
 
-div.style.left=(i*70)+"px";
+            key.style.left =
+            (whiteIndex * 60 - 19)+"px";
 
 
+        }
 
-div.onclick=function(){
+        else{
 
-sound(start+whiteMidi[i]);
 
-document.getElementById("note").innerHTML=
-"Playing "+key+octave;
+            key.className="white";
 
-};
 
+            key.style.left =
+            (whiteIndex * 60)+"px";
 
 
-piano.appendChild(div);
+            whiteIndex++;
 
 
+        }
 
-});
 
 
+        key.onclick=function(){
 
 
+            playSound(Number(this.dataset.note));
 
-let black=[
 
-["C#",45,1],
-["D#",115,2],
-["F#",255,4],
-["G#",325,5],
-["A#",395,6]
+            document.getElementById("note").innerHTML =
+            "Playing : "+this.innerHTML;
 
-];
 
+        };
 
 
-black.forEach(item=>{
 
+        piano.appendChild(key);
 
-let div=document.createElement("div");
 
-
-div.className="black";
-
-
-div.innerHTML=item[0];
-
-
-div.style.left=item[1]+"px";
-
-
-
-div.onclick=function(){
-
-sound(start+item[2]);
-
-document.getElementById("note").innerHTML=
-"Playing "+item[0];
-
-};
-
-
-
-piano.appendChild(div);
-
-
-
-});
+    }
 
 
 }
+
+
+
+
+
+
+// Piano Sound
+
+function playSound(note){
+
+
+    if(!audioContext){
+
+        audioContext =
+        new AudioContext();
+
+    }
+
+
+
+    let oscillator =
+    audioContext.createOscillator();
+
+
+    let gain =
+    audioContext.createGain();
+
+
+
+    oscillator.frequency.value =
+    440 * Math.pow(2,(note-69)/12);
+
+
+
+    oscillator.connect(gain);
+
+
+    gain.connect(
+    audioContext.destination
+    );
+
+
+    gain.gain.value=0.3;
+
+
+
+    oscillator.start();
+
+
+
+    oscillator.stop(
+        audioContext.currentTime+1
+    );
+
+
+}
+
+
+
+
+
+
+
+// Zoom Controls
+
+
+function zoomIn(){
+
+    zoom +=0.1;
+
+    document.getElementById("piano")
+    .style.transform =
+    "scale("+zoom+")";
+
+}
+
+
+
+function zoomOut(){
+
+    zoom -=0.1;
+
+    if(zoom<0.5)
+    zoom=0.5;
+
+
+    document.getElementById("piano")
+    .style.transform =
+    "scale("+zoom+")";
+
+}
+
+
+
+function resetZoom(){
+
+    zoom=1;
+
+    document.getElementById("piano")
+    .style.transform =
+    "scale(1)";
+
+}
+
+
+
 
 
 
 window.onload=function(){
 
-createPiano();
+    createPiano();
 
 };
