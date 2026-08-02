@@ -1,23 +1,59 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-  <meta charset="UTF-8">  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-  <title>Anikous Music Institute - Login</title>    <link rel="stylesheet" href="login.css">  
-</head>  
-<body>  <div class="login-box">    <h1>Anikous Music Institute</h1>    <h2>Login</h2>    <select id="role">  
-    <option value="teacher">Teacher</option>  
-    <option value="student">Student</option>  
-  </select>  <input  
-type="text"  
-id="userid"  
-placeholder="User ID">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anikous Music Institute - Login</title>
 
-<input  
-type="password"  
-id="password"  
-placeholder="Password">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
 
-  <button id="loginBtn">  
-    Login  
-  </button>    <p id="message"></p>  </div>  <script src="login.js"></script>  </body>  
+<div class="login-container">
+
+    <div class="login-box">
+
+        <h1>🎵 Anikous Music Institute</h1>
+        <p class="subtitle">Online Music Learning Platform</p>
+
+        <img src="logo.png" id="logo" alt="Logo">
+
+        <h2>Login</h2>
+
+        <select id="role">
+            <option value="teacher">👨‍🏫 Teacher</option>
+            <option value="student">🎓 Student</option>
+        </select>
+
+        <input
+            type="text"
+            id="userid"
+            placeholder="Enter User ID"
+            autocomplete="username">
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Enter Password"
+            autocomplete="current-password">
+
+        <button id="loginBtn">
+            🔐 Login
+        </button>
+
+        <button
+            onclick="location.href='register.html'"
+            class="registerBtn">
+            ➕ Create New Account
+        </button>
+
+        <p id="message"></p>
+
+    </div>
+
+</div>
+
+<script src="login.js"></script>
+
+</body>
 </html>
