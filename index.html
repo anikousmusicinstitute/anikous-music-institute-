@@ -35,9 +35,10 @@
 
 
 
-<!-- Octave Select -->
-
 <br><br>
+
+
+<!-- Octave Select -->
 
 <label>
 Select Octave:
@@ -46,39 +47,23 @@ Select Octave:
 
 <select id="octave" onchange="createPiano()">
 
-    <option value="1">
-    Octave 1
-    </option>
+    <option value="1">Octave 1</option>
 
-    <option value="2">
-    Octave 2
-    </option>
+    <option value="2">Octave 2</option>
 
-    <option value="3" selected>
-    Octave 3
-    </option>
+    <option value="3" selected>Octave 3</option>
 
-    <option value="4">
-    Octave 4
-    </option>
+    <option value="4">Octave 4</option>
 
-    <option value="5">
-    Octave 5
-    </option>
+    <option value="5">Octave 5</option>
 
-    <option value="6">
-    Octave 6
-    </option>
+    <option value="6">Octave 6</option>
 
-    <option value="7">
-    Octave 7
-    </option>
+    <option value="7">Octave 7</option>
 
 </select>
 
 
-
-<!-- Piano -->
 
 <h2>
 🎹 Piano Keyboard
@@ -91,18 +76,13 @@ Select Octave:
 
 
 
-<!-- Note Display -->
-
 <div id="note">
-
 Waiting...
-
 </div>
 
 
 
-
-<!-- Socket.io -->
+<!-- Socket -->
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
@@ -114,63 +94,10 @@ Waiting...
 
 
 
-<!-- Main Script -->
+<!-- Your Script -->
 
 <script src="script.js"></script>
 
-function createPiano(){
-
-    let octave = document.getElementById("octave").value;
-
-    let piano = document.getElementById("piano");
-
-    piano.innerHTML = "";
-
-
-    let whiteNotes = [
-        "C","D","E","F","G","A","B"
-    ];
-
-
-    let blackNotes = [
-        "C#","D#","F#","G#","A#"
-    ];
-
-
-    whiteNotes.forEach(note=>{
-
-        let key = document.createElement("div");
-
-        key.className = "white";
-
-        key.innerHTML = note + octave;
-
-        piano.appendChild(key);
-
-    });
-
-
-
-    blackNotes.forEach((note,index)=>{
-
-        let key = document.createElement("div");
-
-        key.className = "black";
-
-        key.innerHTML = note;
-
-        key.style.left = (45 + index * 60) + "px";
-
-        piano.appendChild(key);
-
-    });
-
-}
-
-
-// Page load
-
-createPiano();
 
 </body>
 
