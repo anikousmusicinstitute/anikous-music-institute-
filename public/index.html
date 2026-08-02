@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANIKOUS Live Class</title>
+
+<style>
+body{
+    margin:0;
+    background:#111;
+    color:#fff;
+    font-family:Arial,sans-serif;
+    text-align:center;
+}
+video{
+    width:90%;
+    max-width:500px;
+    border-radius:12px;
+    margin:20px auto;
+    background:#000;
+}
+button{
+    padding:12px 20px;
+    margin:10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+</style>
+
+</head>
+<body>
+
+<h2>ANIKOUS Live Class</h2>
+
+<video id="localVideo" autoplay playsinline muted></video>
+
+<br>
+
+<button onclick="startCamera()">Start Camera</button>
+
+<script>
+async function startCamera(){
+    const stream = await navigator.mediaDevices.getUserMedia({
+        video:true,
+        audio:true
+    });
+
+    document.getElementById("localVideo").srcObject = stream;
+}
+</script>
+
+</body>
+</html>
