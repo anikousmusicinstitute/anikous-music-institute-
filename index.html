@@ -3,7 +3,7 @@
 
 <head>
 
-<title>Piano Live Class</title>
+<title>Premium 88 Keys Piano</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -14,31 +14,44 @@
 
 <body>
 
-<h1>🎹 Piano Live Class</h1>
+
+<h1>🎹 Premium Piano</h1>
 
 
-<select id="octave" onchange="createPiano()">
+<div class="control">
 
-<option value="1">Octave 1</option>
-<option value="2">Octave 2</option>
-<option value="3" selected>Octave 3</option>
-<option value="4">Octave 4</option>
-<option value="5">Octave 5</option>
-<option value="6">Octave 6</option>
-<option value="7">Octave 7</option>
+<button onclick="zoomOut()">−</button>
 
-</select>
+<button onclick="zoomIn()">+</button>
+
+<button onclick="resetZoom()">Reset</button>
+
+</div>
 
 
-<div id="piano"></div>
+
+<div id="piano-wrapper">
 
 
-<h3 id="note">
-Ready 🎹
-</h3>
+<div id="piano">
+
+</div>
+
+
+</div>
+
+
+
+<div id="note">
+
+Ready 🎵
+
+</div>
+
 
 
 <script src="script.js"></script>
+
 
 </body>
 
