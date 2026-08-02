@@ -1,16 +1,14 @@
 let socket = io("https://pianobackend.onrender.com");
 
 let audioContext;
-let midiAccess;
 let jitsiApi;
-
 
 
 // Video Call
 
 function joinVideo(){
 
-    const options={
+    const options = {
 
         roomName:"PianoLiveClassRoom",
 
@@ -22,17 +20,13 @@ function joinVideo(){
         document.getElementById("jitsi-container"),
 
         userInfo:{
-
-            displayName:
-            prompt("Enter your name")
-
+            displayName:prompt("Enter your name")
         }
 
     };
 
 
-    jitsiApi =
-    new JitsiMeetExternalAPI(
+    jitsiApi = new JitsiMeetExternalAPI(
         "meet.jit.si",
         options
     );
@@ -41,15 +35,24 @@ function joinVideo(){
 
 
 
-
-
 // Create Piano
 
 function createPiano(){
 
+    console.log("Creating Piano");
 
-    let piano =
-    document.getElementById("piano");
+
+    let piano = document.getElementById("piano");
+
+
+    if(!piano){
+
+        console.log("Piano div not found");
+
+        return;
+
+    }
+
 
 
     piano.innerHTML="";
@@ -61,7 +64,6 @@ function createPiano(){
 
 
     let notes=[
-
         "C",
         "D",
         "E",
@@ -69,7 +71,6 @@ function createPiano(){
         "G",
         "A",
         "B"
-
     ];
 
 
@@ -97,24 +98,19 @@ function createPiano(){
         key.onclick=function(){
 
 
-            let midiNote =
-            Number(this.dataset.note);
-
-
-
-            playPianoSound(midiNote);
-
-
-            lightKey(this);
-
-
-
-            socket.emit(
-                "midiNote",
-                {
-                    note:midiNote
-                }
+            playSound(
+                Number(this.dataset.note)
             );
+
+
+            this.style.background="yellow";
+
+
+            setTimeout(()=>{
+
+                this.style.background="white";
+
+            },200);
 
 
         };
@@ -127,29 +123,26 @@ function createPiano(){
     });
 
 
+
 }
-
-
-
-
 
 
 
 // Sound
 
-function playPianoSound(note){
+function playSound(note){
 
 
-    if(!audioContext)
+    if(!audioContext){
 
-    audioContext =
-    new AudioContext();
+        audioContext =
+        new AudioContext();
+
+    }
 
 
-
-    let oscillator =
+    let osc =
     audioContext.createOscillator();
-
 
 
     let gain =
@@ -157,19 +150,14 @@ function playPianoSound(note){
 
 
 
-    oscillator.type="sine";
-
-
-    oscillator.frequency.value =
+    osc.frequency.value =
     440 * Math.pow(
         2,
         (note-69)/12
     );
 
 
-
-    oscillator.connect(gain);
-
+    osc.connect(gain);
 
     gain.connect(
         audioContext.destination
@@ -179,11 +167,10 @@ function playPianoSound(note){
     gain.gain.value=0.3;
 
 
+    osc.start();
 
-    oscillator.start();
 
-
-    oscillator.stop(
+    osc.stop(
         audioContext.currentTime+0.5
     );
 
@@ -192,48 +179,35 @@ function playPianoSound(note){
 
 
 
-
-
-
-// MIDI Connect
+// MIDI
 
 async function connectMIDI(){
 
 
-    audioContext =
-    new AudioContext();
-
-
-
-    midiAccess =
+    let midi =
     await navigator.requestMIDIAccess();
-
 
 
     alert("MIDI Connected 🎹");
 
 
 
-    midiAccess.inputs.forEach(input=>{
+    midi.inputs.forEach(input=>{
 
 
-        input.onmidimessage =
-        function(event){
+        input.onmidimessage=function(e){
 
 
-            let note =
-            event.data[1];
+            let note=e.data[1];
 
-
-            let velocity =
-            event.data[2];
+            let velocity=e.data[2];
 
 
 
             if(velocity>0){
 
 
-                playPianoSound(note);
+                playSound(note);
 
 
                 socket.emit(
@@ -257,81 +231,18 @@ async function connectMIDI(){
 
 
 
+// Receive
+
+socket.on("studentNote",(data)=>{
 
 
-
-
-// Highlight
-
-function lightKey(key){
-
-
-    key.classList.add("active");
-
-
-
-    setTimeout(()=>{
-
-
-        key.classList.remove("active");
-
-
-    },200);
-
-
-}
-
-
-
-
-
-
-
-// Student Receive
-
-socket.on(
-"studentNote",
-(data)=>{
-
-
-    let keys =
-    document.querySelectorAll(".key");
-
-
-
-    keys.forEach(key=>{
-
-
-        if(
-        Number(key.dataset.note)
-        ===
-        data.note
-        ){
-
-
-            playPianoSound(data.note);
-
-
-            lightKey(key);
-
-
-        }
-
-
-    });
+    playSound(data.note);
 
 
 });
 
 
 
-
-
-
 // Start
 
-window.onload=function(){
-
-    createPiano();
-
-};
+createPiano();
