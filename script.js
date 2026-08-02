@@ -1,4 +1,18 @@
-const socket = io("https://pianobackend.onrender.com");
+let socket;
+
+try {
+
+    socket = io("https://pianobackend.onrender.com");
+
+    console.log("Socket connected");
+
+} catch(error) {
+
+    console.log("Socket Error:", error);
+
+}
+
+
 
 console.log("script loaded");
 
@@ -50,13 +64,10 @@ function joinVideo(){
 
 async function connectMIDI(){
 
-
     try{
 
 
-        audioContext =
-        new AudioContext();
-
+        audioContext = new AudioContext();
 
 
         if(navigator.requestMIDIAccess){
@@ -66,20 +77,16 @@ async function connectMIDI(){
             await navigator.requestMIDIAccess();
 
 
-
             alert("MIDI Connected 🎹");
-
 
 
             midiAccess.inputs.forEach(input=>{
 
 
-                input.onmidimessage =
-                playPiano;
+                input.onmidimessage = playPiano;
 
 
             });
-
 
 
         }
@@ -93,49 +100,37 @@ async function connectMIDI(){
         }
 
 
-
     }
-
 
     catch(error){
 
 
         console.log(error);
 
-
         alert("MIDI Connection Failed");
 
 
     }
-
 
 }
 
 
 
 
-
-// MIDI Key Press
-
+// MIDI Play
 
 function playPiano(event){
 
 
-    let command =
-    event.data[0];
+    let command = event.data[0];
 
+    let note = event.data[1];
 
-    let note =
-    event.data[1];
-
-
-    let velocity =
-    event.data[2];
+    let velocity = event.data[2];
 
 
 
     if(command === 144 && velocity > 0){
-
 
 
         document.getElementById("note").innerHTML =
@@ -147,30 +142,28 @@ function playPiano(event){
 
 
 
-        socket.emit("midiNote",{
+        if(socket){
 
-            note:note
+            socket.emit("midiNote",{
 
-        });
+                note:note
 
+            });
+
+        }
 
 
         lightKey(note);
 
 
-
     }
-
-
 
 }
 
 
 
 
-
-// Piano Sound
-
+// Sound
 
 function playSound(note){
 
@@ -197,17 +190,14 @@ function playSound(note){
     );
 
 
-
     gain.gain.value=0.3;
-
 
 
     oscillator.start();
 
 
-
     oscillator.stop(
-    audioContext.currentTime + 0.5
+        audioContext.currentTime + 0.5
     );
 
 
@@ -217,10 +207,7 @@ function playSound(note){
 
 
 
-
-
-// Piano Create
-
+// Create Piano
 
 function createPiano(){
 
@@ -246,7 +233,7 @@ function createPiano(){
 
 
 
-    let whiteNotes=[
+    let notes=[
 
         "C",
         "D",
@@ -260,7 +247,7 @@ function createPiano(){
 
 
 
-    whiteNotes.forEach(note=>{
+    notes.forEach(note=>{
 
 
         let key =
@@ -280,23 +267,19 @@ function createPiano(){
     });
 
 
-
 }
 
 
 
 
 
-
-// Highlight Key
-
+// Light Key
 
 function lightKey(note){
 
 
     let keys =
     document.querySelectorAll(".key");
-
 
 
     let key =
@@ -308,7 +291,6 @@ function lightKey(note){
 
 
         key.style.background="yellow";
-
 
 
         setTimeout(()=>{
@@ -329,18 +311,15 @@ function lightKey(note){
 
 
 
-
-
 // Student Receive
 
+if(socket){
 
 socket.on("studentNote",(data)=>{
 
 
     document.getElementById("note").innerHTML =
-
     "Teacher Playing : " + data.note;
-
 
 
     lightKey(data.note);
@@ -348,14 +327,18 @@ socket.on("studentNote",(data)=>{
 
 });
 
+}
 
 
 
 
 
-// Start Piano
+// Page Load
 
 window.onload=function(){
+
+
+    console.log("Page loaded");
 
 
     createPiano();
