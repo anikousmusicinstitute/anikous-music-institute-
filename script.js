@@ -112,3 +112,12 @@ function playSound(note){
         oscillator.stop();
     },500);
 }
+socket.emit("midiNote",{
+    note: note
+});
+socket.on("studentNote",(data)=>{
+
+    document.getElementById("note").innerHTML =
+    "Teacher Playing: "+data.note;
+
+});
