@@ -367,3 +367,38 @@ window.onload=function(){
 createPiano();
 
 };
+function highlightMIDI(note){
+
+
+let key=document.querySelector(
+'[data-note="'+note+'"]'
+);
+
+
+
+if(key){
+
+
+key.style.background="yellow";
+
+
+setTimeout(()=>{
+
+
+if(key.className==="white")
+
+key.style.background="white";
+
+else
+
+key.style.background="black";
+
+
+},200);
+
+
+}
+
+
+
+}
