@@ -1,148 +1,103 @@
-const express = require("express");
-const dotenv = require("dotenv");
-dotenv.config();
+// server.js
 
+require("dotenv").config();
+
+const express = require("express");
+const http = require("http");
+const path = require("path");
+const { Server } = require("socket.io");
 const mongoose = require("mongoose");
-const User = require("./models/User");
+const cors = require("cors");
 
 const app = express();
-const http = require("http").createServer(app);
+const server = http.createServer(app);
 
-const { Server } = require("socket.io");
-const io = new Server(http);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 
-app.use(express.static(__dirname));
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("MongoDB Connected"))
+.catch(err => console.log(err));
+
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI)
-.then(() => {
-    console.log("✅ MongoDB Connected");
-})
-.catch((err) => {
-    console.log("❌ MongoDB Error:", err);
-});
+app.use(express.static(path.join(__dirname, "public")));
 
-// Register User
-app.post("/register", async (req, res) => {
+const authRoutes = require("./routes/auth");
+const usersRoutes = require("./routes/users");
+const classesRoutes = require("./routes/classes");
 
-    try {
+app.use("/api/auth", authRoutes);
+app.use("/api/users", usersRoutes);
+app.use("/api/classes", classesRoutes);
 
-        const { name, username, password, role } = req.body;
+const rooms = {};
 
-        const exists = await User.findOne({ username });
-
-        if (exists) {
-            return res.json({
-                success: false,
-                message: "Username already exists"
-            });
-        }
-
-        const user = new User({
-            name,
-            username,
-            password,
-            role
-        });
-
-        await user.save();
-
-        res.json({
-            success: true,
-            message: "User Created Successfully"
-        });
-
-    } catch (err) {
-
-        console.log(err);
-
-        res.json({
-            success: false,
-            message: "Server Error"
-        });
-
-    }
-
-});
-
-// Login User
-app.post("/login", async (req, res) => {
-
-    try {
-
-        const { username, password } = req.body;
-
-        const user = await User.findOne({
-            username,
-            password
-        });
-
-        if (!user) {
-            return res.json({
-                success: false,
-                message: "Invalid Username or Password"
-            });
-        }
-
-        res.json({
-            success: true,
-            role: user.role,
-            name: user.name
-        });
-
-    } catch (err) {
-
-        console.log(err);
-
-        res.json({
-            success: false,
-            message: "Server Error"
-        });
-
-    }
-
-});
-
-// Socket.IO
 io.on("connection", (socket) => {
 
-    console.log("✅ User Connected:", socket.id);
+    socket.on("join-room", (roomId) => {
 
-    socket.on("join-room", (room) => {
+        socket.join(roomId);
 
-        socket.join(room);
-        socket.room = room;
+        if (!rooms[roomId]) {
+            rooms[roomId] = [];
+        }
 
-        console.log(`${socket.id} joined ${room}`);
+        rooms[roomId].push(socket.id);
 
-        socket.to(room).emit("user-joined", socket.id);
+        socket.to(roomId).emit("user-joined", socket.id);
 
-    });
+        socket.on("offer", (data) => {
+            socket.to(roomId).emit("offer", data);
+        });
 
-    socket.on("signal", ({ room, signal }) => {
+        socket.on("answer", (data) => {
+            socket.to(roomId).emit("answer", data);
+        });
 
-        socket.to(room).emit("signal", {
-            sender: socket.id,
-            signal
+        socket.on("ice-candidate", (data) => {
+            socket.to(roomId).emit("ice-candidate", data);
+        });
+
+        socket.on("chat-message", (msg) => {
+            io.to(roomId).emit("chat-message", msg);
+        });
+
+        socket.on("piano-key", (note) => {
+            socket.to(roomId).emit("piano-key", note);
+        });
+
+        socket.on("midi-note", (note) => {
+            socket.to(roomId).emit("midi-note", note);
+        });
+
+        socket.on("disconnect", () => {
+
+            if (rooms[roomId]) {
+                rooms[roomId] =
+                    rooms[roomId].filter(id => id !== socket.id);
+            }
+
+            socket.to(roomId).emit("user-left", socket.id);
+
         });
 
     });
 
-    socket.on("disconnect", () => {
+});
 
-        console.log("❌ User Disconnected:", socket.id);
-
-        if (socket.room) {
-            socket.to(socket.room).emit("user-left", socket.id);
-        }
-
-    });
-
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 const PORT = process.env.PORT || 3000;
 
-http.listen(PORT, () => {
-    console.log(`🚀 Server Running on Port ${PORT}`);
+server.listen(PORT, () => {
+    console.log(`Server Running : http://localhost:${PORT}`);
 });
