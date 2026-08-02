@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Teacher Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>👨‍🏫 Teacher Dashboard</h1>
+
+<h2 id="teacherName"></h2>
+
+<input
+type="text"
+id="roomId"
+placeholder="Enter Class ID">
+
+<button id="startClassBtn">
+Start Class
+</button>
+
+<br><br>
+
+<a href="index.html">
+<button>
+Open Video Class
+</button>
+</a>
+
+<script>
+document.getElementById("teacherName").innerText =
+"Welcome " + localStorage.getItem("name");
+</script>
+
+</body>
+</html>
