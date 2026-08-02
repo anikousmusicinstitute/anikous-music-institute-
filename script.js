@@ -57,26 +57,26 @@ showKeys ? name+octave:"";
 if(name.includes("#")){
 
 
-key.className="black";
+    key.className="black";
 
 
-key.style.left=
-(white*100)+"px";
+    key.style.left =
+    (white*55 - 17)+"px";
 
 
 }
-
 else{
 
 
-key.className="white";
+    key.className="white";
 
 
-key.style.left=
-(white*55)+"px";
+    key.style.left =
+    (white*55)+"px";
 
 
-white++;
+    white++;
+
 
 }
 
