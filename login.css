@@ -2,63 +2,129 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial,sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
-    background:#121212;
+    min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
+    background:linear-gradient(135deg,#0f172a,#111827,#1e293b);
+    padding:20px;
+}
+
+.login-container{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
 .login-box{
-    background:#1f1f1f;
-    padding:30px;
-    border-radius:12px;
-    width:350px;
+    width:100%;
+    max-width:420px;
+    background:#ffffff;
+    border-radius:20px;
+    padding:35px 30px;
     text-align:center;
-    box-shadow:0 0 15px rgba(0,0,0,.4);
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+#logo{
+    width:90px;
+    height:90px;
+    object-fit:contain;
+    margin:15px auto;
+    display:block;
 }
 
 h1{
-    color:#00bcd4;
-    margin-bottom:10px;
+    color:#0f172a;
+    font-size:28px;
+    margin-bottom:8px;
+}
+
+.subtitle{
+    color:#64748b;
+    font-size:15px;
+    margin-bottom:20px;
 }
 
 h2{
-    color:#fff;
+    color:#1e293b;
     margin-bottom:20px;
 }
 
 select,
 input{
     width:100%;
-    padding:12px;
-    margin:10px 0;
-    border:none;
-    border-radius:8px;
+    padding:14px;
+    margin-bottom:15px;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
     font-size:16px;
+    outline:none;
+    transition:.3s;
+}
+
+select:focus,
+input:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 8px rgba(37,99,235,.3);
 }
 
 button{
     width:100%;
-    padding:12px;
+    padding:14px;
     border:none;
-    border-radius:8px;
-    background:#00bcd4;
-    color:#fff;
+    border-radius:10px;
     font-size:16px;
+    font-weight:bold;
     cursor:pointer;
+    transition:.3s;
 }
 
-button:hover{
-    background:#0097a7;
+#loginBtn{
+    background:#2563eb;
+    color:#fff;
+    margin-bottom:12px;
+}
+
+#loginBtn:hover{
+    background:#1d4ed8;
+}
+
+.registerBtn{
+    background:#10b981;
+    color:#fff;
+}
+
+.registerBtn:hover{
+    background:#059669;
 }
 
 #message{
-    margin-top:15px;
-    color:#ff5252;
+    margin-top:18px;
+    color:#ef4444;
     font-weight:bold;
+    min-height:20px;
+}
+
+@media(max-width:500px){
+
+.login-box{
+    padding:25px 20px;
+}
+
+h1{
+    font-size:24px;
+}
+
+button,
+input,
+select{
+    font-size:15px;
+}
+
 }
