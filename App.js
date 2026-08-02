@@ -52,3 +52,30 @@ joinBtn.onclick = () => {
   socket.emit("join-room", room);
   alert("Joined: " + room);
 };
+function createPeer() {
+
+  peerConnection = new RTCPeerConnection(servers);
+
+  localStream.getTracks().forEach(track => {
+    peerConnection.addTrack(track, localStream);
+  });
+
+  peerConnection.ontrack = (event) => {
+    remoteVideo.srcObject = event.streams[0];
+  };
+
+  peerConnection.onicecandidate = (event) => {
+    if (event.candidate) {
+      socket.emit("signal", {
+        room: room,
+        signal: {
+          candidate: event.candidate
+        }
+      });
+    }
+  };
+
+  peerConnection.onconnectionstatechange = () => {
+    console.log("Connection:", peerConnection.connectionState);
+  };
+}
