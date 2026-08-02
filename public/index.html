@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANIKOUS Live Class</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+<header>
+<h1>🎵 ANIKOUS Music Institute</h1>
+<p>Professional Live Class</p>
+</header>
+
+<div class="join-box">
+
+<input
+type="text"
+id="roomId"
+placeholder="Enter Class ID">
+
+<button id="joinBtn">
+Join Class
+</button>
+
+</div>
+
+<div class="videos">
+
+<div class="video-box">
+
+<h3>Teacher</h3>
+
+<video
+id="remoteVideo"
+autoplay
+playsinline>
+</video>
+
+</div>
+
+<div class="video-box">
+
+<h3>You</h3>
+
+<video
+id="localVideo"
+autoplay
+playsinline
+muted>
+</video>
+
+</div>
+
+</div>
+
+<div class="controls">
+
+<button id="micBtn">
+🎤 Mic
+</button>
+
+<button id="cameraBtn">
+📷 Camera
+</button>
+
+<button id="switchBtn">
+🔄 Switch Camera
+</button>
+
+<button id="leaveBtn">
+❌ Leave
+</button>
+
+</div>
+
+<div id="piano">
+
+<h2>🎹 Piano Area</h2>
+
+<p>MIDI Keyboard will appear here.</p>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
