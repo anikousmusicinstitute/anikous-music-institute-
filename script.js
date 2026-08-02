@@ -1,56 +1,113 @@
-window.onload = function(){
-
-    let piano = document.getElementById("piano");
-
-    piano.innerHTML = "";
-
-    let notes = [
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "A",
-        "B"
-    ];
+function createPiano(){
 
 
-    notes.forEach(function(note){
+let piano=document.getElementById("piano");
 
 
-        let key = document.createElement("button");
+piano.innerHTML="";
 
 
-        key.innerHTML = note;
+let octave=document.getElementById("octave").value;
 
 
-        key.style.width = "60px";
-        key.style.height = "200px";
-        key.style.background = "white";
-        key.style.color = "black";
-        key.style.border = "2px solid black";
+
+let whiteNotes=[
+
+"C",
+"D",
+"E",
+"F",
+"G",
+"A",
+"B"
+
+];
 
 
-        key.onclick = function(){
 
-            let audio = new AudioContext();
-
-            let osc = audio.createOscillator();
-
-            osc.frequency.value = 440;
-
-            osc.connect(audio.destination);
-
-            osc.start();
-
-            osc.stop(audio.currentTime + 0.5);
-
-        };
+whiteNotes.forEach(function(note,index){
 
 
-        piano.appendChild(key);
+let key=document.createElement("div");
 
 
-    });
+key.className="white";
+
+
+key.innerHTML=note+octave;
+
+
+piano.appendChild(key);
+
+
+});
+
+
+
+
+
+let blackNotes=[
+
+{
+name:"C#",
+left:45
+},
+
+{
+name:"D#",
+left:105
+},
+
+{
+name:"F#",
+left:225
+},
+
+{
+name:"G#",
+left:285
+},
+
+{
+name:"A#",
+left:345
+}
+
+];
+
+
+
+
+
+blackNotes.forEach(function(item){
+
+
+let key=document.createElement("div");
+
+
+key.className="black";
+
+
+key.innerHTML=item.name;
+
+
+key.style.left=item.left+"px";
+
+
+piano.appendChild(key);
+
+
+});
+
+
+
+}
+
+
+
+
+window.onload=function(){
+
+createPiano();
 
 };
