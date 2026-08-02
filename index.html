@@ -15,38 +15,58 @@
 <body>
 
 
-<h1>🎹 Premium Piano</h1>
+<h1>🎹 Premium Piano Studio</h1>
 
 
-<div class="control">
 
-<button onclick="zoomOut()">−</button>
+<div class="controls">
 
-<button onclick="zoomIn()">+</button>
 
-<button onclick="resetZoom()">Reset</button>
+<button onclick="toggleKeys()">
+🎼 Keys Name ON/OFF
+</button>
+
+
+<button onclick="toggleChords()">
+🎵 Chords Name ON/OFF
+</button>
+
+
+<button onclick="zoomOut()">
+➖
+</button>
+
+
+<button onclick="zoomIn()">
+➕
+</button>
+
 
 </div>
+
 
 
 
 <div id="piano-wrapper">
 
 
-<div id="piano">
-
-</div>
+<div id="piano"></div>
 
 
 </div>
+
+
+
+<h2 id="chordDisplay">
+Chord: None
+</h2>
 
 
 
 <div id="note">
-
-Ready 🎵
-
+Ready 🎹
 </div>
+
 
 
 
