@@ -1,43 +1,23 @@
-const loginBtn = document.getElementById("loginBtn");
-const message = document.getElementById("message");
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>Anikous Music Institute - Login</title>    <link rel="stylesheet" href="login.css">  
+</head>  
+<body>  <div class="login-box">    <h1>Anikous Music Institute</h1>    <h2>Login</h2>    <select id="role">  
+    <option value="teacher">Teacher</option>  
+    <option value="student">Student</option>  
+  </select>  <input  
+type="text"  
+id="userid"  
+placeholder="User ID">
 
-loginBtn.onclick = async () => {
+<input  
+type="password"  
+id="password"  
+placeholder="Password">
 
-    const role = document.getElementById("role").value;
-    const username = document.getElementById("userid").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    if (!username || !password) {
-        message.innerText = "Enter User ID and Password";
-        return;
-    }
-
-    const res = await fetch("/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            username,
-            password
-        })
-    });
-
-    const data = await res.json();
-
-    if (!data.success) {
-        message.innerText = data.message;
-        return;
-    }
-
-    if (role !== data.role) {
-        message.innerText = "Wrong Role Selected";
-        return;
-    }
-
-    localStorage.setItem("username", username);
-    localStorage.setItem("role", data.role);
-    localStorage.setItem("name", data.name);
-
-    window.location.href = "index.html";
-};
+  <button id="loginBtn">  
+    Login  
+  </button>    <p id="message"></p>  </div>  <script src="login.js"></script>  </body>  
+</html>
