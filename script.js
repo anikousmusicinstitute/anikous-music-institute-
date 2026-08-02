@@ -61,7 +61,7 @@ key.className="black";
 
 
 key.style.left=
-(white*55-17)+"px";
+(white*55)+"px";
 
 
 }
