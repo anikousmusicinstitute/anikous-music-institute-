@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anikous Music Institute</title>
+    <title>Anikous Music Institute - Live Class</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <h1>Anikous Music Institute</h1>
+
+    <h3 id="welcomeText"></h3>
 
     <div class="video-container">
 
@@ -47,11 +49,35 @@
             📷 Camera
         </button>
 
+        <button id="screenBtn">
+            🖥️ Share Screen
+        </button>
+
+        <button id="switchCameraBtn">
+            🔄 Switch Camera
+        </button>
+
         <button id="leaveBtn">
-            ❌ Leave
+            ❌ Leave Class
         </button>
 
     </div>
+
+    <script>
+        const name = localStorage.getItem("name");
+        const role = localStorage.getItem("role");
+
+        if (name && role) {
+            document.getElementById("welcomeText").innerText =
+                "Welcome " + name + " (" + role + ")";
+        }
+
+        const savedRoom = localStorage.getItem("roomId");
+
+        if (savedRoom) {
+            document.getElementById("roomId").value = savedRoom;
+        }
+    </script>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="App.js"></script>
