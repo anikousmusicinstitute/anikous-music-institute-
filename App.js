@@ -372,3 +372,72 @@ http.listen(PORT, () => {
 
 });
 
+        await peerConnection.setLocalDescription(answer);
+
+        socket.emit("signal", {
+            room: room,
+            signal: {
+                answer: answer
+            }
+        });
+
+    } else if (signal.answer) {
+
+        await peerConnection.setRemoteDescription(
+            new RTCSessionDescription(signal.answer)
+        );
+
+    } else if (signal.candidate) {
+
+        try {
+            await peerConnection.addIceCandidate(
+                new RTCIceCandidate(signal.candidate)
+            );
+        } catch (err) {
+            console.error(err);
+        }
+    }
+});
+
+// Join Button
+joinBtn.onclick = () => {
+
+    room = roomInput.value.trim();
+
+    if (!room) {
+        alert("Enter Class ID");
+        return;
+    }
+
+    socket.emit("join-room", room);
+
+    alert("Joined: " + room);
+};
+
+// Mic
+micBtn.onclick = () => {
+    if (localStream) {
+        const track = localStream.getAudioTracks()[0];
+        track.enabled = !track.enabled;
+    }
+};
+
+// Camera
+cameraBtn.onclick = () => {
+    if (localStream) {
+        const track = localStream.getVideoTracks()[0];
+        track.enabled = !track.enabled;
+    }
+};
+
+// Leave
+leaveBtn.onclick = () => {
+    if (peerConnection) peerConnection.close();
+
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+    }
+
+    socket.disconnect();
+    location.reload();
+};
