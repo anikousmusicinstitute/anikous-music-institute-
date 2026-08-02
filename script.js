@@ -1,4 +1,7 @@
 const socket = io("https://pianobackend.onrender.com");
+
+console.log("script loaded");
+
 let audioContext;
 let midiAccess;
 let jitsiApi;
@@ -20,38 +23,66 @@ function joinVideo(){
     };
 
     jitsiApi = new JitsiMeetExternalAPI(domain, options);
+
 }
+
 
 
 // MIDI Connect
 async function connectMIDI(){
 
-    audioContext = new AudioContext();
+    try{
 
-    if(navigator.requestMIDIAccess){
+        audioContext = new AudioContext();
 
-        midiAccess = await navigator.requestMIDIAccess();
 
-        alert("MIDI Connected 🎹");
+        if(navigator.requestMIDIAccess){
 
-        midiAccess.inputs.forEach(input=>{
-            input.onmidimessage = playPiano;
-        });
+            midiAccess = await navigator.requestMIDIAccess();
 
-    }else{
-        alert("MIDI not supported");
+
+            alert("MIDI Connected 🎹");
+
+
+            midiAccess.inputs.forEach(input=>{
+
+                input.onmidimessage = playPiano;
+
+            });
+
+
+        }else{
+
+            alert("MIDI not supported");
+
+        }
+
+
+    }catch(error){
+
+        console.log(error);
+
+        alert("MIDI Connection Failed");
+
     }
+
 }
+
 
 
 // MIDI Key Press
 function playPiano(event){
 
+    let command = event.data[0];
+
     let note = event.data[1];
+
     let velocity = event.data[2];
 
 
-    if(velocity > 0){
+    // Key press only
+    if(command === 144 && velocity > 0){
+
 
         document.getElementById("note").innerHTML =
         "Playing Note : " + note;
@@ -60,65 +91,89 @@ function playPiano(event){
         playSound(note);
 
 
-        // Send Teacher Key to Student
+        // Send to students
         socket.emit("midiNote",{
+
             note: note
+
         });
 
 
         lightKey(note);
 
+
     }
+
 }
+
 
 
 // Piano Sound
 function playSound(note){
 
     let oscillator = audioContext.createOscillator();
+
     let gain = audioContext.createGain();
+
 
     oscillator.frequency.value =
     440 * Math.pow(2,(note-69)/12);
 
+
     oscillator.connect(gain);
+
     gain.connect(audioContext.destination);
+
 
     gain.gain.value = 0.3;
 
+
     oscillator.start();
 
-    setTimeout(()=>{
-        oscillator.stop();
-    },500);
+
+    oscillator.stop(
+        audioContext.currentTime + 0.5
+    );
+
 }
 
 
-// Live Piano Key
+
+// Show Piano Key
 function lightKey(note){
 
     let keys = document.querySelectorAll(".key");
 
+
     let key = keys[note % 7];
+
 
     if(key){
 
-        key.style.background="yellow";
+        key.style.background = "yellow";
+
 
         setTimeout(()=>{
-            key.style.background="white";
+
+            key.style.background = "white";
+
         },200);
 
     }
+
 }
 
 
-// Student Receive
+
+// Receive Student Side
 socket.on("studentNote",(data)=>{
 
+
     document.getElementById("note").innerHTML =
-    "Teacher Playing: " + data.note;
+    "Teacher Playing : " + data.note;
+
 
     lightKey(data.note);
+
 
 });
