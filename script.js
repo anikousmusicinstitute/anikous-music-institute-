@@ -1,12 +1,16 @@
 let audioContext;
 
+let showKeys = true;
+
+let showChords = true;
+
+let pressedNotes = [];
+
 let zoom = 1;
 
 
 
-// Piano notes
-
-const notes = [
+const noteNames = [
 
 "C",
 "C#",
@@ -25,94 +29,124 @@ const notes = [
 
 
 
-// Create 88 Keys
+
 
 function createPiano(){
 
 
-    let piano = document.getElementById("piano");
+let piano=document.getElementById("piano");
 
-    piano.innerHTML="";
-
-
-    let whiteIndex = 0;
+piano.innerHTML="";
 
 
-    // A0 to C8 = 88 keys
-
-    for(let midi = 21; midi <=108; midi++){
-
-
-        let noteName =
-        notes[midi % 12];
-
-
-        let octave =
-        Math.floor(midi / 12) - 1;
+let whiteCount=0;
 
 
 
-        let key =
-        document.createElement("div");
+for(let midi=21;midi<=108;midi++){
+
+
+let name =
+noteNames[midi%12];
+
+
+let octave =
+Math.floor(midi/12)-1;
 
 
 
-        key.innerHTML =
-        noteName + octave;
+let key=document.createElement("div");
+
+
+key.dataset.note=midi;
+
+
+key.dataset.name=name+octave;
 
 
 
-        key.dataset.note=midi;
+if(name.includes("#")){
+
+
+key.className="black";
+
+
+key.style.left=
+(whiteCount*55-18)+"px";
+
+
+}
+
+else{
+
+
+key.className="white";
+
+
+key.style.left=
+(whiteCount*55)+"px";
+
+
+whiteCount++;
+
+
+}
 
 
 
-        if(noteName.includes("#")){
-
-
-            key.className="black";
-
-
-            key.style.left =
-            (whiteIndex * 60 - 19)+"px";
-
-
-        }
-
-        else{
-
-
-            key.className="white";
-
-
-            key.style.left =
-            (whiteIndex * 60)+"px";
-
-
-            whiteIndex++;
-
-
-        }
+key.innerHTML =
+showKeys ? name+octave : "";
 
 
 
-        key.onclick=function(){
+
+key.onpointerdown=function(){
 
 
-            playSound(Number(this.dataset.note));
+let note=Number(this.dataset.note);
 
 
-            document.getElementById("note").innerHTML =
-            "Playing : "+this.innerHTML;
+pressedNotes.push(note);
 
 
-        };
+playSound(note);
+
+
+this.style.background="yellow";
+
+
+detectChord();
+
+
+};
 
 
 
-        piano.appendChild(key);
+key.onpointerup=function(){
 
 
-    }
+this.style.background="";
+
+
+pressedNotes =
+pressedNotes.filter(
+n=>n!==Number(this.dataset.note)
+);
+
+
+};
+
+
+
+piano.appendChild(key);
+
+
+}
+
+
+
+piano.style.width=
+(whiteCount*55)+"px";
 
 
 }
@@ -122,53 +156,45 @@ function createPiano(){
 
 
 
-// Piano Sound
 
 function playSound(note){
 
 
-    if(!audioContext){
+if(!audioContext)
 
-        audioContext =
-        new AudioContext();
-
-    }
+audioContext=new AudioContext();
 
 
 
-    let oscillator =
-    audioContext.createOscillator();
+let osc=
+audioContext.createOscillator();
 
 
-    let gain =
-    audioContext.createGain();
-
-
-
-    oscillator.frequency.value =
-    440 * Math.pow(2,(note-69)/12);
+let gain=
+audioContext.createGain();
 
 
 
-    oscillator.connect(gain);
-
-
-    gain.connect(
-    audioContext.destination
-    );
-
-
-    gain.gain.value=0.3;
+osc.frequency.value =
+440*Math.pow(2,(note-69)/12);
 
 
 
-    oscillator.start();
+osc.connect(gain);
+
+gain.connect(audioContext.destination);
 
 
 
-    oscillator.stop(
-        audioContext.currentTime+1
-    );
+gain.gain.value=.3;
+
+
+osc.start();
+
+
+osc.stop(
+audioContext.currentTime+1
+);
 
 
 }
@@ -179,16 +205,134 @@ function playSound(note){
 
 
 
-// Zoom Controls
+
+function detectChord(){
+
+
+if(!showChords)
+return;
+
+
+
+let notes =
+pressedNotes.map(
+n=>n%12
+);
+
+
+
+notes.sort(
+(a,b)=>a-b
+);
+
+
+
+let chord="None";
+
+
+
+let chords={
+
+
+"0,4,7":"C Major",
+
+"0,3,7":"C Minor",
+
+"2,6,9":"D Major",
+
+"4,8,11":"E Major",
+
+"5,9,0":"F Major",
+
+"7,11,2":"G Major",
+
+"9,1,4":"A Major"
+
+
+};
+
+
+
+let key =
+notes.join(",");
+
+
+
+if(chords[key])
+
+chord=chords[key];
+
+
+
+document.getElementById("chordDisplay").innerHTML=
+"Chord: "+chord;
+
+
+}
+
+
+
+
+
+
+
+
+function toggleKeys(){
+
+
+showKeys=!showKeys;
+
+
+document.querySelectorAll(".white,.black")
+.forEach(k=>{
+
+k.innerHTML =
+showKeys ?
+k.dataset.name :
+"";
+
+
+});
+
+
+}
+
+
+
+
+
+
+function toggleChords(){
+
+
+showChords=!showChords;
+
+
+if(!showChords)
+
+document.getElementById("chordDisplay")
+.innerHTML="Chord: OFF";
+
+
+}
+
+
+
+
+
+
 
 
 function zoomIn(){
 
-    zoom +=0.1;
 
-    document.getElementById("piano")
-    .style.transform =
-    "scale("+zoom+")";
+zoom+=0.1;
+
+
+document.getElementById("piano")
+.style.transform=
+"scale("+zoom+")";
+
 
 }
 
@@ -196,27 +340,20 @@ function zoomIn(){
 
 function zoomOut(){
 
-    zoom -=0.1;
 
-    if(zoom<0.5)
-    zoom=0.5;
+zoom-=0.1;
 
 
-    document.getElementById("piano")
-    .style.transform =
-    "scale("+zoom+")";
+if(zoom<0.5)
 
-}
+zoom=.5;
 
 
 
-function resetZoom(){
+document.getElementById("piano")
+.style.transform=
+"scale("+zoom+")";
 
-    zoom=1;
-
-    document.getElementById("piano")
-    .style.transform =
-    "scale(1)";
 
 }
 
@@ -227,6 +364,6 @@ function resetZoom(){
 
 window.onload=function(){
 
-    createPiano();
+createPiano();
 
 };
