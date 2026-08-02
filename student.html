@@ -16,15 +16,29 @@ type="text"
 id="roomId"
 placeholder="Enter Class ID">
 
-<a href="index.html">
-<button>
+<!-- Button with a click function instead of static anchor link -->
+<button onclick="joinClass()">
 Join Class
 </button>
-</a>
 
 <script>
+// Display student name from localStorage
 document.getElementById("studentName").innerText =
-"Welcome " + localStorage.getItem("name");
+"Welcome " + (localStorage.getItem("name") || "Student");
+
+function joinClass() {
+    const roomId = document.getElementById("roomId").value.trim();
+    if (!roomId) {
+        alert("Please enter a Class ID!");
+        return;
+    }
+    
+    // Room ID-a localStorage-la save panrom, appathan live class page-ku theriyum
+    localStorage.setItem("currentRoomId", roomId);
+    
+    // Live Class page-ku redirect panrom (ungaloda live class html file name-a inge podunga, eg: live.html)
+    window.location.href = "live.html"; 
+}
 </script>
 
 </body>
