@@ -1,92 +1,69 @@
 body{
 
-    text-align:center;
-
-    font-family:Arial;
-
-    background:#111;
-
-    color:white;
+text-align:center;
+font-family:Arial;
+background:#111;
+color:white;
 
 }
-
 
 
 button{
 
-    padding:15px;
-
-    margin:10px;
-
-    font-size:18px;
-
-    border-radius:10px;
+padding:15px;
+margin:10px;
+font-size:18px;
 
 }
-
-
-
-select{
-
-    padding:10px;
-
-    font-size:16px;
-
-}
-
 
 
 #piano{
 
-    position:relative;
-
-    display:flex;
-
-    justify-content:center;
-
-    margin:30px auto;
-
-    height:220px;
-
-    max-width:100%;
-
-    overflow-x:auto;
+position:relative;
+display:flex;
+justify-content:center;
+height:220px;
+margin:30px auto;
 
 }
 
 
+/* White keys */
 
-.key{
+.white{
 
-    width:50px;
+width:60px;
+height:220px;
 
-    height:220px;
+background:white;
+color:black;
 
-    background:white;
+border:1px solid black;
 
-    border:2px solid black;
+position:relative;
 
-    color:black;
-
-    display:flex;
-
-    align-items:flex-end;
-
-    justify-content:center;
-
-    padding-bottom:15px;
-
-    user-select:none;
-
-    cursor:pointer;
+z-index:1;
 
 }
 
 
+/* Black keys */
 
-.key.active{
+.black{
 
-    background:yellow;
+width:35px;
+height:130px;
+
+background:black;
+color:white;
+
+position:absolute;
+
+top:0;
+
+z-index:2;
+
+margin-left:-18px;
 
 }
 
@@ -94,22 +71,19 @@ select{
 
 @media(max-width:600px){
 
+.white{
 
-    .key{
+width:45px;
+height:180px;
 
-        width:40px;
-
-        height:180px;
-
-        font-size:12px;
-
-    }
+}
 
 
-    #piano{
+.black{
 
-        height:180px;
+width:30px;
+height:110px;
 
-    }
+}
 
 }
