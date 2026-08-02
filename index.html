@@ -1,86 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anikous Music Institute - Live Class</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css">
+<title>Anikous Music Institute</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
 
-    <h1>Anikous Music Institute</h1>
+<h1>Anikous Music Institute</h1>
 
-    <h3 id="welcomeText"></h3>
+<h2 id="welcomeText"></h2>
 
-    <div class="video-container">
+<div class="video-container">
 
-        <video
-            id="localVideo"
-            autoplay
-            playsinline
-            muted>
-        </video>
+<video
+id="localVideo"
+autoplay
+playsinline
+muted>
+</video>
 
-        <video
-            id="remoteVideo"
-            autoplay
-            playsinline>
-        </video>
+<video
+id="remoteVideo"
+autoplay
+playsinline>
+</video>
 
-    </div>
+</div>
 
-    <div class="controls">
+<div class="controls">
 
-        <input
-            type="text"
-            id="roomId"
-            placeholder="Enter Class ID">
+<button id="micBtn">
+🎤 Mic
+</button>
 
-        <button id="joinBtn">
-            Join Class
-        </button>
+<button id="cameraBtn">
+📷 Camera
+</button>
 
-        <button id="micBtn">
-            🎤 Mic
-        </button>
+<button id="leaveBtn">
+❌ Leave Class
+</button>
 
-        <button id="cameraBtn">
-            📷 Camera
-        </button>
+</div>
 
-        <button id="screenBtn">
-            🖥️ Share Screen
-        </button>
+<script>
 
-        <button id="switchCameraBtn">
-            🔄 Switch Camera
-        </button>
+document.getElementById("welcomeText").innerText =
+"Welcome " +
+localStorage.getItem("name") +
+" (" +
+localStorage.getItem("role") +
+")";
 
-        <button id="leaveBtn">
-            ❌ Leave Class
-        </button>
+</script>
 
-    </div>
-
-    <script>
-        const name = localStorage.getItem("name");
-        const role = localStorage.getItem("role");
-
-        if (name && role) {
-            document.getElementById("welcomeText").innerText =
-                "Welcome " + name + " (" + role + ")";
-        }
-
-        const savedRoom = localStorage.getItem("roomId");
-
-        if (savedRoom) {
-            document.getElementById("roomId").value = savedRoom;
-        }
-    </script>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="App.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>
