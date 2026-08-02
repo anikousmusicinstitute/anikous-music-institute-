@@ -9,18 +9,22 @@
 
 <h1>🎹 Piano Live Class</h1>
 
+
 <!-- Video Call -->
 <button onclick="joinVideo()">🎥 Join Video Call</button>
 
 <div id="jitsi-container"></div>
 
 
-<!-- MIDI -->
+
+<!-- MIDI Keyboard -->
 <button onclick="connectMIDI()">🎹 Connect MIDI Keyboard</button>
 
 
-<!-- Piano Display -->
+
+<!-- Live Piano Display -->
 <div id="piano">
+
     <div class="key" id="C">C</div>
     <div class="key" id="D">D</div>
     <div class="key" id="E">E</div>
@@ -28,7 +32,9 @@
     <div class="key" id="G">G</div>
     <div class="key" id="A">A</div>
     <div class="key" id="B">B</div>
+
 </div>
+
 
 
 <div id="note">
@@ -36,13 +42,16 @@
 </div>
 
 
+
 <!-- Socket.io -->
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
 
 <!-- Jitsi -->
 <script src="https://meet.jit.si/external_api.js"></script>
 
-<!-- Main JS -->
+
+<!-- Your JavaScript -->
 <script src="script.js"></script>
 
 
