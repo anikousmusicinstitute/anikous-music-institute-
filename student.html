@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Student Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🎓 Student Dashboard</h1>
+
+<h2 id="studentName"></h2>
+
+<input
+type="text"
+id="roomId"
+placeholder="Enter Class ID">
+
+<a href="index.html">
+<button>
+Join Class
+</button>
+</a>
+
+<script>
+document.getElementById("studentName").innerText =
+"Welcome " + localStorage.getItem("name");
+</script>
+
+</body>
+</html>
