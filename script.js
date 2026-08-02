@@ -61,3 +61,54 @@ const options = {
 const api = new JitsiMeetExternalAPI(domain, options);
 
 }
+let audioContext;
+let midiAccess;
+
+async function connectMIDI(){
+
+    audioContext = new AudioContext();
+
+    midiAccess = await navigator.requestMIDIAccess();
+
+    midiAccess.inputs.forEach((input)=>{
+        input.onmidimessage = playPiano;
+    });
+
+    alert("MIDI Connected 🎹");
+}
+
+
+function playPiano(event){
+
+    let note = event.data[1];
+    let velocity = event.data[2];
+
+    if(velocity > 0){
+
+        document.getElementById("note").innerHTML =
+        "Playing Note : " + note;
+
+        playSound(note);
+    }
+}
+
+
+function playSound(note){
+
+    let oscillator = audioContext.createOscillator();
+    let gain = audioContext.createGain();
+
+    oscillator.frequency.value =
+    440 * Math.pow(2,(note-69)/12);
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    gain.gain.value = 0.3;
+
+    oscillator.start();
+
+    setTimeout(()=>{
+        oscillator.stop();
+    },500);
+}
