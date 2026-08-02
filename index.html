@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -12,11 +13,21 @@
 
 <body>
 
+<header>
+
 <h1>Anikous Music Institute</h1>
 
 <h2 id="welcomeText"></h2>
 
+</header>
+
+<main>
+
 <div class="video-container">
+
+<div class="video-box">
+
+<h3>Your Camera</h3>
 
 <video
 id="localVideo"
@@ -24,6 +35,12 @@ autoplay
 playsinline
 muted>
 </video>
+
+</div>
+
+<div class="video-box">
+
+<h3>Live Class</h3>
 
 <video
 id="remoteVideo"
@@ -33,30 +50,37 @@ playsinline>
 
 </div>
 
+</div>
+
 <div class="controls">
 
 <button id="micBtn">
-🎤 Mic
+🎤 Mic On
 </button>
 
 <button id="cameraBtn">
-📷 Camera
+📷 Camera On
 </button>
 
 <button id="leaveBtn">
 ❌ Leave Class
 </button>
 
+<button id="logoutBtn">
+🚪 Logout
+</button>
+
 </div>
+
+</main>
 
 <script>
 
-document.getElementById("welcomeText").innerText =
-"Welcome " +
-localStorage.getItem("name") +
-" (" +
-localStorage.getItem("role") +
-")";
+const name = localStorage.getItem("name") || "User";
+const role = localStorage.getItem("role") || "";
+
+document.getElementById("welcomeText").innerHTML =
+`Welcome <b>${name}</b> (${role})`;
 
 </script>
 
