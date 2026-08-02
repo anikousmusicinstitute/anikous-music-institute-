@@ -1,14 +1,14 @@
 let audioContext;
 
-let showKeys=true;
+let showKeys = true;
 
-let showChords=true;
+let showChords = true;
 
-let pressed=[];
+let pressedKeys = [];
 
 
 
-let names=[
+const noteNames = [
 "C","C#","D","D#",
 "E","F","F#","G",
 "G#","A","A#","B"
@@ -16,164 +16,192 @@ let names=[
 
 
 
+
+// Create 88 Keys Piano
+
 function createPiano(){
 
 
-let piano=document.getElementById("piano");
-
-piano.innerHTML="";
-
-
-let white=0;
+    let piano =
+    document.getElementById("piano");
 
 
-
-for(let midi=21;midi<=108;midi++){
-
-
-let name=
-names[midi%12];
+    piano.innerHTML="";
 
 
-let octave=
-Math.floor(midi/12)-1;
+    let whiteCount=0;
 
 
 
-let key=document.createElement("div");
+    for(let midi=21; midi<=108; midi++){
 
 
-key.dataset.note=midi;
-
-key.dataset.name=name+octave;
-
+        let name =
+        noteNames[midi % 12];
 
 
-key.innerHTML=
-showKeys ? name+octave:"";
+        let octave =
+        Math.floor(midi/12)-1;
 
 
 
-if(name.includes("#")){
+        let key =
+        document.createElement("div");
 
 
-    key.className="black";
+
+        key.dataset.note=midi;
+
+        key.dataset.name =
+        name+octave;
 
 
-    key.style.left =
-    (white*55 - 17)+"px";
+
+        key.innerHTML =
+        showKeys ? name+octave : "";
+
+
+
+
+        if(name.includes("#")){
+
+
+            key.className="black";
+
+
+            key.style.left =
+            (whiteCount*55-17)+"px";
+
+
+        }
+
+        else{
+
+
+            key.className="white";
+
+
+            key.style.left =
+            (whiteCount*55)+"px";
+
+
+            whiteCount++;
+
+
+        }
+
+
+
+
+        key.onpointerdown=function(){
+
+
+            let note =
+            Number(this.dataset.note);
+
+
+
+            playSound(note);
+
+
+
+            this.style.background="yellow";
+
+
+
+            pressedKeys.push(note);
+
+
+
+            detectChord();
+
+
+        };
+
+
+
+
+        key.onpointerup=function(){
+
+
+            this.style.background="";
+
+
+
+            pressedKeys =
+            pressedKeys.filter(
+            n=>n!==Number(this.dataset.note)
+            );
+
+        };
+
+
+
+        piano.appendChild(key);
+
+
+
+    }
+
+
+
+    piano.style.width =
+    whiteCount*55+"px";
 
 
 }
-else{
-
-
-    key.className="white";
-
-
-    key.style.left =
-    (white*55)+"px";
-
-
-    white++;
-
-
-}
-
-
-
-key.onpointerdown=function(){
-
-
-let n=Number(this.dataset.note);
-
-
-playSound(n);
-
-
-this.style.background="yellow";
-
-
-pressed.push(n);
-
-
-detectChord();
-
-
-};
-
-
-
-key.onpointerup=function(){
-
-
-pressed=
-pressed.filter(x=>x!==Number(this.dataset.note));
-
-
-this.style.background="";
-
-};
-
-
-
-piano.appendChild(key);
-
-
-}
-
-
-
-piano.style.width=
-white*55+"px";
-
-
-}
 
 
 
 
 
 
+
+// Piano Sound
 
 function playSound(note){
 
 
-if(!audioContext)
+    if(!audioContext){
 
-audioContext=new AudioContext();
+        audioContext =
+        new AudioContext();
 
-
-
-let osc=
-audioContext.createOscillator();
-
-
-let gain=
-audioContext.createGain();
-
-
-osc.frequency.value=
-440*Math.pow(2,(note-69)/12);
+    }
 
 
 
-osc.connect(gain);
-
-gain.connect(
-audioContext.destination
-);
+    let osc =
+    audioContext.createOscillator();
 
 
-gain.gain.value=.3;
+    let gain =
+    audioContext.createGain();
 
 
-osc.start();
+
+    osc.frequency.value =
+    440*Math.pow(2,(note-69)/12);
 
 
-osc.stop(
-audioContext.currentTime+1
-);
+
+    osc.connect(gain);
+
+    gain.connect(
+    audioContext.destination
+    );
+
+
+    gain.gain.value=.3;
+
+
+
+    osc.start();
+
+
+    osc.stop(
+    audioContext.currentTime+1
+    );
 
 
 }
@@ -183,20 +211,29 @@ audioContext.currentTime+1
 
 
 
+
+// Keys Name ON/OFF
 
 function toggleKeys(){
 
 
-showKeys=!showKeys;
+    showKeys=!showKeys;
 
 
-document.querySelectorAll(".white,.black")
-.forEach(k=>{
 
-k.innerHTML=
-showKeys?k.dataset.name:"";
+    document.querySelectorAll(
+    ".white,.black"
+    )
+    .forEach(key=>{
 
-});
+
+        key.innerHTML =
+        showKeys ?
+        key.dataset.name :
+        "";
+
+
+    });
 
 
 }
@@ -205,17 +242,22 @@ showKeys?k.dataset.name:"";
 
 
 
+
+
+// Chords ON/OFF
 
 function toggleChords(){
 
 
-showChords=!showChords;
+    showChords=!showChords;
 
 
-if(!showChords)
+    document.getElementById("display")
+    .innerHTML =
+    showChords ?
+    "Chord ON 🎵" :
+    "Chord OFF";
 
-document.getElementById("chordDisplay")
-.innerHTML="Chord OFF";
 
 
 }
@@ -225,38 +267,51 @@ document.getElementById("chordDisplay")
 
 
 
+
+// Chord Detection
 
 function detectChord(){
 
 
-if(!showChords)
-return;
-
-
-let n=
-pressed.map(x=>x%12)
-.sort()
-.join(",");
+    if(!showChords)
+    return;
 
 
 
-let list={
-
-"0,4,7":"C Major",
-
-"0,3,7":"C Minor",
-
-"7,11,2":"G Major",
-
-"9,0,4":"A Minor"
-
-};
+    let notes =
+    pressedKeys.map(
+    n=>n%12
+    )
+    .sort()
+    .join(",");
 
 
 
-document.getElementById("chordDisplay")
-.innerHTML=
-"Chord : "+(list[n]||"");
+    let chords={
+
+
+    "0,4,7":"C Major",
+
+    "0,3,7":"C Minor",
+
+    "7,11,2":"G Major",
+
+    "9,0,4":"A Minor"
+
+
+    };
+
+
+
+    if(chords[notes]){
+
+
+        document.getElementById("display")
+        .innerHTML =
+        chords[notes];
+
+
+    }
 
 
 }
@@ -266,42 +321,62 @@ document.getElementById("chordDisplay")
 
 
 
+
+// MIDI Connect
 
 async function connectMIDI(){
 
 
-let midi=
-await navigator.requestMIDIAccess();
+    if(!navigator.requestMIDIAccess){
 
 
-alert("MIDI Connected 🎹");
+        alert("MIDI Not Supported");
+
+
+        return;
+
+    }
 
 
 
-midi.inputs.forEach(input=>{
+    let midi =
+    await navigator.requestMIDIAccess();
 
 
-input.onmidimessage=function(e){
+
+    alert("🎹 MIDI Connected");
 
 
-let note=e.data[1];
 
-let velocity=e.data[2];
+    midi.inputs.forEach(input=>{
 
 
-if(velocity>0){
+        input.onmidimessage=function(e){
 
-playSound(note);
+
+            let note=e.data[1];
+
+            let velocity=e.data[2];
+
+
+
+            if(velocity>0){
+
+
+                playSound(note);
+
+
+            }
+
+
+        };
+
+
+    });
+
 
 }
 
-};
-
-
-});
-
-
-}
 
 
 
@@ -310,6 +385,6 @@ playSound(note);
 
 window.onload=function(){
 
-createPiano();
+    createPiano();
 
 };
