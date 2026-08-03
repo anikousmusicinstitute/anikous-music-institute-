@@ -1,74 +1,2278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#111111">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="mobile-web-app-capable" content="yes">
-    
-    <title>🎹 Piano Live Pro</title>
-    
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>Anikous Music Institute</title>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+<style>
+  
+
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  background:#080b12;
+  color:white;
+  font-family:Arial,sans-serif;
+  overflow-x:hidden;
+}
+
+button{
+  border:0;
+  border-radius:10px;
+  padding:10px 14px;
+  background:#202938;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(.96);
+}
+
+button.active{
+  background:#16a34a;
+}
+
+.top{
+  padding:16px;
+  text-align:center;
+  background:#111827;
+  border-bottom:1px solid #293244;
+}
+
+.top h1{
+  font-size:23px;
+  color:#ffffff;
+}
+
+.sub{
+  margin-top:5px;
+  color:#9ca3af;
+  font-size:12px;
+}
+
+.panel{
+  width:min(1100px,96%);
+  margin:12px auto;
+  background:#111827;
+  border-radius:16px;
+  padding:14px;
+}
+
+.roomRow{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.roomRow input,
+.roomRow select{
+  flex:1;
+  min-width:120px;
+  background:#05070b;
+  color:white;
+  border:1px solid #374151;
+  border-radius:10px;
+  padding:11px;
+}
+
+.status{
+  margin-top:10px;
+  padding:10px;
+  border-radius:9px;
+  background:#05070b;
+  color:#a7f3d0;
+  text-align:center;
+  font-size:13px;
+  min-height:38px;
+}
+
+/* VIDEO */
+
+.videoGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.videoCard{
+  position:relative;
+  background:#020617;
+  border-radius:14px;
+  overflow:hidden;
+  min-height:220px;
+  border:1px solid #263044;
+}
+
+.videoCard video{
+  width:100%;
+  height:100%;
+  min-height:220px;
+  object-fit:cover;
+  background:#000;
+}
+
+.videoName{
+  position:absolute;
+  left:8px;
+  bottom:8px;
+  background:rgba(0,0,0,.65);
+  padding:6px 9px;
+  border-radius:7px;
+  font-size:12px;
+}
+
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+}
+
+/* INFO */
+
+.info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.infoCard{
+  background:#05070b;
+  border:1px solid #263044;
+  padding:12px;
+  border-radius:12px;
+  text-align:center;
+}
+
+.infoCard small{
+  display:block;
+  color:#9ca3af;
+  margin-bottom:5px;
+}
+
+.infoCard strong{
+  font-size:20px;
+}
+
+/* PIANO */
+
+
+
+.pianoHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+
+
+.octaves{
+  display:flex;
+  gap:5px;
+  overflow-x:auto;
+  padding-bottom:5px;
+}
+
+.octaves button{
+  min-width:43px;
+  padding:7px;
+}
+
+.pianoScroll{
+  width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  background:#020617;
+  border-radius:12px;
+  padding:12px;
+  -webkit-overflow-scrolling:touch;
+}
+
+#piano{
+  position:relative;
+  height:250px;
+  min-width:100px;
+}
+
+.white{
+  position:absolute;
+  top:0;
+  width:48px;
+  height:235px;
+  background:linear-gradient(to bottom,#fff,#d1d5db);
+  border:1px solid #777;
+  border-radius:0 0 7px 7px;
+  z-index:1;
+  color:#111;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding-bottom:8px;
+  font-size:10px;
+  user-select:none;
+  touch-action:none;
+}
+
+.white.local-active{
+  background:#facc15 !important;
+  box-shadow:0 0 12px rgba(250,204,21,.9);
+  transform:translateY(3px);
+}
+
+.white.remote-active{
+  background:#38bdf8 !important;
+  box-shadow:0 0 14px rgba(56,189,248,.95);
+  transform:translateY(3px);
+}
+
+.white.local-active.remote-active{
+  background:#c084fc !important;
+  box-shadow:0 0 18px rgba(192,132,252,1);
+  transform:translateY(3px);
+}
+
+.black{
+  position:absolute;
+  top:0;
+  width:30px;
+  height:145px;
+  background:linear-gradient(#333,#000);
+  border:1px solid #111;
+  border-radius:0 0 6px 6px;
+  z-index:2;
+  color:white;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding-bottom:6px;
+  font-size:8px;
+  user-select:none;
+  touch-action:none;
+}
+
+.black.local-active{
+  background:#facc15 !important;
+  color:#111 !important;
+  box-shadow:0 0 12px rgba(250,204,21,.95);
+  transform:translateY(3px);
+}
+
+.black.remote-active{
+  background:#38bdf8 !important;
+  color:#fff !important;
+  box-shadow:0 0 14px rgba(56,189,248,1);
+  transform:translateY(3px);
+}
+
+.black.local-active.remote-active{
+  background:#c084fc !important;
+  color:#111 !important;
+  box-shadow:0 0 18px rgba(192,132,252,1);
+  transform:translateY(3px);
+}
+
+.noteToggle{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+}
+
+/* MOBILE */
+
+@media(max-width:650px){
+
+  .videoGrid{
+    grid-template-columns:1fr;
+  }
+
+  .videoCard,
+  .videoCard video{
+    min-height:190px;
+  }
+
+  .info{
+    grid-template-columns:1fr;
+  }
+
+  .white{
+    width:44px;
+    height:220px;
+  }
+
+  .black{
+    width:28px;
+    height:135px;
+  }
+
+  #piano{
+    height:235px;
+  }
+
+  .top h1{
+    font-size:19px;
+  }
+
+  button{
+    padding:9px 10px;
+    font-size:12px;
+  }
+}
+</style>
 </head>
-<body oncontextmenu="return false;" draggable="false">
 
-    <header class="top">
-        <h1>🎹 Piano Live Pro</h1>
-        <div class="topButtons">
-            <button id="videoBtn" onclick="startVideo()">
-                🎥 Video Call
-            </button>
-        </div>
-    </header>
+<body>
 
-    <section class="options">
-        <button id="keysBtn" class="active" onclick="toggleKeys()">
-            🎹 Keys ON
-        </button>
-        <button id="chordsBtn" class="active" onclick="toggleChords()">
-            🎵 Chords ON
-        </button>
-        <button id="holdBtn" onclick="toggleHold()">
-            ✋ HOLD OFF
-        </button>
-        <button onclick="connectMIDI()">
-            🎹 MIDI
-        </button>
-    </section>
+<header class="top">
+  <h1>AMI ONLINE MUSIC CLASS</h1>
+  <div class="sub">Teacher - Student - Live Piano - MIDI</div>
+</header>
 
-    <div id="videoBox">
-        <iframe id="meet" allow="camera; microphone; fullscreen" allowfullscreen loading="lazy"></iframe>
+<!-- ROOM -->
+
+<section class="panel">
+
+  <div class="roomRow">
+
+    <input id="roomId" placeholder="Enter Room ID">
+
+    <select id="userRole">
+
+      <option value="teacher">Teacher</option>
+      <option value="student">Student</option>
+
+    </select>
+
+    <button onclick="startClass()">
+      Start Class
+    </button>
+
+  </div>
+
+  <div id="status" class="status">
+    Ready - Enter Room ID and Start Class
+  </div>
+
+</section>
+
+<!-- VIDEO -->
+
+<section class="panel">
+
+  <div class="videoGrid">
+
+    <div class="videoCard">
+
+      <video
+        id="localVideo"
+        autoplay
+        playsinline
+        muted>
+      </video>
+
+      <div class="videoName" id="localName">
+        Teacher - My Camera
+      </div>
+
     </div>
 
-    <section class="info">
-        <div class="card">
-            <h3>Keys</h3>
-            <span id="keyShow">-</span>
-        </div>
-        <div class="card">
-            <h3>Chord</h3>
-            <span id="chordShow">-</span>
-        </div>
-    </section>
+    <div class="videoCard">
 
-    <section class="pianoArea">
-        <div id="piano"></div>
-    </section>
+      <video
+        id="remoteVideo"
+        autoplay
+        playsinline>
+      </video>
 
-    <script src="sound.js"></script>
-    <script src="chords.js"></script>
-    <script src="piano.js"></script>
-    <script src="app.js"></script>
+      <div class="videoName" id="remoteName">
+        Student - Remote Camera
+      </div>
 
-    <script>
-        document.addEventListener("pointerdown", () => {
-            if (window.audioContext && audioContext.state === "suspended") {
-                audioContext.resume();
+    </div>
+
+  </div>
+
+  <div class="controls">
+
+    <button id="cameraBtn" onclick="toggleCamera()">
+      Camera ON
+    </button>
+
+    <button onclick="switchCamera()">
+      Front / Back
+    </button>
+
+    <button id="micBtn" onclick="toggleMic()">
+      Mic ON
+    </button>
+
+    <button onclick="toggleRemoteFullscreen()">
+      Full View
+    </button>
+
+  </div>
+
+</section>
+
+<!-- INFORMATION -->
+
+<section class="panel">
+
+  <div class="info">
+
+    <div class="infoCard">
+
+      <small>Keys</small>
+
+      <strong id="keyShow">-</strong>
+
+    </div>
+
+    <div class="infoCard">
+
+      <small>Chord</small>
+
+      <strong id="chordShow">-</strong>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- PIANO -->
+
+<section class="panel">
+
+  <div class="pianoHeader">
+
+    <h>7 Octave Piano</h3>
+
+    <div class="controls">
+
+      <button id="holdBtn" onclick="toggleHold()">
+        HOLD OFF
+      </button>
+
+      <button onclick="connectMIDI()">
+        MIDI CONNECT
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="octaves" id="octaveButtons"></div>
+
+  <div class="pianoScroll" id="pianoScroll">
+
+    <div id="piano"></div>
+
+  </div>
+
+  <div class="noteToggle">
+
+    <button
+      id="keyToggle"
+      class="active"
+      onclick="toggleKeyNames()">
+      Key Names ON
+    </button>
+
+    <button onclick="centerPiano()">
+      Center Piano
+    </button>
+
+  </div>
+
+</section>
+
+<script>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let peer = null;
+let localStream = null;
+let currentFacing = "user";
+let cameraOn = true;
+let micOn = true;
+let currentRole = "";
+let currentRoom = "";
+let mediaCall = null;
+let dataConnection = null;
+
+const localVideo =
+  document.getElementById("localVideo");
+
+const remoteVideo =
+  document.getElementById("remoteVideo");
+
+const statusBox =
+  document.getElementById("status");
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function status(text){
+
+  statusBox.textContent = text;
+
+}
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+async function getCameraStream(){
+
+  if(localStream){
+
+    localStream
+      .getTracks()
+      .forEach(t=>t.stop());
+
+  }
+
+  try{
+
+    localStream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video:{
+          facingMode:{
+            ideal:currentFacing
+          },
+          width:{ideal:1280},
+          height:{ideal:720}
+        },
+
+        audio:true
+
+      });
+
+    localVideo.srcObject =
+      localStream;
+
+    cameraOn = true;
+    micOn = true;
+
+    updateMediaButtons();
+
+    status("Camera and Microphone Connected");
+
+    return localStream;
+
+  }catch(error){
+
+    console.error(error);
+
+    status("Camera or Microphone Permission Not Granted");
+
+    alert(
+      "Camera open ஆகவில்லை.\n\n" +
+      "1. HTTPS page-ல் open செய்யுங்கள்\n" +
+      "2. Camera permission Allow செய்யுங்கள்\n" +
+      "3. Microphone permission Allow செய்யுங்கள்"
+    );
+
+    throw error;
+
+  }
+
+}
+
+
+/* =========================================================
+   START CLASS
+========================================================= */
+
+async function startClass(){
+
+  const room =
+    document.getElementById("roomId").value.trim();
+
+  const role =
+    document.getElementById("userRole").value;
+
+  if(!room){
+
+    alert("Room ID enter செய்யுங்கள்.");
+
+    return;
+
+  }
+
+  if(!window.isSecureContext){
+
+    status("HTTPS Required For Camera");
+
+    alert(
+      "Camera வேலை செய்ய HTTPS தேவை.\n" +
+      "Blogger HTTPS page-ல் இந்த code-ஐ பயன்படுத்துங்கள்."
+    );
+
+    return;
+
+  }
+
+  currentRole = role;
+  currentRoom = room;
+
+  updateRoleNames();
+
+  try{
+
+    await getCameraStream();
+
+  }catch(e){
+
+    return;
+
+  }
+
+  const peerId =
+    "anikous-" +
+    room +
+    "-" +
+    role;
+
+  status("Connecting To Class");
+
+  peer =
+    new Peer(
+      peerId,
+      {
+        host:"0.peerjs.com",
+        port:443,
+        path:"/",
+        secure:true
+      }
+    );
+
+
+  /* PEER OPEN */
+
+  peer.on("open",id=>{
+
+    status(
+      "Connected - " +
+      (
+        role==="teacher"
+        ? "Teacher"
+        : "Student"
+      ) +
+      " - Room - " +
+      room
+    );
+
+    if(role==="student"){
+
+      const teacherId =
+        "anikous-" +
+        room +
+        "-teacher";
+
+      callPeer(teacherId);
+
+      connectData(teacherId);
+
+    }
+
+  });
+
+
+  /* INCOMING VIDEO */
+
+  peer.on("call",call=>{
+
+    mediaCall = call;
+
+    call.answer(localStream);
+
+    call.on("stream",remoteStream=>{
+
+      remoteVideo.srcObject =
+        remoteStream;
+
+      status("Live Teacher And Student Video Connected");
+
+    });
+
+    call.on("close",()=>{
+
+      remoteVideo.srcObject = null;
+
+      status("Remote User Disconnected");
+
+    });
+
+  });
+
+
+  /* INCOMING DATA */
+
+  peer.on("connection",connection=>{
+
+    dataConnection = connection;
+
+    setupDataConnection(connection);
+
+  });
+
+
+  /* ERROR */
+
+  peer.on("error",err=>{
+
+    console.error(err);
+
+    if(err.type==="peer-unavailable"){
+
+      status("Other User Has Not Joined Yet");
+
+    }else{
+
+      status(
+        "Connection Error - " +
+        err.type
+      );
+
+    }
+
+  });
+
+}
+
+
+/* =========================================================
+   VIDEO CALL
+========================================================= */
+
+function callPeer(id){
+
+  if(!peer || !localStream)
+    return;
+
+  mediaCall =
+    peer.call(
+      id,
+      localStream
+    );
+
+  mediaCall.on("stream",remoteStream=>{
+
+    remoteVideo.srcObject =
+      remoteStream;
+
+    status("Live Teacher And Student Video Connected");
+
+  });
+
+  mediaCall.on("close",()=>{
+
+    remoteVideo.srcObject = null;
+
+    status("Remote User Disconnected");
+
+  });
+
+}
+
+
+/* =========================================================
+   DATA CONNECTION
+========================================================= */
+
+function connectData(id){
+
+  if(!peer)
+    return;
+
+  try{
+
+    const connection =
+      peer.connect(
+        id,
+        {
+          reliable:true
+        }
+      );
+
+    dataConnection =
+      connection;
+
+    setupDataConnection(connection);
+
+  }catch(error){
+
+    console.error(
+      "Data connection error:",
+      error
+    );
+
+  }
+
+}
+
+
+function setupDataConnection(connection){
+
+  connection.on("open",()=>{
+
+    dataConnection =
+      connection;
+
+    status("Keyboard Sync Connected Successfully");
+
+  });
+
+
+  connection.on("data",data=>{
+
+    handleRemoteData(data);
+
+  });
+
+
+  connection.on("close",()=>{
+
+    dataConnection = null;
+
+  });
+
+}
+
+
+/* =========================================================
+   SEND DATA
+========================================================= */
+
+function sendData(data){
+
+  if(
+    dataConnection &&
+    dataConnection.open
+  ){
+
+    try{
+
+      dataConnection.send(data);
+
+    }catch(error){
+
+      console.error(
+        "Data send error:",
+        error
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   REMOTE DATA
+========================================================= */
+
+function handleRemoteData(data){
+
+  if(!data || !data.type)
+    return;
+
+  if(data.type==="keyDown"){
+
+    const key =
+      document.querySelector(
+        `[data-note="${data.note}"]`
+      );
+
+    if(key){
+
+      pressRemoteKey(
+        data.note,
+        key
+      );
+
+    }
+
+  }
+
+  if(data.type==="keyUp"){
+
+    const key =
+      document.querySelector(
+        `[data-note="${data.note}"]`
+      );
+
+    if(key){
+
+      releaseRemoteKey(
+        data.note,
+        key
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   REMOTE KEYBOARD
+========================================================= */
+
+let remoteKeys =
+  new Set();
+
+let remoteSounds = {};
+
+
+function pressRemoteKey(note,key){
+
+  if(remoteKeys.has(note))
+    return;
+
+  remoteKeys.add(note);
+
+  key.classList.add("remote-active");
+
+  playRemoteNote(note);
+
+  updateDisplay();
+
+}
+
+
+function releaseRemoteKey(note,key){
+
+  remoteKeys.delete(note);
+
+  key.classList.remove("remote-active");
+
+  stopRemoteNote(note);
+
+  updateDisplay();
+
+}
+
+
+/* =========================================================
+   REMOTE AUDIO
+========================================================= */
+
+function playRemoteNote(note){
+
+  initAudio();
+
+  if(remoteSounds[note])
+    return;
+
+  const osc =
+    audioContext.createOscillator();
+
+  const gain =
+    audioContext.createGain();
+
+  const filter =
+    audioContext.createBiquadFilter();
+
+  osc.type = "triangle";
+
+  osc.frequency.value =
+    frequency(note);
+
+  filter.type = "lowpass";
+
+  filter.frequency.value = 4500;
+
+  gain.gain.setValueAtTime(
+    0,
+    audioContext.currentTime
+  );
+
+  gain.gain.linearRampToValueAtTime(
+    .18,
+    audioContext.currentTime+.02
+  );
+
+  gain.gain.linearRampToValueAtTime(
+    .12,
+    audioContext.currentTime+.15
+  );
+
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioContext.destination);
+
+  osc.start();
+
+  remoteSounds[note] = {
+    osc,
+    gain
+  };
+
+}
+
+
+function stopRemoteNote(note){
+
+  const sound =
+    remoteSounds[note];
+
+  if(!sound)
+    return;
+
+  const now =
+    audioContext.currentTime;
+
+  sound.gain.gain.cancelScheduledValues(now);
+
+  sound.gain.gain.setValueAtTime(
+    sound.gain.gain.value,
+    now
+  );
+
+  sound.gain.gain.exponentialRampToValueAtTime(
+    .0001,
+    now+.2
+  );
+
+  try{
+
+    sound.osc.stop(now+.25);
+
+  }catch(e){}
+
+  delete remoteSounds[note];
+
+}
+
+
+/* =========================================================
+   ROLE LABELS
+========================================================= */
+
+function updateRoleNames(){
+
+  if(currentRole==="teacher"){
+
+    document.getElementById("localName").textContent =
+      "Teacher - My Camera";
+
+    document.getElementById("remoteName").textContent =
+      "Student - Remote Camera";
+
+  }else{
+
+    document.getElementById("localName").textContent =
+      "Student - My Camera";
+
+    document.getElementById("remoteName").textContent =
+      "Teacher - Remote Camera";
+
+  }
+
+}
+
+
+/* =========================================================
+   CAMERA ON OFF
+========================================================= */
+
+function toggleCamera(){
+
+  if(!localStream)
+    return;
+
+  const track =
+    localStream.getVideoTracks()[0];
+
+  if(!track)
+    return;
+
+  cameraOn =
+    !cameraOn;
+
+  track.enabled =
+    cameraOn;
+
+  updateMediaButtons();
+
+}
+
+
+/* =========================================================
+   MIC ON OFF
+========================================================= */
+
+function toggleMic(){
+
+  if(!localStream)
+    return;
+
+  const track =
+    localStream.getAudioTracks()[0];
+
+  if(!track)
+    return;
+
+  micOn =
+    !micOn;
+
+  track.enabled =
+    micOn;
+
+  updateMediaButtons();
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+function updateMediaButtons(){
+
+  const cameraBtn =
+    document.getElementById("cameraBtn");
+
+  const micBtn =
+    document.getElementById("micBtn");
+
+  cameraBtn.textContent =
+    cameraOn
+    ? "Camera ON"
+    : "Camera OFF";
+
+  micBtn.textContent =
+    micOn
+    ? (
+      currentRole==="teacher"
+      ? "Teacher Mic ON"
+      : "Student Mic ON"
+    )
+    : (
+      currentRole==="teacher"
+      ? "Teacher Mic OFF"
+      : "Student Mic OFF"
+    );
+
+  cameraBtn.classList.toggle(
+    "active",
+    cameraOn
+  );
+
+  micBtn.classList.toggle(
+    "active",
+    micOn
+  );
+
+}
+
+
+/* =========================================================
+   SWITCH CAMERA
+========================================================= */
+
+async function switchCamera(){
+
+  if(!localStream)
+    return;
+
+  currentFacing =
+    currentFacing==="user"
+    ? "environment"
+    : "user";
+
+  try{
+
+    const oldStream =
+      localStream;
+
+    const newStream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video:{
+          facingMode:{
+            exact:currentFacing
+          }
+        },
+
+        audio:true
+
+      });
+
+    localStream =
+      newStream;
+
+    localVideo.srcObject =
+      newStream;
+
+    oldStream
+      .getTracks()
+      .forEach(t=>t.stop());
+
+    cameraOn = true;
+    micOn = true;
+
+    updateMediaButtons();
+
+    if(peer){
+
+      peer.connections &&
+      Object.values(peer.connections)
+      .forEach(list=>{
+
+        list.forEach(call=>{
+
+          if(call.peerConnection){
+
+            const senders =
+              call.peerConnection
+              .getSenders();
+
+            const newVideo =
+              newStream
+              .getVideoTracks()[0];
+
+            const newAudio =
+              newStream
+              .getAudioTracks()[0];
+
+            senders.forEach(sender=>{
+
+              if(
+                sender.track &&
+                sender.track.kind==="video" &&
+                newVideo
+              ){
+
+                sender.replaceTrack(
+                  newVideo
+                );
+
+              }
+
+              if(
+                sender.track &&
+                sender.track.kind==="audio" &&
+                newAudio
+              ){
+
+                sender.replaceTrack(
+                  newAudio
+                );
+
+              }
+
+            });
+
+          }
+
+        });
+
+      });
+
+    }
+
+    status(
+      currentFacing==="user"
+      ? "Front Camera Active"
+      : "Back Camera Active"
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    try{
+
+      const newStream =
+        await navigator.mediaDevices.getUserMedia({
+
+          video:{
+            facingMode:{
+              ideal:currentFacing
             }
-        }, { once: true });
-    </script>
+          },
+
+          audio:true
+
+        });
+
+      localStream
+        .getTracks()
+        .forEach(t=>t.stop());
+
+      localStream =
+        newStream;
+
+      localVideo.srcObject =
+        newStream;
+
+      status("Camera Switched Successfully");
+
+    }catch(e){
+
+      status(
+        "Camera Switching Not Supported On This Device"
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   FULLSCREEN
+========================================================= */
+
+function toggleRemoteFullscreen(){
+
+  const v =
+    document.getElementById("remoteVideo");
+
+  if(v.requestFullscreen){
+
+    v.requestFullscreen();
+
+  }else if(v.webkitEnterFullscreen){
+
+    v.webkitEnterFullscreen();
+
+  }
+
+}
+
+
+/* =========================================================
+   PIANO
+========================================================= */
+
+const NOTE_NAMES = [
+  "C","C#","D","D#","E","F",
+  "F#","G","G#","A","A#","B"
+];
+
+const BLACK_KEYS =
+  [1,3,6,8,10];
+
+let activeKeys =
+  new Set();
+
+let pointerMap =
+  new Map();
+
+let holdMode =
+  false;
+
+let showKeyNames =
+  true;
+
+let audioContext =
+  null;
+
+let sounds = {};
+
+const piano =
+  document.getElementById("piano");
+
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+function initAudio(){
+
+  if(!audioContext){
+
+    const AC =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+    audioContext =
+      new AC();
+
+  }
+
+  if(audioContext.state==="suspended"){
+
+    audioContext.resume();
+
+  }
+
+}
+
+
+function frequency(note){
+
+  return 440 *
+    Math.pow(
+      2,
+      (note-69)/12
+    );
+
+}
+
+
+/* =========================================================
+   PLAY NOTE
+========================================================= */
+
+function playNote(note){
+
+  initAudio();
+
+  if(sounds[note])
+    return;
+
+  const osc =
+    audioContext.createOscillator();
+
+  const gain =
+    audioContext.createGain();
+
+  const filter =
+    audioContext.createBiquadFilter();
+
+  osc.type = "triangle";
+
+  osc.frequency.value =
+    frequency(note);
+
+  filter.type = "lowpass";
+
+  filter.frequency.value = 4500;
+
+  gain.gain.setValueAtTime(
+    0,
+    audioContext.currentTime
+  );
+
+  gain.gain.linearRampToValueAtTime(
+    .3,
+    audioContext.currentTime+.02
+  );
+
+  gain.gain.linearRampToValueAtTime(
+    .20,
+    audioContext.currentTime+.15
+  );
+
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioContext.destination);
+
+  osc.start();
+
+  sounds[note] = {
+    osc,
+    gain
+  };
+
+}
+
+
+function stopNote(note){
+
+  const sound =
+    sounds[note];
+
+  if(!sound)
+    return;
+
+  const now =
+    audioContext.currentTime;
+
+  sound.gain.gain.cancelScheduledValues(now);
+
+  sound.gain.gain.setValueAtTime(
+    sound.gain.gain.value,
+    now
+  );
+
+  sound.gain.gain.exponentialRampToValueAtTime(
+    .0001,
+    now+.2
+  );
+
+  try{
+
+    sound.osc.stop(now+.25);
+
+  }catch(e){}
+
+  delete sounds[note];
+
+}
+
+
+/* =========================================================
+   NOTE NAME
+========================================================= */
+
+function noteName(note){
+
+  const octave =
+    Math.floor(note/12)-1;
+
+  return NOTE_NAMES[note%12] + octave;
+
+}
+
+
+/* =========================================================
+   LOCAL KEY PRESS
+========================================================= */
+
+function pressKey(note,key){
+
+  if(activeKeys.has(note))
+    return;
+
+  activeKeys.add(note);
+
+  key.classList.add("local-active");
+
+  playNote(note);
+
+  sendData({
+    type:"keyDown",
+    note:note
+  });
+
+  updateDisplay();
+
+}
+
+
+/* =========================================================
+   LOCAL KEY RELEASE
+========================================================= */
+
+function releaseKey(note,key){
+
+  if(holdMode)
+    return;
+
+  activeKeys.delete(note);
+
+  key.classList.remove("local-active");
+
+  stopNote(note);
+
+  sendData({
+    type:"keyUp",
+    note:note
+  });
+
+  updateDisplay();
+
+}
+
+
+/* =========================================================
+   CREATE PIANO
+========================================================= */
+
+function createPiano(){
+
+  piano.innerHTML="";
+
+  const start = 24;
+  const end = 108;
+
+  let whiteIndex = 0;
+
+  const whitePositions = {};
+
+  /* WHITE KEYS */
+
+  for(
+    let n=start;
+    n<=end;
+    n++
+  ){
+
+    const pc =
+      n%12;
+
+    if(!BLACK_KEYS.includes(pc)){
+
+      whitePositions[n] =
+        whiteIndex;
+
+      const key =
+        document.createElement("div");
+
+      key.className = "white";
+
+      key.dataset.note = n;
+
+      key.style.left =
+        (whiteIndex*48)+"px";
+
+      key.innerHTML =
+        `<span>${noteName(n)}</span>`;
+
+      addKeyEvents(key,n);
+
+      piano.appendChild(key);
+
+      whiteIndex++;
+
+    }
+
+  }
+
+
+  /* BLACK KEYS */
+
+  for(
+    let n=start;
+    n<=end;
+    n++
+  ){
+
+    const pc =
+      n%12;
+
+    if(BLACK_KEYS.includes(pc)){
+
+      let previous =
+        n-1;
+
+      while(
+        previous>=start &&
+        BLACK_KEYS.includes(previous%12)
+      ){
+
+        previous--;
+
+      }
+
+      const leftWhite =
+        whitePositions[previous];
+
+      if(leftWhite!==undefined){
+
+        const key =
+          document.createElement("div");
+
+        key.className = "black";
+
+        key.dataset.note = n;
+
+        key.style.left =
+          (leftWhite*48+32)+"px";
+
+        key.innerHTML =
+          `<span>${noteName(n)}</span>`;
+
+        addKeyEvents(key,n);
+
+        piano.appendChild(key);
+
+      }
+
+    }
+
+  }
+
+  piano.style.width =
+    (whiteIndex*48)+"px";
+
+  createOctaveButtons();
+
+}
+
+
+/* =========================================================
+   KEY EVENTS
+========================================================= */
+
+function addKeyEvents(key,note){
+
+  key.addEventListener(
+    "pointerdown",
+    e=>{
+
+      e.preventDefault();
+
+      key.setPointerCapture(
+        e.pointerId
+      );
+
+      pointerMap.set(
+        e.pointerId,
+        note
+      );
+
+      pressKey(note,key);
+
+    }
+  );
+
+
+  key.addEventListener(
+    "pointerup",
+    e=>{
+
+      e.preventDefault();
+
+      pointerMap.delete(
+        e.pointerId
+      );
+
+      releaseKey(note,key);
+
+    }
+  );
+
+
+  key.addEventListener(
+    "pointercancel",
+    e=>{
+
+      pointerMap.delete(
+        e.pointerId
+      );
+
+      releaseKey(note,key);
+
+    }
+  );
+
+
+  key.addEventListener(
+    "pointerleave",
+    e=>{
+
+      if(
+        !key.hasPointerCapture(e.pointerId)
+      ){
+
+        return;
+
+      }
+
+      if(!holdMode){
+
+        pointerMap.delete(
+          e.pointerId
+        );
+
+        releaseKey(note,key);
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   OCTAVE BUTTONS
+========================================================= */
+
+function createOctaveButtons(){
+
+  const box = document.getElementById("octaveButtons");
+  box.innerHTML = "";
+
+  for(let o=1;o<=7;o++){
+
+    const btn=document.createElement("button");
+    btn.textContent="Oct "+o;
+
+    btn.onclick=function(){
+
+      box.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const endNote = 24 + (o*12) - 1;
+
+      document.querySelectorAll("#piano .white,#piano .black").forEach(key=>{
+
+        const note = Number(key.dataset.note);
+
+        if(note <= endNote){
+          key.style.display="";
+        }else{
+          key.style.display="none";
+        }
+
+      });
+
+    };
+
+    box.appendChild(btn);
+
+  }
+
+}
+      
+
+/* =========================================================
+   CENTER
+========================================================= */
+
+function centerPiano(){
+
+  const box =
+    document.getElementById("pianoScroll");
+
+  box.scrollLeft =
+    (
+      box.scrollWidth -
+      box.clientWidth
+    )/2;
+
+}
+
+
+/* =========================================================
+   HOLD
+========================================================= */
+
+function toggleHold(){
+
+  holdMode =
+    !holdMode;
+
+  const btn =
+    document.getElementById("holdBtn");
+
+  btn.textContent =
+    holdMode
+    ? "HOLD ON"
+    : "HOLD OFF";
+
+  btn.classList.toggle(
+    "active",
+    holdMode
+  );
+
+  if(!holdMode){
+
+    [...activeKeys].forEach(note=>{
+
+      const key =
+        document.querySelector(
+          `[data-note="${note}"]`
+        );
+
+      if(key){
+
+        key.classList.remove(
+          "local-active"
+        );
+
+      }
+
+      stopNote(note);
+
+      sendData({
+        type:"keyUp",
+        note:note
+      });
+
+    });
+
+    activeKeys.clear();
+
+    pointerMap.clear();
+
+    updateDisplay();
+
+  }
+
+}
+
+
+/* =========================================================
+   KEY NAMES
+========================================================= */
+
+function toggleKeyNames(){
+
+  showKeyNames =
+    !showKeyNames;
+
+  document.getElementById(
+    "keyToggle"
+  ).textContent =
+    showKeyNames
+    ? "Key Names ON"
+    : "Key Names OFF";
+
+  document.querySelectorAll(
+    ".white span,.black span"
+  ).forEach(el=>{
+
+    el.style.display =
+      showKeyNames
+      ? "block"
+      : "none";
+
+  });
+
+}
+
+
+/* =========================================================
+   DISPLAY
+========================================================= */
+
+function updateDisplay(){
+
+  const local =
+    [...activeKeys];
+
+  const remote =
+    [...remoteKeys];
+
+  const all =
+    [
+      ...new Set([
+        ...local,
+        ...remote
+      ])
+    ]
+    .sort((a,b)=>a-b);
+
+  document.getElementById(
+    "keyShow"
+  ).textContent =
+    all.length
+    ? all.map(noteName).join(" ")
+    : "-";
+
+  document.getElementById(
+    "chordShow"
+  ).textContent =
+    all.length>=3
+    ? findChord(all)
+    : "-";
+
+}
+
+
+/* =========================================================
+   CHORD DETECTION
+========================================================= */
+
+const CHORDS = {
+
+  "0,4,7":"Major",
+  "0,3,7":"Minor",
+  "0,3,6":"Diminished",
+  "0,4,8":"Augmented",
+  "0,5,7":"Sus4",
+  "0,2,7":"Sus2",
+  "0,4,7,10":"7",
+  "0,4,7,11":"Maj7",
+  "0,3,7,10":"m7",
+  "0,3,6,10":"m7b5",
+  "0,3,6,9":"Dim7",
+  "0,2,4,7":"Add9",
+  "0,4,7,9":"6",
+  "0,3,7,9":"m6"
+
+};
+
+
+function findChord(notes){
+
+  const pcs = [
+    ...new Set(
+      notes.map(n=>n%12)
+    )
+  ]
+  .sort((a,b)=>a-b);
+
+  for(const root of pcs){
+
+    const intervals =
+      pcs
+      .map(
+        n=>
+          (n-root+12)%12
+      )
+      .sort((a,b)=>a-b);
+
+    const key =
+      intervals.join(",");
+
+    if(CHORDS[key]){
+
+      return (
+        NOTE_NAMES[root] +
+        " " +
+        CHORDS[key]
+      );
+
+    }
+
+  }
+
+  return "-";
+
+}
+
+
+/* =========================================================
+   MIDI
+========================================================= */
+
+let midiAccess = null;
+let midiConnected = false;
+let midiInputs = [];
+
+
+async function connectMIDI(){
+
+  if(!navigator.requestMIDIAccess){
+
+    status("Web MIDI Not Supported In This Browser");
+
+    alert(
+      "இந்த browser Web MIDI support செய்யவில்லை."
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    midiAccess =
+      await navigator.requestMIDIAccess();
+
+    midiInputs = [];
+
+    midiAccess.inputs.forEach(input=>{
+
+      midiInputs.push(input);
+
+      input.onmidimessage =
+        handleMIDI;
+
+    });
+
+
+    const count =
+      midiInputs.length;
+
+
+    if(count>0){
+
+      midiConnected = true;
+
+      status(
+        "MIDI Connected Successfully - " +
+        count +
+        " Device"
+      );
+
+      alert(
+        "MIDI Connected Successfully"
+      );
+
+    }else{
+
+      midiConnected = false;
+
+      status(
+        "MIDI Device Not Connected"
+      );
+
+      alert(
+        "MIDI Device Not Connected"
+      );
+
+    }
+
+
+    /* Detect future MIDI device connection */
+
+    midiAccess.onstatechange =
+      event=>{
+
+        if(event.port.type==="input"){
+
+          if(event.port.state==="connected"){
+
+            event.port.onmidimessage =
+              handleMIDI;
+
+            midiConnected = true;
+
+            status(
+              "MIDI Device Connected Successfully"
+            );
+
+          }
+
+          if(event.port.state==="disconnected"){
+
+            status(
+              "MIDI Device Disconnected"
+            );
+
+          }
+
+        }
+
+      };
+
+
+  }catch(error){
+
+    console.error(error);
+
+    midiConnected = false;
+
+    status(
+      "MIDI Permission Not Granted"
+    );
+
+    alert(
+      "MIDI permission கிடைக்கவில்லை."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   MIDI MESSAGE
+========================================================= */
+
+function handleMIDI(event){
+
+  if(!event || !event.data)
+    return;
+
+  const data =
+    event.data;
+
+  if(data.length<2)
+    return;
+
+  const command =
+    data[0] & 0xf0;
+
+  const note =
+    data[1];
+
+  const velocity =
+    data[2] || 0;
+
+  const key =
+    document.querySelector(
+      `[data-note="${note}"]`
+    );
+
+
+  /* NOTE ON */
+
+  if(
+    command===0x90 &&
+    velocity>0
+  ){
+
+    if(key){
+
+      pressKey(
+        note,
+        key
+      );
+
+    }
+
+    return;
+
+  }
+
+
+  /* NOTE OFF */
+
+  if(
+    command===0x80 ||
+    (
+      command===0x90 &&
+      velocity===0
+    )
+  ){
+
+    if(key){
+
+      releaseKey(
+        note,
+        key
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+createPiano();
+  document.querySelector("#octaveButtons button").click();
+
+
+document.addEventListener(
+  "pointerdown",
+  ()=>{
+
+    if(
+      audioContext &&
+      audioContext.state==="suspended"
+    ){
+
+      audioContext.resume();
+
+    }
+
+  },
+  {once:true}
+);
+
+</script>
 
 </body>
 </html>
