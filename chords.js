@@ -1,9 +1,17 @@
+const NOTE_NAMES = [
+"C","C#","D","D#",
+"E","F","F#","G",
+"G#","A","A#","B"
+];
+
 const CHORDS = {
 
 "0,4,7":"Major",
 "0,3,7":"Minor",
+
 "0,3,6":"Diminished",
 "0,4,8":"Augmented",
+
 "0,5,7":"Sus4",
 "0,2,7":"Sus2",
 
@@ -11,63 +19,65 @@ const CHORDS = {
 "0,4,7,11":"Maj7",
 "0,3,7,10":"m7",
 
+"0,3,6,10":"m7♭5",
 "0,3,6,9":"Dim7",
-"0,3,6,10":"m7b5",
 
-"0,4,7,10,2":"9",
-"0,3,7,10,2":"m9",
-"0,4,7,11,2":"Maj9",
+"0,4,8,10":"Aug7",
 
-"0,4,7,10,2,5":"11",
-"0,4,7,10,2,5,9":"13"
+"0,2,4,7":"Add9",
+
+"0,4,7,9":"6",
+"0,3,7,9":"m6"
 
 };
 
 
 
-const NOTE_NAMES = [
-
-"C","C#","D","D#",
-"E","F","F#","G",
-"G#","A","A#","B"
-
-];
-
-
-
 function findChord(notes){
 
-
-if(notes.length < 3){
+if(!notes || notes.length<3){
 
 return "-";
 
 }
 
 
+notes=[...new Set(notes)];
 
-let pitch = notes.map(n=>n%12);
-
-
-
-for(let root of pitch){
+notes.sort((a,b)=>a-b);
 
 
-let intervals = pitch.map(n=>{
 
-return (n-root+12)%12;
+let pitchClasses=
+notes.map(n=>n%12);
 
-})
+
+
+pitchClasses=
+[...new Set(pitchClasses)];
+
+
+
+for(let root of pitchClasses){
+
+
+let intervals=
+pitchClasses
+.map(n=>(n-root+12)%12)
 .sort((a,b)=>a-b);
 
 
+let key=
+intervals.join(",");
 
-let chordType = CHORDS[intervals.join(",")];
+
+if(CHORDS[key]){
 
 
-if(chordType){
+return NOTE_NAMES[root]
++" "+
+CHORDS[key];
 
-return NOTE_NAMES[root]+" "+chordType;
 
 }
 
@@ -75,8 +85,6 @@ return NOTE_NAMES[root]+" "+chordType;
 }
 
 
-
-return "Unknown";
-
+return "-";
 
 }
