@@ -1,298 +1,200 @@
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
+const piano = document.getElementById("piano");
 
 
-body{
-
-background:#090909;
-color:white;
-overflow-x:hidden;
-
-}
+const notes = [
+"C","C#","D","D#",
+"E","F","F#","G",
+"G#","A","A#","B"
+];
 
 
-/* TOP */
-
-.top{
-
-background:linear-gradient(#1c1c1c,#0d0d0d);
-
-padding:20px;
-
-text-align:center;
-
-border-bottom:1px solid #333;
-
-}
+let activeKeys = new Set();
 
 
-.top h1{
-
-font-size:32px;
-
-color:#ffd54f;
-
-margin-bottom:15px;
-
-}
+let start = 36; // C2
+let end = 96;   // C7
 
 
 
-button{
+function createPiano(){
 
-padding:12px 22px;
+let white = 0;
 
-background:#1976d2;
 
-color:white;
+for(let i=start;i<=end;i++){
 
-border:none;
 
-border-radius:10px;
+let name = notes[i % 12];
 
-font-size:16px;
+let octave = Math.floor(i / 12) - 1;
 
-cursor:pointer;
+
+let key = document.createElement("div");
+
+
+key.dataset.note = i;
+
+
+
+if(name.includes("#")){
+
+
+key.className = "black";
+
+
+key.style.left =
+((white-1)*55 + 38) + "px";
+
 
 }
+else{
 
 
+key.className = "white";
 
-/* DISPLAY */
 
-.info{
+key.style.left =
+(white*55) + "px";
 
-display:grid;
 
-grid-template-columns:
-repeat(auto-fit,minmax(170px,1fr));
+key.innerHTML =
+"<span>"+name+octave+"</span>";
 
-gap:15px;
 
-margin:20px;
+white++;
+
 
 }
 
 
 
-.info div{
+key.addEventListener("pointerdown",()=>{
 
-background:#151515;
+pressKey(i,key);
 
-border:1px solid #333;
+});
 
-border-radius:12px;
 
-padding:18px;
+key.addEventListener("pointerup",()=>{
 
-text-align:center;
+releaseKey(i,key);
 
-box-shadow:
-0 4px 15px rgba(0,0,0,.7);
+});
+
+
+key.addEventListener("pointerleave",()=>{
+
+releaseKey(i,key);
+
+});
+
+
+piano.appendChild(key);
+
 
 }
 
 
 
-#keyShow{
+piano.style.width =
+(white*55)+"px";
 
-color:#4fc3f7;
-
-font-size:22px;
-
-font-weight:bold;
-
-}
-
-
-#chordShow{
-
-color:#00e676;
-
-font-size:24px;
-
-font-weight:bold;
 
 }
 
 
 
-/* PIANO AREA */
 
-.pianoArea{
+function pressKey(note,key){
 
-width:100%;
 
-overflow-x:auto;
+key.classList.add("active");
 
-padding:30px 10px;
 
-background:#111;
+activeKeys.add(note);
+
+
+if(typeof playSound === "function"){
+
+playSound(note);
+
+}
+
+
+updateDisplay();
+
 
 }
 
 
 
-#piano{
 
-position:relative;
+function releaseKey(note,key){
 
-height:270px;
 
-margin:auto;
+key.classList.remove("active");
+
+
+activeKeys.delete(note);
+
+
+if(typeof stopSound === "function"){
+
+stopSound(note);
+
+}
+
+
+updateDisplay();
+
 
 }
 
 
 
-/* WHITE KEYS */
 
-.white{
+function updateDisplay(){
 
-position:absolute;
 
-top:0;
+let names = [...activeKeys].map(n=>{
 
-width:55px;
 
-height:260px;
+return notes[n % 12] +
 
-background:
+(Math.floor(n / 12)-1);
 
-linear-gradient(
-90deg,
-#eee,
-#fff,
-#ddd
-);
 
-border:1px solid #777;
+});
 
-border-radius:0 0 10px 10px;
 
-color:#111;
 
-z-index:1;
+document.getElementById("keyShow").innerHTML =
 
-box-shadow:
+names.join(" ") || "-";
 
-inset 0 -12px 15px rgba(0,0,0,.25),
 
-0 5px 8px rgba(0,0,0,.6);
 
-transition:.08s;
+if(typeof findChord === "function"){
+
+
+document.getElementById("chordShow").innerHTML =
+
+findChord([...activeKeys]);
+
+
+}
+
+else{
+
+
+document.getElementById("chordShow").innerHTML = "-";
+
+
+}
+
 
 }
 
 
 
-.white span{
-
-position:absolute;
-
-bottom:15px;
-
-width:100%;
-
-text-align:center;
-
-font-size:12px;
-
-font-weight:bold;
-
-}
-
-
-
-/* BLACK KEYS */
-
-.black{
-
-position:absolute;
-
-top:0;
-
-width:36px;
-
-height:160px;
-
-background:
-
-linear-gradient(
-90deg,
-#111,
-#000,
-#333
-);
-
-border-radius:
-
-0 0 8px 8px;
-
-z-index:10;
-
-box-shadow:
-
-0 8px 12px rgba(0,0,0,.9);
-
-transition:.08s;
-
-}
-
-
-
-/* PRESS */
-
-.white.active{
-
-background:#ffd54f;
-
-transform:translateY(5px);
-
-}
-
-
-
-.black.active{
-
-background:#ff9800;
-
-transform:translateY(5px);
-
-}
-
-
-
-/* MOBILE */
-
-@media(max-width:600px){
-
-.top h1{
-
-font-size:24px;
-
-}
-
-
-.white{
-
-width:45px;
-
-height:230px;
-
-}
-
-
-.black{
-
-width:30px;
-
-height:140px;
-
-}
-
-}
+createPiano();
