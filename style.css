@@ -5,360 +5,203 @@ box-sizing:border-box;
 font-family:Arial,sans-serif;
 }
 
-
 body{
-
-background:#090909;
-
-color:white;
-
-overflow-x:hidden;
-
+background:#0d0d0d;
+color:#fff;
+overflow:hidden;
 user-select:none;
-
 -webkit-user-select:none;
-
 }
 
-
-
-
-
-/* TOP */
+/* HEADER */
 
 .top{
-
-background:#151515;
-
+background:#181818;
 padding:12px;
-
 text-align:center;
-
 border-bottom:1px solid #333;
-
 }
-
 
 .top h1{
-
-color:#ffd54f;
-
 font-size:22px;
-
+color:#ffd54f;
 margin-bottom:10px;
-
 }
 
-
-
-
-
-/* BUTTON AREA */
+/* BUTTONS */
 
 .options{
-
 display:flex;
-
 justify-content:center;
-
 flex-wrap:wrap;
-
-gap:5px;
-
-padding:8px;
-
+gap:8px;
+padding:10px;
+background:#111;
 }
-
-
 
 button{
-
-padding:6px 10px;
-
-background:#1976d2;
-
-color:white;
-
-border:none;
-
-border-radius:7px;
-
+padding:7px 12px;
 font-size:12px;
-
-margin:2px;
-
-min-width:65px;
-
+border:none;
+border-radius:8px;
+background:#1976d2;
+color:white;
+cursor:pointer;
+transition:.2s;
 }
-
-
 
 button.active{
-
 background:#00c853;
-
 }
 
-
-
-
+button:active{
+transform:scale(.95);
+}
 
 /* VIDEO */
 
 #videoBox{
-
 width:100%;
-
-height:0;
-
-overflow:hidden;
-
+display:flex;
+justify-content:center;
 }
-
-
 
 #meet{
-
 width:100%;
-
-height:300px;
-
+height:0;
+border:none;
+display:none;
 }
 
-
-
-
-
-/* DISPLAY */
+/* INFO */
 
 .info{
-
 display:grid;
-
 grid-template-columns:1fr 1fr;
-
-gap:8px;
-
-margin:10px;
-
+gap:10px;
+padding:10px;
 }
 
-
-
-.info div{
-
+.card{
 background:#181818;
-
 padding:12px;
-
 border-radius:10px;
-
-border:1px solid #333;
-
 text-align:center;
-
-font-size:14px;
-
+border:1px solid #333;
 }
 
-
+.card h3{
+font-size:14px;
+margin-bottom:6px;
+color:#bbb;
+}
 
 #keyShow{
-
+font-size:18px;
 color:#4fc3f7;
-
-font-size:16px;
-
 font-weight:bold;
-
+word-break:break-word;
 }
-
-
 
 #chordShow{
-
+font-size:22px;
 color:#00e676;
-
-font-size:20px;
-
 font-weight:bold;
-
 }
 
-
-
-
-
-/* PIANO AREA */
+/* PIANO */
 
 .pianoArea{
-
 width:100%;
-
 overflow-x:auto;
-
 overflow-y:hidden;
-
-padding:20px 5px;
-
 background:#111;
-
+padding:15px 0;
 -webkit-overflow-scrolling:touch;
-
-touch-action:pan-x;
-
+scrollbar-width:none;
 }
 
-
-
-
+.pianoArea::-webkit-scrollbar{
+display:none;
+}
 
 #piano{
-
 position:relative;
-
-height:230px;
-
-margin:0;
-
+height:250px;
 }
-
-
-
-
 
 /* WHITE KEY */
 
 .white{
-
 position:absolute;
-
-top:0;
-
-width:45px;
-
-height:220px;
-
-background:
-
-linear-gradient(
-90deg,
-#ddd,
-#fff,
-#ddd
-);
-
-border:1px solid #777;
-
+width:48px;
+height:240px;
+background:linear-gradient(#fff,#ddd);
+border:1px solid #888;
 border-radius:0 0 8px 8px;
-
-color:#111;
-
+z-index:1;
 }
-
-
-
-
 
 .white span{
-
 position:absolute;
-
-bottom:8px;
-
+bottom:10px;
 width:100%;
-
 text-align:center;
-
 font-size:10px;
-
 font-weight:bold;
-
+color:#111;
 }
 
-
-
-
+.white.active{
+background:#ffd54f;
+transform:translateY(3px);
+}
 
 /* BLACK KEY */
 
 .black{
-
 position:absolute;
-
-top:0;
-
 width:30px;
-
-height:135px;
-
-background:#000;
-
+height:150px;
+background:linear-gradient(#333,#000);
 border-radius:0 0 6px 6px;
-
-z-index:10;
-
+z-index:2;
 }
-
-
-
-
-
-/* PRESS EFFECT */
-
-.white.active{
-
-background:#ffd54f;
-
-transform:translateY(4px);
-
-}
-
-
 
 .black.active{
-
 background:#ff9800;
-
-transform:translateY(4px);
-
+transform:translateY(3px);
 }
-
-
-
-
 
 /* MOBILE */
 
-@media(max-width:500px){
-
+@media(max-width:600px){
 
 .top h1{
-
 font-size:20px;
-
 }
-
-
 
 button{
-
 font-size:11px;
-
-padding:5px 8px;
-
-min-width:60px;
-
+padding:6px 10px;
 }
-
-
 
 .info{
-
 grid-template-columns:1fr;
-
 }
 
+.white{
+width:44px;
+height:220px;
+}
 
+.black{
+width:28px;
+height:140px;
+}
+
+#piano{
+height:230px;
+}
 
 }
