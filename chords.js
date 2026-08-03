@@ -4,7 +4,7 @@ const NOTE_NAMES = [
 "G#","A","A#","B"
 ];
 
-const CHORDS = {
+const CHORDS={
 
 "0,4,7":"Major",
 "0,3,7":"Minor",
@@ -42,45 +42,53 @@ return "-";
 }
 
 
-notes=[...new Set(notes)];
-
-notes.sort((a,b)=>a-b);
-
-
-
-let pitchClasses=
-notes.map(n=>n%12);
-
-
-
-pitchClasses=
-[...new Set(pitchClasses)];
-
+let pitchClasses=[
+...new Set(
+notes.map(n=>n%12)
+)
+].sort((a,b)=>a-b);
 
 
 for(let root of pitchClasses){
 
-
-let intervals=
-pitchClasses
+let intervals=pitchClasses
 .map(n=>(n-root+12)%12)
 .sort((a,b)=>a-b);
 
+let key=intervals.join(",");
+
+if(CHORDS[key]){
+
+return NOTE_NAMES[root]+" "+CHORDS[key];
+
+}
+
+}
+
+
+/* Try inversions */
+
+for(let i=0;i<pitchClasses.length;i++){
+
+let rotated=[
+...pitchClasses.slice(i),
+...pitchClasses.slice(0,i).map(n=>n+12)
+];
+
+let root=
+rotated[0]%12;
+
+let intervals=
+rotated.map(n=>(n-root+12)%12);
 
 let key=
 intervals.join(",");
 
-
 if(CHORDS[key]){
 
-
-return NOTE_NAMES[root]
-+" "+
-CHORDS[key];
-
+return NOTE_NAMES[root]+" "+CHORDS[key];
 
 }
-
 
 }
 
