@@ -1,8 +1,8 @@
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
 
+const audioContext = new AudioCtx();
 
-let sounds = {};
-
+const sounds = {};
 
 
 function getFrequency(note){
@@ -13,107 +13,116 @@ return 440 * Math.pow(2,(note-69)/12);
 
 
 
-
-
 function playSound(note){
 
-
-if(audioContext.state === "suspended"){
+if(audioContext.state==="suspended"){
 
 audioContext.resume();
 
 }
 
 
-
 if(sounds[note]) return;
 
 
+const osc = audioContext.createOscillator();
 
-let osc = audioContext.createOscillator();
+const gain = audioContext.createGain();
 
-let gain = audioContext.createGain();
+const filter = audioContext.createBiquadFilter();
 
+
+
+filter.type = "lowpass";
+filter.frequency.value = 4500;
 
 
 osc.type = "triangle";
 
-
 osc.frequency.value = getFrequency(note);
 
 
-
 gain.gain.setValueAtTime(
-0.0001,
+0,
 audioContext.currentTime
 );
 
+gain.gain.linearRampToValueAtTime(
+0.28,
+audioContext.currentTime+0.02
+);
 
-
-gain.gain.exponentialRampToValueAtTime(
-0.3,
-audioContext.currentTime + 0.05
+gain.gain.linearRampToValueAtTime(
+0.22,
+audioContext.currentTime+0.15
 );
 
 
+osc.connect(filter);
 
-osc.connect(gain);
+filter.connect(gain);
 
 gain.connect(audioContext.destination);
-
 
 
 osc.start();
 
 
+sounds[note]={
 
-sounds[note] = {
+osc,
 
-osc: osc,
+gain,
 
-gain: gain
+filter
 
 };
-
 
 }
 
 
 
 
-
-
-
-
 function stopSound(note){
 
-
-let sound = sounds[note];
-
+const sound = sounds[note];
 
 if(!sound) return;
 
 
-
-sound.gain.gain.exponentialRampToValueAtTime(
-
-0.001,
-
-audioContext.currentTime + 0.2
-
+sound.gain.gain.cancelScheduledValues(
+audioContext.currentTime
 );
 
+sound.gain.gain.setValueAtTime(
+sound.gain.gain.value,
+audioContext.currentTime
+);
+
+sound.gain.gain.exponentialRampToValueAtTime(
+0.0001,
+audioContext.currentTime+0.25
+);
 
 
 sound.osc.stop(
-
-audioContext.currentTime + 0.2
-
+audioContext.currentTime+0.3
 );
-
 
 
 delete sounds[note];
 
+}
+
+
+
+
+function stopAllSounds(){
+
+Object.keys(sounds).forEach(note=>{
+
+stopSound(Number(note));
+
+});
 
 }
