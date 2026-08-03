@@ -3,110 +3,17 @@ margin:0;
 padding:0;
 box-sizing:border-box;
 font-family:Arial,sans-serif;
+-webkit-tap-highlight-color:transparent;
 }
 
 body{
 background:#0d0d0d;
 color:#fff;
-overflow:hidden;
+overflow-x:hidden;
+overflow-y:auto;
 user-select:none;
 -webkit-user-select:none;
-}
-
-/* HEADER */
-
-.top{
-background:#181818;
-padding:12px;
-text-align:center;
-border-bottom:1px solid #333;
-}
-
-.top h1{
-font-size:22px;
-color:#ffd54f;
-margin-bottom:10px;
-}
-
-/* BUTTONS */
-
-.options{
-display:flex;
-justify-content:center;
-flex-wrap:wrap;
-gap:8px;
-padding:10px;
-background:#111;
-}
-
-button{
-padding:7px 12px;
-font-size:12px;
-border:none;
-border-radius:8px;
-background:#1976d2;
-color:white;
-cursor:pointer;
-transition:.2s;
-}
-
-button.active{
-background:#00c853;
-}
-
-button:active{
-transform:scale(.95);
-}
-
-/* VIDEO */
-
-#videoBox{
-width:100%;
-display:flex;
-justify-content:center;
-}
-
-#meet{
-width:100%;
-height:0;
-border:none;
-display:none;
-}
-
-/* INFO */
-
-.info{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-padding:10px;
-}
-
-.card{
-background:#181818;
-padding:12px;
-border-radius:10px;
-text-align:center;
-border:1px solid #333;
-}
-
-.card h3{
-font-size:14px;
-margin-bottom:6px;
-color:#bbb;
-}
-
-#keyShow{
-font-size:18px;
-color:#4fc3f7;
-font-weight:bold;
-word-break:break-word;
-}
-
-#chordShow{
-font-size:22px;
-color:#00e676;
-font-weight:bold;
+touch-action:manipulation;
 }
 
 /* PIANO */
@@ -119,6 +26,8 @@ background:#111;
 padding:15px 0;
 -webkit-overflow-scrolling:touch;
 scrollbar-width:none;
+touch-action:pan-x;
+cursor:grab;
 }
 
 .pianoArea::-webkit-scrollbar{
@@ -128,6 +37,7 @@ display:none;
 #piano{
 position:relative;
 height:250px;
+min-width:max-content;
 }
 
 /* WHITE KEY */
@@ -140,16 +50,7 @@ background:linear-gradient(#fff,#ddd);
 border:1px solid #888;
 border-radius:0 0 8px 8px;
 z-index:1;
-}
-
-.white span{
-position:absolute;
-bottom:10px;
-width:100%;
-text-align:center;
-font-size:10px;
-font-weight:bold;
-color:#111;
+touch-action:none;
 }
 
 .white.active{
@@ -166,6 +67,7 @@ height:150px;
 background:linear-gradient(#333,#000);
 border-radius:0 0 6px 6px;
 z-index:2;
+touch-action:none;
 }
 
 .black.active{
