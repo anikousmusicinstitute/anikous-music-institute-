@@ -1,34 +1,94 @@
-<div id="pianoBox">
-    <div id="piano"></div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Piano Live Pro</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🎹 Piano Live Pro</h1>
+
+<div class="controls">
+
+<button>🎹 Connect MIDI</button>
+
+<button>🎥 Video Call</button>
+
+<button>🔊 Sound</button>
+
+<select>
+<option>Octave 1</option>
+<option>Octave 2</option>
+<option>Octave 3</option>
+<option>Octave 4</option>
+<option>Octave 5</option>
+<option>Octave 6</option>
+<option>Octave 7</option>
+</select>
+
 </div>
 
-<div id="panel">
+</header>
 
-<div class="box">
+
+<section id="infoPanel">
+
+<div class="infoBox">
 <h3>🎹 Keys</h3>
 <div id="keysPressed">-</div>
 </div>
 
-<div class="box">
+
+<div class="infoBox">
 <h3>🎼 Chord</h3>
 <div id="chordName">-</div>
 </div>
 
-<div class="box">
+
+<div class="infoBox">
 <h3>🎵 Notes</h3>
 <div id="notesName">-</div>
 </div>
 
-<div class="box">
+
+<div class="infoBox">
 <h3>🎯 Root</h3>
 <div id="rootName">-</div>
 </div>
 
-<div class="box">
+
+<div class="infoBox">
 <h3>🔄 Inversion</h3>
-<div id="inversionName">Root Position</div>
+<div id="inversionName">-</div>
 </div>
+
+
+</section>
+
+
+<div class="pianoWrapper">
+
+<div id="piano"></div>
 
 </div>
 
-<script src="script.js"></script>
+
+<script src="sound.js"></script>
+<script src="chords.js"></script>
+<script src="midi.js"></script>
+<script src="piano.js"></script>
+<script src="app.js"></script>
+
+
+</body>
+
+</html>
