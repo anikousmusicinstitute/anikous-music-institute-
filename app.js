@@ -1,81 +1,45 @@
-function startVideo(){
+// --- Video Call Integration ---
 
-const box =
-document.getElementById("videoBox");
+function startVideo() {
+    const box = document.getElementById("videoBox");
+    const meet = document.getElementById("meet");
+    const btn = document.getElementById("videoBtn");
 
-const meet =
-document.getElementById("meet");
+    if (!meet || !box || !btn) return;
 
-const btn =
-document.getElementById("videoBtn");
-
-
-if(meet.src===""){
-
-const room =
-"PianoLiveProClass";
-
-meet.src =
-"https://meet.jit.si/"+room;
-
-meet.style.display="block";
-
-box.style.height="400px";
-
-box.style.transition=
-"height .3s ease";
-
-btn.innerHTML=
-"❌ Close Video";
-
-btn.classList.add("active");
-
-}
-else{
-
-meet.src="";
-
-meet.style.display="none";
-
-box.style.height="0";
-
-btn.innerHTML=
-"🎥 Video Call";
-
-btn.classList.remove("active");
-
+    if (!meet.src || meet.src === window.location.href) {
+        const room = "PianoLiveProClass";
+        meet.src = `https://meet.jit.si/${room}`;
+        meet.style.display = "block";
+        box.style.height = "400px";
+        box.style.transition = "height 0.3s ease";
+        
+        btn.textContent = "❌ Close Video";
+        btn.classList.add("active");
+    } else {
+        meet.src = "";
+        meet.style.display = "none";
+        box.style.height = "0";
+        
+        btn.textContent = "🎥 Video Call";
+        btn.classList.remove("active");
+    }
 }
 
-}
+// --- Lifecycle & Mobile Event Handlers ---
 
-
-/* Close video automatically when page closes */
-
-window.addEventListener("beforeunload",()=>{
-
-const meet =
-document.getElementById("meet");
-
-if(meet){
-
-meet.src="";
-
-}
-
+window.addEventListener("beforeunload", () => {
+    const meet = document.getElementById("meet");
+    if (meet) {
+        meet.src = "";
+    }
 });
 
+// Prevent accidental zoom and double-tap behaviors on mobile devices
+document.addEventListener("gesturestart", (e) => {
+    e.preventDefault();
+}, { passive: false });
 
-/* Prevent accidental zoom on mobile */
-
-document.addEventListener("gesturestart",(e)=>{
-
-e.preventDefault();
-
-});
-
-
-document.addEventListener("dblclick",(e)=>{
-
-e.preventDefault();
-
-});
+document.addEventListener("dblclick", (e) => {
+    e.preventDefault();
+}, { passive: false });
