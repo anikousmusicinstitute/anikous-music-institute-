@@ -29,13 +29,9 @@ const CHORDS = {
 
 
 const NOTE_NAMES = [
-
 "C","C#","D","D#",
-
 "E","F","F#","G",
-
 "G#","A","A#","B"
-
 ];
 
 
@@ -51,27 +47,34 @@ return "-";
 
 
 
-let root = notes[0] % 12;
+let pitch = notes.map(n=>n % 12);
 
 
 
-let intervals = notes.map(n=>{
+for(let root of pitch){
 
-return (n%12-root+12)%12;
+
+let intervals = pitch.map(n=>{
+
+return (n-root+12)%12;
 
 })
 .sort((a,b)=>a-b);
 
 
 
-let chord = CHORDS[intervals.join(",")];
+let type = CHORDS[intervals.join(",")];
 
 
-if(chord){
+if(type){
 
-return NOTE_NAMES[root]+" "+chord;
+return NOTE_NAMES[root]+" "+type;
 
 }
+
+
+}
+
 
 
 return "Unknown";
