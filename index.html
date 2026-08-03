@@ -112,12 +112,14 @@ button.active{
   border:1px solid #263044;
 }
 
-.videoCard video{
+.videoCard video,
+.videoCard iframe{
   width:100%;
   height:100%;
   min-height:220px;
   object-fit:cover;
   background:#000;
+  border:0;
 }
 
 .videoName{
@@ -128,6 +130,7 @@ button.active{
   padding:6px 9px;
   border-radius:7px;
   font-size:12px;
+  z-index:10;
 }
 
 .controls{
@@ -294,7 +297,8 @@ button.active{
   }
 
   .videoCard,
-  .videoCard video{
+  .videoCard video,
+  .videoCard iframe{
     min-height:190px;
   }
 
@@ -357,7 +361,7 @@ button.active{
       <video id="localVideo" autoplay playsinline muted></video>
       <div class="videoName" id="localName">Teacher - My Camera</div>
     </div>
-    <div class="videoCard">
+    <div class="videoCard" id="remoteCard">
       <video id="remoteVideo" autoplay playsinline></video>
       <div class="videoName" id="remoteName">Student - Remote Camera</div>
     </div>
@@ -367,7 +371,14 @@ button.active{
     <button onclick="switchCamera()">Front / Back</button>
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
     <button onclick="toggleRemoteFullscreen()">Full View</button>
-    <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet (Backup)</button>
+    
+    <!-- Jitsi Meet Backup Button -->
+    <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet</button>
+    
+    <!-- WhatsApp Direct Chat Button (உங்கள் போன் எண்ணை மாற்றிக் கொள்ளவும்) -->
+    <a href="https://wa.me/9198421XXXXX?text=Hello%2C%20Let's%20start%20the%20Music%20Class!" target="_blank" style="text-decoration:none;">
+      <button style="background:#25d366;">WhatsApp Direct</button>
+    </a>
   </div>
 </section>
 
@@ -730,22 +741,49 @@ async function switchCamera(){
   }
 }
 
+/* =========================================================
+   JITSI MEET EMBEDDED FUNCTION (Back Camera Support)
+========================================================= */
 function openJitsiMeet() {
   const room = document.getElementById("roomId").value.trim();
   if(!room) {
     alert("முதலில் Room ID-ஐ உள்ளிடவும்!");
     return;
   }
-  const jitsiUrl = `https://meet.jit.si/AnikousMusicInstitute_${room}`;
-  window.open(jitsiUrl, '_blank');
+  const remoteCard = document.getElementById("remoteCard");
+  
+  const domain = "meet.jit.si";
+  const roomName = "AnikousMusicInstitute_" + room;
+  const jitsiUrl = `https://${domain}/${roomName}#config.startWithVideoMuted=false&config.startWithAudioMuted=false&deviceConfig.preferBackCamera=true`;
+
+  remoteCard.innerHTML = `
+    <iframe id="jitsiFrame" src="${jitsiUrl}" allow="camera; microphone; fullscreen; display-capture; autoplay" style="width:100%; height:100%; min-height:220px; border:0;"></iframe>
+    <div class="videoName" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>Jitsi Meet Video</span>
+      <button onclick="switchJitsiCamera()" style="padding:3px 8px; font-size:10px; background:#374151;">Flip Camera</button>
+    </div>
+  `;
+  status("Jitsi Meet Loaded (Back Camera Preferred)");
+}
+
+function switchJitsiCamera() {
+  const iframe = document.getElementById("jitsiFrame");
+  if(iframe && iframe.contentWindow) {
+    try {
+      iframe.contentWindow.postMessage({type: "video-input-changed"}, "*");
+      alert("Jitsi ஸ்கிரீனுக்குள் உள்ள 3-dots (Settings) மெனுவை அழுத்தி உங்கள் Back Camera-வை தேர்வு செய்யவும்.");
+    } catch(e) {
+      console.error(e);
+    }
+  }
 }
 
 function toggleRemoteFullscreen(){
-  const v = document.getElementById("remoteVideo");
-  if(v.requestFullscreen){
-    v.requestFullscreen();
-  }else if(v.webkitEnterFullscreen){
-    v.webkitEnterFullscreen();
+  const card = document.getElementById("remoteCard");
+  if(card.requestFullscreen){
+    card.requestFullscreen();
+  }else if(card.webkitEnterFullscreen){
+    card.webkitEnterFullscreen();
   }
 }
 
