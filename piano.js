@@ -2,23 +2,17 @@ const piano = document.getElementById("piano");
 
 
 const notes = [
-
-"C","C#","D","D#","E","F",
-"F#","G","G#","A","A#","B"
-
+"C","C#","D","D#",
+"E","F","F#","G",
+"G#","A","A#","B"
 ];
 
 
 let activeKeys = new Set();
 
 
-
-let start = 36; 
-// C2
-
-
-let end = 96;  
-// C7
+let start = 36; // C2
+let end = 96;   // C7
 
 
 
@@ -28,25 +22,18 @@ function createPiano(){
 let white = 0;
 
 
-
 for(let i=start;i<=end;i++){
 
 
-let name =
-notes[i%12];
+let name = notes[i%12];
+
+let octave = Math.floor(i/12)-1;
 
 
-let octave =
-Math.floor(i/12)-1;
+let key = document.createElement("div");
 
 
-
-let key =
-document.createElement("div");
-
-
-
-key.dataset.note=i;
+key.dataset.note = i;
 
 
 
@@ -56,20 +43,25 @@ if(name.includes("#")){
 key.className="black";
 
 
+// black key correct position
+
 key.style.left =
-(white*55-18)+"px";
+((white-1)*55 + 38)+"px";
 
 
-
-}else{
+}
+else{
 
 
 key.className="white";
 
 
+key.style.left =
+(white*55)+"px";
+
+
 key.innerHTML =
 "<span>"+name+octave+"</span>";
-
 
 
 white++;
@@ -79,40 +71,25 @@ white++;
 
 
 
-key.addEventListener(
-"pointerdown",
-()=>{
+key.addEventListener("pointerdown",()=>{
 
 pressKey(i,key);
 
-}
-
-);
+});
 
 
-
-key.addEventListener(
-"pointerup",
-()=>{
+key.addEventListener("pointerup",()=>{
 
 releaseKey(i,key);
 
-}
-
-);
+});
 
 
-
-key.addEventListener(
-"pointerleave",
-()=>{
+key.addEventListener("pointerleave",()=>{
 
 releaseKey(i,key);
 
-}
-
-);
-
+});
 
 
 piano.appendChild(key);
@@ -120,6 +97,11 @@ piano.appendChild(key);
 
 }
 
+
+// piano size
+
+piano.style.width =
+(white*55)+"px";
 
 
 }
@@ -136,7 +118,6 @@ activeKeys.add(note);
 
 
 playSound(note);
-
 
 
 updateDisplay();
@@ -183,9 +164,15 @@ document.getElementById("keyShow").innerHTML =
 names.join(" ") || "-";
 
 
-document.getElementById("noteShow").innerHTML =
-names.join(" ") || "-";
 
+if(typeof findChord === "function"){
+
+
+document.getElementById("chordShow").innerHTML =
+findChord([...activeKeys]);
+
+
+}
 
 
 }
