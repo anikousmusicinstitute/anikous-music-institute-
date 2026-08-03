@@ -9,6 +9,9 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <style>
+  
+
+
 *{
   box-sizing:border-box;
   margin:0;
@@ -165,6 +168,8 @@ button.active{
 
 /* PIANO */
 
+
+
 .pianoHeader{
   display:flex;
   align-items:center;
@@ -173,6 +178,7 @@ button.active{
   margin-bottom:10px;
   flex-wrap:wrap;
 }
+
 
 .octaves{
   display:flex;
@@ -289,6 +295,7 @@ button.active{
 /* MOBILE */
 
 @media(max-width:650px){
+
   .videoGrid{
     grid-template-columns:1fr;
   }
@@ -336,76 +343,173 @@ button.active{
 </header>
 
 <!-- ROOM -->
+
 <section class="panel">
+
   <div class="roomRow">
+
     <input id="roomId" placeholder="Enter Room ID">
+
     <select id="userRole">
+
       <option value="teacher">Teacher</option>
       <option value="student">Student</option>
+
     </select>
-    <button onclick="startClass()">Start Class</button>
+
+    <button onclick="startClass()">
+      Start Class
+    </button>
+
   </div>
+
   <div id="status" class="status">
     Ready - Enter Room ID and Start Class
   </div>
+
 </section>
 
 <!-- VIDEO -->
+
 <section class="panel">
+
   <div class="videoGrid">
+
     <div class="videoCard">
-      <video id="localVideo" autoplay playsinline muted></video>
-      <div class="videoName" id="localName">Teacher - My Camera</div>
+
+      <video
+        id="localVideo"
+        autoplay
+        playsinline
+        muted>
+      </video>
+
+      <div class="videoName" id="localName">
+        Teacher - My Camera
+      </div>
+
     </div>
+
     <div class="videoCard">
-      <video id="remoteVideo" autoplay playsinline></video>
-      <div class="videoName" id="remoteName">Student - Remote Camera</div>
+
+      <video
+        id="remoteVideo"
+        autoplay
+        playsinline>
+      </video>
+
+      <div class="videoName" id="remoteName">
+        Student - Remote Camera
+      </div>
+
     </div>
+
   </div>
+
   <div class="controls">
-    <button id="cameraBtn" onclick="toggleCamera()">Camera ON</button>
-    <button onclick="switchCamera()">Front / Back</button>
-    <button id="micBtn" onclick="toggleMic()">Mic ON</button>
-    <button onclick="toggleRemoteFullscreen()">Full View</button>
+
+    <button id="cameraBtn" onclick="toggleCamera()">
+      Camera ON
+    </button>
+
+    <button onclick="switchCamera()">
+      Front / Back
+    </button>
+
+    <button id="micBtn" onclick="toggleMic()">
+      Mic ON
+    </button>
+
+    <button onclick="toggleRemoteFullscreen()">
+      Full View
+    </button>
+
   </div>
+
 </section>
 
 <!-- INFORMATION -->
+
 <section class="panel">
+
   <div class="info">
+
     <div class="infoCard">
+
       <small>Keys</small>
+
       <strong id="keyShow">-</strong>
+
     </div>
+
     <div class="infoCard">
+
       <small>Chord</small>
+
       <strong id="chordShow">-</strong>
+
     </div>
+
   </div>
+
 </section>
 
 <!-- PIANO -->
+
 <section class="panel">
+
   <div class="pianoHeader">
-    <h3>7 Octave Piano</h3>
+
+    <h>7 Octave Piano</h3>
+
     <div class="controls">
-      <button id="holdBtn" onclick="toggleHold()">HOLD OFF</button>
-      <button onclick="connectMIDI()">MIDI CONNECT</button>
+
+      <button id="holdBtn" onclick="toggleHold()">
+        HOLD OFF
+      </button>
+
+      <button onclick="connectMIDI()">
+        MIDI CONNECT
+      </button>
+
     </div>
+
   </div>
+
   <div class="octaves" id="octaveButtons"></div>
+
   <div class="pianoScroll" id="pianoScroll">
+
     <div id="piano"></div>
+
   </div>
+
   <div class="noteToggle">
-    <button id="keyToggle" class="active" onclick="toggleKeyNames()">Key Names ON</button>
-    <button onclick="centerPiano()">Center Piano</button>
+
+    <button
+      id="keyToggle"
+      class="active"
+      onclick="toggleKeyNames()">
+      Key Names ON
+    </button>
+
+    <button onclick="centerPiano()">
+      Center Piano
+    </button>
+
   </div>
+
 </section>
 
 <script>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
 let peer = null;
 let localStream = null;
+let currentFacing = "user";
 let cameraOn = true;
 let micOn = true;
 let currentRole = "";
@@ -413,581 +517,1491 @@ let currentRoom = "";
 let mediaCall = null;
 let dataConnection = null;
 
-const localVideo = document.getElementById("localVideo");
-const remoteVideo = document.getElementById("remoteVideo");
-const statusBox = document.getElementById("status");
+const localVideo =
+  document.getElementById("localVideo");
+
+const remoteVideo =
+  document.getElementById("remoteVideo");
+
+const statusBox =
+  document.getElementById("status");
+
+
+/* =========================================================
+   STATUS
+========================================================= */
 
 function status(text){
+
   statusBox.textContent = text;
+
 }
 
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
 async function getCameraStream(){
+
   if(localStream){
-    localStream.getTracks().forEach(t=>t.stop());
+
+    localStream
+      .getTracks()
+      .forEach(t=>t.stop());
+
   }
 
   try{
-    localStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
-    localVideo.srcObject = localStream;
+
+    localStream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video:{
+          facingMode:{
+            ideal:currentFacing
+          },
+          width:{ideal:1280},
+          height:{ideal:720}
+        },
+
+        audio:true
+
+      });
+
+    localVideo.srcObject =
+      localStream;
+
     cameraOn = true;
     micOn = true;
+
     updateMediaButtons();
+
     status("Camera and Microphone Connected");
+
     return localStream;
+
   }catch(error){
-    console.error("Camera error, trying fallback:", error);
-    try {
-      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      localVideo.srcObject = localStream;
-      cameraOn = true;
-      micOn = true;
-      updateMediaButtons();
-      status("Camera Connected (Default Mode)");
-      return localStream;
-    } catch(e) {
-      status("Camera or Microphone Permission Not Granted");
-      alert("Camera open ஆகவில்லை.\n1. HTTPS page-ல் open செய்யுங்கள்\n2. Camera & Mic permission Allow செய்யுங்கள்");
-      throw e;
-    }
+
+    console.error(error);
+
+    status("Camera or Microphone Permission Not Granted");
+
+    alert(
+      "Camera open ஆகவில்லை.\n\n" +
+      "1. HTTPS page-ல் open செய்யுங்கள்\n" +
+      "2. Camera permission Allow செய்யுங்கள்\n" +
+      "3. Microphone permission Allow செய்யுங்கள்"
+    );
+
+    throw error;
+
   }
+
 }
 
+
+/* =========================================================
+   START CLASS
+========================================================= */
+
 async function startClass(){
-  const room = document.getElementById("roomId").value.trim();
-  const role = document.getElementById("userRole").value;
+
+  const room =
+    document.getElementById("roomId").value.trim();
+
+  const role =
+    document.getElementById("userRole").value;
 
   if(!room){
+
     alert("Room ID enter செய்யுங்கள்.");
+
     return;
+
   }
 
   if(!window.isSecureContext){
+
     status("HTTPS Required For Camera");
-    alert("Camera வேலை செய்ய HTTPS தேவை.");
+
+    alert(
+      "Camera வேலை செய்ய HTTPS தேவை.\n" +
+      "Blogger HTTPS page-ல் இந்த code-ஐ பயன்படுத்துங்கள்."
+    );
+
     return;
+
   }
 
   currentRole = role;
   currentRoom = room;
+
   updateRoleNames();
 
   try{
+
     await getCameraStream();
+
   }catch(e){
+
     return;
+
   }
 
-  const peerId = "anikous-" + room + "-" + role;
+  const peerId =
+    "anikous-" +
+    room +
+    "-" +
+    role;
+
   status("Connecting To Class");
 
-  peer = new Peer(peerId, {
-    host:"0.peerjs.com",
-    port:443,
-    path:"/",
-    secure:true
-  });
+  peer =
+    new Peer(
+      peerId,
+      {
+        host:"0.peerjs.com",
+        port:443,
+        path:"/",
+        secure:true
+      }
+    );
 
-  peer.on("open", id => {
-    status("Connected - " + (role==="teacher" ? "Teacher" : "Student") + " - Room - " + room);
+
+  /* PEER OPEN */
+
+  peer.on("open",id=>{
+
+    status(
+      "Connected - " +
+      (
+        role==="teacher"
+        ? "Teacher"
+        : "Student"
+      ) +
+      " - Room - " +
+      room
+    );
+
     if(role==="student"){
-      const teacherId = "anikous-" + room + "-teacher";
+
+      const teacherId =
+        "anikous-" +
+        room +
+        "-teacher";
+
       callPeer(teacherId);
+
       connectData(teacherId);
+
     }
+
   });
 
-  peer.on("call", call => {
+
+  /* INCOMING VIDEO */
+
+  peer.on("call",call=>{
+
     mediaCall = call;
+
     call.answer(localStream);
-    call.on("stream", remoteStream => {
-      remoteVideo.srcObject = remoteStream;
+
+    call.on("stream",remoteStream=>{
+
+      remoteVideo.srcObject =
+        remoteStream;
+
       status("Live Teacher And Student Video Connected");
+
     });
-    call.on("close", () => {
+
+    call.on("close",()=>{
+
       remoteVideo.srcObject = null;
+
       status("Remote User Disconnected");
+
     });
+
   });
 
-  peer.on("connection", connection => {
+
+  /* INCOMING DATA */
+
+  peer.on("connection",connection=>{
+
     dataConnection = connection;
+
     setupDataConnection(connection);
+
   });
 
-  peer.on("error", err => {
+
+  /* ERROR */
+
+  peer.on("error",err=>{
+
     console.error(err);
+
     if(err.type==="peer-unavailable"){
+
       status("Other User Has Not Joined Yet");
+
     }else{
-      status("Connection Error - " + err.type);
+
+      status(
+        "Connection Error - " +
+        err.type
+      );
+
     }
+
   });
+
 }
+
+
+/* =========================================================
+   VIDEO CALL
+========================================================= */
 
 function callPeer(id){
-  if(!peer || !localStream) return;
-  mediaCall = peer.call(id, localStream);
-  mediaCall.on("stream", remoteStream => {
-    remoteVideo.srcObject = remoteStream;
+
+  if(!peer || !localStream)
+    return;
+
+  mediaCall =
+    peer.call(
+      id,
+      localStream
+    );
+
+  mediaCall.on("stream",remoteStream=>{
+
+    remoteVideo.srcObject =
+      remoteStream;
+
     status("Live Teacher And Student Video Connected");
+
   });
-  mediaCall.on("close", () => {
+
+  mediaCall.on("close",()=>{
+
     remoteVideo.srcObject = null;
+
     status("Remote User Disconnected");
+
   });
+
 }
+
+
+/* =========================================================
+   DATA CONNECTION
+========================================================= */
 
 function connectData(id){
-  if(!peer) return;
+
+  if(!peer)
+    return;
+
   try{
-    const connection = peer.connect(id, { reliable:true });
-    dataConnection = connection;
+
+    const connection =
+      peer.connect(
+        id,
+        {
+          reliable:true
+        }
+      );
+
+    dataConnection =
+      connection;
+
     setupDataConnection(connection);
+
   }catch(error){
-    console.error("Data connection error:", error);
+
+    console.error(
+      "Data connection error:",
+      error
+    );
+
   }
+
 }
+
 
 function setupDataConnection(connection){
-  connection.on("open", () => {
-    dataConnection = connection;
+
+  connection.on("open",()=>{
+
+    dataConnection =
+      connection;
+
     status("Keyboard Sync Connected Successfully");
+
   });
-  connection.on("data", data => {
+
+
+  connection.on("data",data=>{
+
     handleRemoteData(data);
+
   });
-  connection.on("close", () => {
+
+
+  connection.on("close",()=>{
+
     dataConnection = null;
+
   });
+
 }
+
+
+/* =========================================================
+   SEND DATA
+========================================================= */
 
 function sendData(data){
-  if(dataConnection && dataConnection.open){
+
+  if(
+    dataConnection &&
+    dataConnection.open
+  ){
+
     try{
+
       dataConnection.send(data);
+
     }catch(error){
-      console.error("Data send error:", error);
+
+      console.error(
+        "Data send error:",
+        error
+      );
+
     }
+
   }
+
 }
+
+
+/* =========================================================
+   REMOTE DATA
+========================================================= */
 
 function handleRemoteData(data){
-  if(!data || !data.type) return;
+
+  if(!data || !data.type)
+    return;
+
   if(data.type==="keyDown"){
-    const key = document.querySelector(`[data-note="${data.note}"]`);
-    if(key) pressRemoteKey(data.note, key);
+
+    const key =
+      document.querySelector(
+        `[data-note="${data.note}"]`
+      );
+
+    if(key){
+
+      pressRemoteKey(
+        data.note,
+        key
+      );
+
+    }
+
   }
+
   if(data.type==="keyUp"){
-    const key = document.querySelector(`[data-note="${data.note}"]`);
-    if(key) releaseRemoteKey(data.note, key);
+
+    const key =
+      document.querySelector(
+        `[data-note="${data.note}"]`
+      );
+
+    if(key){
+
+      releaseRemoteKey(
+        data.note,
+        key
+      );
+
+    }
+
   }
+
 }
 
-let remoteKeys = new Set();
+
+/* =========================================================
+   REMOTE KEYBOARD
+========================================================= */
+
+let remoteKeys =
+  new Set();
+
 let remoteSounds = {};
 
-function pressRemoteKey(note, key){
-  if(remoteKeys.has(note)) return;
+
+function pressRemoteKey(note,key){
+
+  if(remoteKeys.has(note))
+    return;
+
   remoteKeys.add(note);
+
   key.classList.add("remote-active");
+
   playRemoteNote(note);
+
   updateDisplay();
+
 }
 
-function releaseRemoteKey(note, key){
+
+function releaseRemoteKey(note,key){
+
   remoteKeys.delete(note);
+
   key.classList.remove("remote-active");
+
   stopRemoteNote(note);
+
   updateDisplay();
+
 }
+
+
+/* =========================================================
+   REMOTE AUDIO
+========================================================= */
 
 function playRemoteNote(note){
+
   initAudio();
-  if(remoteSounds[note]) return;
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  const filter = audioContext.createBiquadFilter();
+
+  if(remoteSounds[note])
+    return;
+
+  const osc =
+    audioContext.createOscillator();
+
+  const gain =
+    audioContext.createGain();
+
+  const filter =
+    audioContext.createBiquadFilter();
 
   osc.type = "triangle";
-  osc.frequency.value = frequency(note);
+
+  osc.frequency.value =
+    frequency(note);
+
   filter.type = "lowpass";
+
   filter.frequency.value = 4500;
 
-  gain.gain.setValueAtTime(0, audioContext.currentTime);
-  gain.gain.linearRampToValueAtTime(.18, audioContext.currentTime+.02);
-  gain.gain.linearRampToValueAtTime(.12, audioContext.currentTime+.15);
+  gain.gain.setValueAtTime(
+    0,
+    audioContext.currentTime
+  );
+
+  gain.gain.linearRampToValueAtTime(
+    .18,
+    audioContext.currentTime+.02
+  );
+
+  gain.gain.linearRampToValueAtTime(
+    .12,
+    audioContext.currentTime+.15
+  );
 
   osc.connect(filter);
   filter.connect(gain);
   gain.connect(audioContext.destination);
+
   osc.start();
 
-  remoteSounds[note] = { osc, gain };
+  remoteSounds[note] = {
+    osc,
+    gain
+  };
+
 }
+
 
 function stopRemoteNote(note){
-  const sound = remoteSounds[note];
-  if(!sound) return;
-  const now = audioContext.currentTime;
+
+  const sound =
+    remoteSounds[note];
+
+  if(!sound)
+    return;
+
+  const now =
+    audioContext.currentTime;
+
   sound.gain.gain.cancelScheduledValues(now);
-  sound.gain.gain.setValueAtTime(sound.gain.gain.value, now);
-  sound.gain.gain.exponentialRampToValueAtTime(.0001, now+.2);
+
+  sound.gain.gain.setValueAtTime(
+    sound.gain.gain.value,
+    now
+  );
+
+  sound.gain.gain.exponentialRampToValueAtTime(
+    .0001,
+    now+.2
+  );
+
   try{
+
     sound.osc.stop(now+.25);
+
   }catch(e){}
+
   delete remoteSounds[note];
+
 }
+
+
+/* =========================================================
+   ROLE LABELS
+========================================================= */
 
 function updateRoleNames(){
+
   if(currentRole==="teacher"){
-    document.getElementById("localName").textContent = "Teacher - My Camera";
-    document.getElementById("remoteName").textContent = "Student - Remote Camera";
+
+    document.getElementById("localName").textContent =
+      "Teacher - My Camera";
+
+    document.getElementById("remoteName").textContent =
+      "Student - Remote Camera";
+
   }else{
-    document.getElementById("localName").textContent = "Student - My Camera";
-    document.getElementById("remoteName").textContent = "Teacher - Remote Camera";
+
+    document.getElementById("localName").textContent =
+      "Student - My Camera";
+
+    document.getElementById("remoteName").textContent =
+      "Teacher - Remote Camera";
+
   }
+
 }
+
+
+/* =========================================================
+   CAMERA ON OFF
+========================================================= */
 
 function toggleCamera(){
-  if(!localStream) return;
-  const track = localStream.getVideoTracks()[0];
-  if(!track) return;
-  cameraOn = !cameraOn;
-  track.enabled = cameraOn;
+
+  if(!localStream)
+    return;
+
+  const track =
+    localStream.getVideoTracks()[0];
+
+  if(!track)
+    return;
+
+  cameraOn =
+    !cameraOn;
+
+  track.enabled =
+    cameraOn;
+
   updateMediaButtons();
+
 }
+
+
+/* =========================================================
+   MIC ON OFF
+========================================================= */
 
 function toggleMic(){
-  if(!localStream) return;
-  const track = localStream.getAudioTracks()[0];
-  if(!track) return;
-  micOn = !micOn;
-  track.enabled = micOn;
+
+  if(!localStream)
+    return;
+
+  const track =
+    localStream.getAudioTracks()[0];
+
+  if(!track)
+    return;
+
+  micOn =
+    !micOn;
+
+  track.enabled =
+    micOn;
+
   updateMediaButtons();
+
 }
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
 
 function updateMediaButtons(){
-  const cameraBtn = document.getElementById("cameraBtn");
-  const micBtn = document.getElementById("micBtn");
 
-  cameraBtn.textContent = cameraOn ? "Camera ON" : "Camera OFF";
-  micBtn.textContent = micOn ? (currentRole==="teacher" ? "Teacher Mic ON" : "Student Mic ON") : (currentRole==="teacher" ? "Teacher Mic OFF" : "Student Mic OFF");
+  const cameraBtn =
+    document.getElementById("cameraBtn");
 
-  cameraBtn.classList.toggle("active", cameraOn);
-  micBtn.classList.toggle("active", micOn);
+  const micBtn =
+    document.getElementById("micBtn");
+
+  cameraBtn.textContent =
+    cameraOn
+    ? "Camera ON"
+    : "Camera OFF";
+
+  micBtn.textContent =
+    micOn
+    ? (
+      currentRole==="teacher"
+      ? "Teacher Mic ON"
+      : "Student Mic ON"
+    )
+    : (
+      currentRole==="teacher"
+      ? "Teacher Mic OFF"
+      : "Student Mic OFF"
+    );
+
+  cameraBtn.classList.toggle(
+    "active",
+    cameraOn
+  );
+
+  micBtn.classList.toggle(
+    "active",
+    micOn
+  );
+
 }
 
+
+/* =========================================================
+   SWITCH CAMERA
+========================================================= */
+
 async function switchCamera(){
-  try {
-    const videoTrack = localStream ? localStream.getVideoTracks()[0] : null;
-    let currentFacingMode = "user";
-    
-    if (videoTrack) {
-      const settings = videoTrack.getSettings();
-      currentFacingMode = settings.facingMode || "user";
-    }
 
-    const nextFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
+  if(!localStream)
+    return;
 
-    const oldStream = localStream;
-    const newStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { exact: nextFacingMode } },
-      audio: true
-    });
+  currentFacing =
+    currentFacing==="user"
+    ? "environment"
+    : "user";
 
-    localStream = newStream;
-    localVideo.srcObject = newStream;
-    if(oldStream) oldStream.getTracks().forEach(t => t.stop());
+  try{
+
+    const oldStream =
+      localStream;
+
+    const newStream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video:{
+          facingMode:{
+            exact:currentFacing
+          }
+        },
+
+        audio:true
+
+      });
+
+    localStream =
+      newStream;
+
+    localVideo.srcObject =
+      newStream;
+
+    oldStream
+      .getTracks()
+      .forEach(t=>t.stop());
 
     cameraOn = true;
     micOn = true;
+
     updateMediaButtons();
 
-    updatePeerTracks(newStream);
-    status("Camera Switched Successfully (" + nextFacingMode + ")");
+    if(peer){
 
-  } catch(error) {
-    console.error("Exact facingMode failed, trying generic:", error);
-    try {
-      const videoTrack = localStream ? localStream.getVideoTracks()[0] : null;
-      let currentFacingMode = "user";
-      if (videoTrack) {
-        const settings = videoTrack.getSettings();
-        currentFacingMode = settings.facingMode || "user";
-      }
-      const nextFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
-      
-      const oldStream = localStream;
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: nextFacingMode },
-        audio: true
+      peer.connections &&
+      Object.values(peer.connections)
+      .forEach(list=>{
+
+        list.forEach(call=>{
+
+          if(call.peerConnection){
+
+            const senders =
+              call.peerConnection
+              .getSenders();
+
+            const newVideo =
+              newStream
+              .getVideoTracks()[0];
+
+            const newAudio =
+              newStream
+              .getAudioTracks()[0];
+
+            senders.forEach(sender=>{
+
+              if(
+                sender.track &&
+                sender.track.kind==="video" &&
+                newVideo
+              ){
+
+                sender.replaceTrack(
+                  newVideo
+                );
+
+              }
+
+              if(
+                sender.track &&
+                sender.track.kind==="audio" &&
+                newAudio
+              ){
+
+                sender.replaceTrack(
+                  newAudio
+                );
+
+              }
+
+            });
+
+          }
+
+        });
+
       });
 
-      localStream = newStream;
-      localVideo.srcObject = newStream;
-      if(oldStream) oldStream.getTracks().forEach(t => t.stop());
-
-      cameraOn = true;
-      micOn = true;
-      updateMediaButtons();
-      updatePeerTracks(newStream);
-      status("Camera Switched (Fallback Mode)");
-    } catch(e) {
-      status("Camera Switch Not Supported");
-      alert("இந்த பிரவுசரில் கேமரா மாற்றுவது தடை செய்யப்பட்டுள்ளது.");
     }
+
+    status(
+      currentFacing==="user"
+      ? "Front Camera Active"
+      : "Back Camera Active"
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    try{
+
+      const newStream =
+        await navigator.mediaDevices.getUserMedia({
+
+          video:{
+            facingMode:{
+              ideal:currentFacing
+            }
+          },
+
+          audio:true
+
+        });
+
+      localStream
+        .getTracks()
+        .forEach(t=>t.stop());
+
+      localStream =
+        newStream;
+
+      localVideo.srcObject =
+        newStream;
+
+      status("Camera Switched Successfully");
+
+    }catch(e){
+
+      status(
+        "Camera Switching Not Supported On This Device"
+      );
+
+    }
+
   }
+
 }
 
-function updatePeerTracks(newStream){
-  if(peer){
-    peer.connections && Object.values(peer.connections).forEach(list=>{
-      list.forEach(call=>{
-        if(call.peerConnection){
-          const senders = call.peerConnection.getSenders();
-          const newVideo = newStream.getVideoTracks()[0];
-          const newAudio = newStream.getAudioTracks()[0];
-          senders.forEach(sender=>{
-            if(sender.track && sender.track.kind==="video" && newVideo) sender.replaceTrack(newVideo);
-            if(sender.track && sender.track.kind==="audio" && newAudio) sender.replaceTrack(newAudio);
-          });
-        }
-      });
-    });
-  }
-}
+
+/* =========================================================
+   FULLSCREEN
+========================================================= */
 
 function toggleRemoteFullscreen(){
-  const v = document.getElementById("remoteVideo");
+
+  const v =
+    document.getElementById("remoteVideo");
+
   if(v.requestFullscreen){
+
     v.requestFullscreen();
+
   }else if(v.webkitEnterFullscreen){
+
     v.webkitEnterFullscreen();
+
   }
+
 }
 
-const NOTE_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-const BLACK_KEYS = [1,3,6,8,10];
-let activeKeys = new Set();
-let pointerMap = new Map();
-let holdMode = false;
-let showKeyNames = true;
-let audioContext = null;
+
+/* =========================================================
+   PIANO
+========================================================= */
+
+const NOTE_NAMES = [
+  "C","C#","D","D#","E","F",
+  "F#","G","G#","A","A#","B"
+];
+
+const BLACK_KEYS =
+  [1,3,6,8,10];
+
+let activeKeys =
+  new Set();
+
+let pointerMap =
+  new Map();
+
+let holdMode =
+  false;
+
+let showKeyNames =
+  true;
+
+let audioContext =
+  null;
+
 let sounds = {};
-const piano = document.getElementById("piano");
+
+const piano =
+  document.getElementById("piano");
+
+
+/* =========================================================
+   AUDIO
+========================================================= */
 
 function initAudio(){
+
   if(!audioContext){
-    const AC = window.AudioContext || window.webkitAudioContext;
-    audioContext = new AC();
+
+    const AC =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+    audioContext =
+      new AC();
+
   }
+
   if(audioContext.state==="suspended"){
+
     audioContext.resume();
+
   }
+
 }
+
 
 function frequency(note){
-  return 440 * Math.pow(2, (note-69)/12);
+
+  return 440 *
+    Math.pow(
+      2,
+      (note-69)/12
+    );
+
 }
 
+
+/* =========================================================
+   PLAY NOTE
+========================================================= */
+
 function playNote(note){
+
   initAudio();
-  if(sounds[note]) return;
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  const filter = audioContext.createBiquadFilter();
+
+  if(sounds[note])
+    return;
+
+  const osc =
+    audioContext.createOscillator();
+
+  const gain =
+    audioContext.createGain();
+
+  const filter =
+    audioContext.createBiquadFilter();
 
   osc.type = "triangle";
-  osc.frequency.value = frequency(note);
+
+  osc.frequency.value =
+    frequency(note);
+
   filter.type = "lowpass";
+
   filter.frequency.value = 4500;
 
-  gain.gain.setValueAtTime(0, audioContext.currentTime);
-  gain.gain.linearRampToValueAtTime(.3, audioContext.currentTime+.02);
-  gain.gain.linearRampToValueAtTime(.20, audioContext.currentTime+.15);
+  gain.gain.setValueAtTime(
+    0,
+    audioContext.currentTime
+  );
+
+  gain.gain.linearRampToValueAtTime(
+    .3,
+    audioContext.currentTime+.02
+  );
+
+  gain.gain.linearRampToValueAtTime(
+    .20,
+    audioContext.currentTime+.15
+  );
 
   osc.connect(filter);
   filter.connect(gain);
   gain.connect(audioContext.destination);
+
   osc.start();
 
-  sounds[note] = { osc, gain };
+  sounds[note] = {
+    osc,
+    gain
+  };
+
 }
+
 
 function stopNote(note){
-  const sound = sounds[note];
-  if(!sound) return;
-  const now = audioContext.currentTime;
+
+  const sound =
+    sounds[note];
+
+  if(!sound)
+    return;
+
+  const now =
+    audioContext.currentTime;
+
   sound.gain.gain.cancelScheduledValues(now);
-  sound.gain.gain.setValueAtTime(sound.gain.gain.value, now);
-  sound.gain.gain.exponentialRampToValueAtTime(.0001, now+.2);
+
+  sound.gain.gain.setValueAtTime(
+    sound.gain.gain.value,
+    now
+  );
+
+  sound.gain.gain.exponentialRampToValueAtTime(
+    .0001,
+    now+.2
+  );
+
   try{
+
     sound.osc.stop(now+.25);
+
   }catch(e){}
+
   delete sounds[note];
+
 }
+
+
+/* =========================================================
+   NOTE NAME
+========================================================= */
 
 function noteName(note){
-  const octave = Math.floor(note/12)-1;
+
+  const octave =
+    Math.floor(note/12)-1;
+
   return NOTE_NAMES[note%12] + octave;
+
 }
 
-function pressKey(note, key){
-  if(activeKeys.has(note)) return;
+
+/* =========================================================
+   LOCAL KEY PRESS
+========================================================= */
+
+function pressKey(note,key){
+
+  if(activeKeys.has(note))
+    return;
+
   activeKeys.add(note);
+
   key.classList.add("local-active");
+
   playNote(note);
-  sendData({ type:"keyDown", note:note });
+
+  sendData({
+    type:"keyDown",
+    note:note
+  });
+
   updateDisplay();
+
 }
 
-function releaseKey(note, key){
-  if(holdMode) return;
+
+/* =========================================================
+   LOCAL KEY RELEASE
+========================================================= */
+
+function releaseKey(note,key){
+
+  if(holdMode)
+    return;
+
   activeKeys.delete(note);
+
   key.classList.remove("local-active");
+
   stopNote(note);
-  sendData({ type:"keyUp", note:note });
+
+  sendData({
+    type:"keyUp",
+    note:note
+  });
+
   updateDisplay();
+
 }
+
+
+/* =========================================================
+   CREATE PIANO
+========================================================= */
 
 function createPiano(){
+
   piano.innerHTML="";
+
   const start = 24;
   const end = 108;
+
   let whiteIndex = 0;
+
   const whitePositions = {};
 
-  for(let n=start; n<=end; n++){
-    const pc = n%12;
+  /* WHITE KEYS */
+
+  for(
+    let n=start;
+    n<=end;
+    n++
+  ){
+
+    const pc =
+      n%12;
+
     if(!BLACK_KEYS.includes(pc)){
-      whitePositions[n] = whiteIndex;
-      const key = document.createElement("div");
+
+      whitePositions[n] =
+        whiteIndex;
+
+      const key =
+        document.createElement("div");
+
       key.className = "white";
+
       key.dataset.note = n;
-      key.style.left = (whiteIndex*48)+"px";
-      key.innerHTML = `<span>${noteName(n)}</span>`;
-      addKeyEvents(key, n);
+
+      key.style.left =
+        (whiteIndex*48)+"px";
+
+      key.innerHTML =
+        `<span>${noteName(n)}</span>`;
+
+      addKeyEvents(key,n);
+
       piano.appendChild(key);
+
       whiteIndex++;
+
     }
+
   }
 
-  for(let n=start; n<=end; n++){
-    const pc = n%12;
+
+  /* BLACK KEYS */
+
+  for(
+    let n=start;
+    n<=end;
+    n++
+  ){
+
+    const pc =
+      n%12;
+
     if(BLACK_KEYS.includes(pc)){
-      let previous = n-1;
-      while(previous>=start && BLACK_KEYS.includes(previous%12)){
+
+      let previous =
+        n-1;
+
+      while(
+        previous>=start &&
+        BLACK_KEYS.includes(previous%12)
+      ){
+
         previous--;
+
       }
-      const leftWhite = whitePositions[previous];
+
+      const leftWhite =
+        whitePositions[previous];
+
       if(leftWhite!==undefined){
-        const key = document.createElement("div");
+
+        const key =
+          document.createElement("div");
+
         key.className = "black";
+
         key.dataset.note = n;
-        key.style.left = (whiteIndex*48+32)+"px";
-        key.innerHTML = `<span>${noteName(n)}</span>`;
-        addKeyEvents(key, n);
+
+        key.style.left =
+          (leftWhite*48+32)+"px";
+
+        key.innerHTML =
+          `<span>${noteName(n)}</span>`;
+
+        addKeyEvents(key,n);
+
         piano.appendChild(key);
+
       }
+
     }
+
   }
-  piano.style.width = (whiteIndex*48)+"px";
+
+  piano.style.width =
+    (whiteIndex*48)+"px";
+
   createOctaveButtons();
+
 }
 
-function addKeyEvents(key, note){
-  key.addEventListener("pointerdown", e => {
-    e.preventDefault();
-    key.setPointerCapture(e.pointerId);
-    pointerMap.set(e.pointerId, note);
-    pressKey(note, key);
-  });
 
-  key.addEventListener("pointerup", e => {
-    e.preventDefault();
-    pointerMap.delete(e.pointerId);
-    releaseKey(note, key);
-  });
+/* =========================================================
+   KEY EVENTS
+========================================================= */
 
-  key.addEventListener("pointercancel", e => {
-    pointerMap.delete(e.pointerId);
-    releaseKey(note, key);
-  });
+function addKeyEvents(key,note){
 
-  key.addEventListener("pointerleave", e => {
-    if(!key.hasPointerCapture(e.pointerId)) return;
-    if(!holdMode){
-      pointerMap.delete(e.pointerId);
-      releaseKey(note, key);
+  key.addEventListener(
+    "pointerdown",
+    e=>{
+
+      e.preventDefault();
+
+      key.setPointerCapture(
+        e.pointerId
+      );
+
+      pointerMap.set(
+        e.pointerId,
+        note
+      );
+
+      pressKey(note,key);
+
     }
-  });
+  );
+
+
+  key.addEventListener(
+    "pointerup",
+    e=>{
+
+      e.preventDefault();
+
+      pointerMap.delete(
+        e.pointerId
+      );
+
+      releaseKey(note,key);
+
+    }
+  );
+
+
+  key.addEventListener(
+    "pointercancel",
+    e=>{
+
+      pointerMap.delete(
+        e.pointerId
+      );
+
+      releaseKey(note,key);
+
+    }
+  );
+
+
+  key.addEventListener(
+    "pointerleave",
+    e=>{
+
+      if(
+        !key.hasPointerCapture(e.pointerId)
+      ){
+
+        return;
+
+      }
+
+      if(!holdMode){
+
+        pointerMap.delete(
+          e.pointerId
+        );
+
+        releaseKey(note,key);
+
+      }
+
+    }
+  );
+
 }
+
+
+/* =========================================================
+   OCTAVE BUTTONS
+========================================================= */
 
 function createOctaveButtons(){
-  const box = document.getElementById("octaveButtons");
-  box.innerHTML = "";
-  for(let o=1; o<=7; o++){
-    const btn = document.createElement("button");
-    btn.textContent = "Oct "+o;
-    btn.onclick = function(){
-      box.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      const endNote = 24 + (o*12) - 1;
-      document.querySelectorAll("#piano .white,#piano .black").forEach(key=>{
-        const note = Number(key.dataset.note);
-        if(note <= endNote){
-          key.style.display="";
-        }else{
-          key.style.display="none";
-        }
-      });
+
+  const box =
+    document.getElementById("octaveButtons");
+
+  box.innerHTML="";
+
+  for(
+    let o=1;
+    o<=7;
+    o++
+  ){
+
+    const btn =
+      document.createElement("button");
+
+    btn.textContent =
+      "Oct " + o;
+
+    btn.onclick=()=>{
+
+      const note =
+        24 +
+        (o-1)*12;
+
+      const el =
+        document.querySelector(
+          `[data-note="${note}"]`
+        );
+
+      if(el){
+
+        el.scrollIntoView({
+
+          behavior:"smooth",
+          inline:"center",
+          block:"nearest"
+
+        });
+
+      }
+
     };
+
     box.appendChild(btn);
+
   }
+
 }
+
+
+/* =========================================================
+   CENTER
+========================================================= */
 
 function centerPiano(){
-  const box = document.getElementById("pianoScroll");
-  box.scrollLeft = (box.scrollWidth - box.clientWidth)/2;
+
+  const box =
+    document.getElementById("pianoScroll");
+
+  box.scrollLeft =
+    (
+      box.scrollWidth -
+      box.clientWidth
+    )/2;
+
 }
+
+
+/* =========================================================
+   HOLD
+========================================================= */
 
 function toggleHold(){
-  holdMode = !holdMode;
-  const btn = document.getElementById("holdBtn");
-  btn.textContent = holdMode ? "HOLD ON" : "HOLD OFF";
-  btn.classList.toggle("active", holdMode);
+
+  holdMode =
+    !holdMode;
+
+  const btn =
+    document.getElementById("holdBtn");
+
+  btn.textContent =
+    holdMode
+    ? "HOLD ON"
+    : "HOLD OFF";
+
+  btn.classList.toggle(
+    "active",
+    holdMode
+  );
 
   if(!holdMode){
+
     [...activeKeys].forEach(note=>{
-      const key = document.querySelector(`[data-note="${note}"]`);
-      if(key) key.classList.remove("local-active");
+
+      const key =
+        document.querySelector(
+          `[data-note="${note}"]`
+        );
+
+      if(key){
+
+        key.classList.remove(
+          "local-active"
+        );
+
+      }
+
       stopNote(note);
-      sendData({ type:"keyUp", note:note });
+
+      sendData({
+        type:"keyUp",
+        note:note
+      });
+
     });
+
     activeKeys.clear();
+
     pointerMap.clear();
+
     updateDisplay();
+
   }
+
 }
+
+
+/* =========================================================
+   KEY NAMES
+========================================================= */
 
 function toggleKeyNames(){
-  showKeyNames = !showKeyNames;
-  document.getElementById("keyToggle").textContent = showKeyNames ? "Key Names ON" : "Key Names OFF";
-  document.querySelectorAll(".white span,.black span").forEach(el=>{
-    el.style.display = showKeyNames ? "block" : "none";
+
+  showKeyNames =
+    !showKeyNames;
+
+  document.getElementById(
+    "keyToggle"
+  ).textContent =
+    showKeyNames
+    ? "Key Names ON"
+    : "Key Names OFF";
+
+  document.querySelectorAll(
+    ".white span,.black span"
+  ).forEach(el=>{
+
+    el.style.display =
+      showKeyNames
+      ? "block"
+      : "none";
+
   });
+
 }
+
+
+/* =========================================================
+   DISPLAY
+========================================================= */
 
 function updateDisplay(){
-  const local = [...activeKeys];
-  const remote = [...remoteKeys];
-  const all = [...new Set([...local, ...remote])].sort((a,b)=>a-b);
 
-  document.getElementById("keyShow").textContent = all.length ? all.map(noteName).join(" ") : "-";
-  document.getElementById("chordShow").textContent = all.length>=3 ? findChord(all) : "-";
+  const local =
+    [...activeKeys];
+
+  const remote =
+    [...remoteKeys];
+
+  const all =
+    [
+      ...new Set([
+        ...local,
+        ...remote
+      ])
+    ]
+    .sort((a,b)=>a-b);
+
+  document.getElementById(
+    "keyShow"
+  ).textContent =
+    all.length
+    ? all.map(noteName).join(" ")
+    : "-";
+
+  document.getElementById(
+    "chordShow"
+  ).textContent =
+    all.length>=3
+    ? findChord(all)
+    : "-";
+
 }
 
+
+/* =========================================================
+   CHORD DETECTION
+========================================================= */
+
 const CHORDS = {
+
   "0,4,7":"Major",
   "0,3,7":"Minor",
   "0,3,6":"Diminished",
@@ -1002,98 +2016,274 @@ const CHORDS = {
   "0,2,4,7":"Add9",
   "0,4,7,9":"6",
   "0,3,7,9":"m6"
+
 };
 
+
 function findChord(notes){
-  const pcs = [...new Set(notes.map(n=>n%12))].sort((a,b)=>a-b);
+
+  const pcs = [
+    ...new Set(
+      notes.map(n=>n%12)
+    )
+  ]
+  .sort((a,b)=>a-b);
+
   for(const root of pcs){
-    const intervals = pcs.map(n=>(n-root+12)%12).sort((a,b)=>a-b);
-    const key = intervals.join(",");
+
+    const intervals =
+      pcs
+      .map(
+        n=>
+          (n-root+12)%12
+      )
+      .sort((a,b)=>a-b);
+
+    const key =
+      intervals.join(",");
+
     if(CHORDS[key]){
-      return NOTE_NAMES[root] + " " + CHORDS[key];
+
+      return (
+        NOTE_NAMES[root] +
+        " " +
+        CHORDS[key]
+      );
+
     }
+
   }
+
   return "-";
+
 }
+
+
+/* =========================================================
+   MIDI
+========================================================= */
 
 let midiAccess = null;
 let midiConnected = false;
 let midiInputs = [];
 
+
 async function connectMIDI(){
+
   if(!navigator.requestMIDIAccess){
+
     status("Web MIDI Not Supported In This Browser");
-    alert("இந்த browser Web MIDI support செய்யவில்லை.");
+
+    alert(
+      "இந்த browser Web MIDI support செய்யவில்லை."
+    );
+
     return;
+
   }
+
 
   try{
-    midiAccess = await navigator.requestMIDIAccess();
+
+    midiAccess =
+      await navigator.requestMIDIAccess();
+
     midiInputs = [];
+
     midiAccess.inputs.forEach(input=>{
+
       midiInputs.push(input);
-      input.onmidimessage = handleMIDI;
+
+      input.onmidimessage =
+        handleMIDI;
+
     });
 
-    const count = midiInputs.length;
+
+    const count =
+      midiInputs.length;
+
+
     if(count>0){
+
       midiConnected = true;
-      status("MIDI Connected Successfully - " + count + " Device");
-      alert("MIDI Connected Successfully");
+
+      status(
+        "MIDI Connected Successfully - " +
+        count +
+        " Device"
+      );
+
+      alert(
+        "MIDI Connected Successfully"
+      );
+
     }else{
+
       midiConnected = false;
-      status("MIDI Device Not Connected");
-      alert("MIDI Device Not Connected");
+
+      status(
+        "MIDI Device Not Connected"
+      );
+
+      alert(
+        "MIDI Device Not Connected"
+      );
+
     }
 
-    midiAccess.onstatechange = event => {
-      if(event.port.type==="input"){
-        if(event.port.state==="connected"){
-          event.port.onmidimessage = handleMIDI;
-          midiConnected = true;
-          status("MIDI Device Connected Successfully");
+
+    /* Detect future MIDI device connection */
+
+    midiAccess.onstatechange =
+      event=>{
+
+        if(event.port.type==="input"){
+
+          if(event.port.state==="connected"){
+
+            event.port.onmidimessage =
+              handleMIDI;
+
+            midiConnected = true;
+
+            status(
+              "MIDI Device Connected Successfully"
+            );
+
+          }
+
+          if(event.port.state==="disconnected"){
+
+            status(
+              "MIDI Device Disconnected"
+            );
+
+          }
+
         }
-        if(event.port.state==="disconnected"){
-          status("MIDI Device Disconnected");
-        }
-      }
-    };
+
+      };
+
+
   }catch(error){
+
     console.error(error);
+
     midiConnected = false;
-    status("MIDI Permission Not Granted");
-    alert("MIDI permission கிடைக்கவில்லை.");
+
+    status(
+      "MIDI Permission Not Granted"
+    );
+
+    alert(
+      "MIDI permission கிடைக்கவில்லை."
+    );
+
   }
+
 }
 
-function handleMIDI(errorEvent){
-  if(!errorEvent || !errorEvent.data) return;
-  const data = errorEvent.data;
-  if(data.length<2) return;
 
-  const command = data[0] & 0xf0;
-  const note = data[1];
-  const velocity = data[2] || 0;
-  const key = document.querySelector(`[data-note="${note}"]`);
+/* =========================================================
+   MIDI MESSAGE
+========================================================= */
 
-  if(command===0x90 && velocity>0){
-    if(key) pressKey(note, key);
+function handleMIDI(event){
+
+  if(!event || !event.data)
     return;
+
+  const data =
+    event.data;
+
+  if(data.length<2)
+    return;
+
+  const command =
+    data[0] & 0xf0;
+
+  const note =
+    data[1];
+
+  const velocity =
+    data[2] || 0;
+
+  const key =
+    document.querySelector(
+      `[data-note="${note}"]`
+    );
+
+
+  /* NOTE ON */
+
+  if(
+    command===0x90 &&
+    velocity>0
+  ){
+
+    if(key){
+
+      pressKey(
+        note,
+        key
+      );
+
+    }
+
+    return;
+
   }
 
-  if(command===0x80 || (command===0x90 && velocity===0)){
-    if(key) releaseKey(note, key);
+
+  /* NOTE OFF */
+
+  if(
+    command===0x80 ||
+    (
+      command===0x90 &&
+      velocity===0
+    )
+  ){
+
+    if(key){
+
+      releaseKey(
+        note,
+        key
+      );
+
+    }
+
   }
+
 }
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
 
 createPiano();
-document.querySelector("#octaveButtons button").click();
 
-document.addEventListener("pointerdown", () => {
-  if(audioContext && audioContext.state==="suspended"){
-    audioContext.resume();
-  }
-}, {once:true});
+
+document.addEventListener(
+  "pointerdown",
+  ()=>{
+
+    if(
+      audioContext &&
+      audioContext.state==="suspended"
+    ){
+
+      audioContext.resume();
+
+    }
+
+  },
+  {once:true}
+);
+
 </script>
 
 </body>
