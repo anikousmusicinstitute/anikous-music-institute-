@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Piano Live Pro</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+<div class="top">
+
+<h1>🎹 Piano Live Pro</h1>
+
+<button onclick="startVideo()">
+🎥 Video Call
+</button>
+
+</div>
+
+
+<div id="videoBox">
+
+<iframe
+id="meet"
+allow="camera; microphone"
+style="display:none;">
+</iframe>
+
+</div>
+
+
+
+<div class="info">
+
+<div>
+Keys
+<br>
+<span id="keyShow">-</span>
+</div>
+
+
+<div>
+Chord
+<br>
+<span id="chordShow">-</span>
+</div>
+
+
+<div>
+Notes
+<br>
+<span id="noteShow">-</span>
+</div>
+
+</div>
+
+
+
+<div class="pianoArea">
+
+<div id="piano"></div>
+
+</div>
+
+
+
+<script src="sound.js"></script>
+<script src="piano.js"></script>
+<script src="app.js"></script>
+
+
+</body>
+</html>
