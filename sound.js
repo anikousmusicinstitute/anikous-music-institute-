@@ -13,38 +13,47 @@ return 440 * Math.pow(2,(note-69)/12);
 
 
 
+
+
 function playSound(note){
 
 
-if(audioContext.state==="suspended"){
+if(audioContext.state === "suspended"){
 
 audioContext.resume();
 
 }
 
 
+
 if(sounds[note]) return;
 
 
 
-let osc =
-audioContext.createOscillator();
+let osc = audioContext.createOscillator();
 
-
-let gain =
-audioContext.createGain();
+let gain = audioContext.createGain();
 
 
 
-osc.type="triangle";
+osc.type = "triangle";
 
 
-osc.frequency.value =
-getFrequency(note);
+osc.frequency.value = getFrequency(note);
 
 
 
-gain.gain.value=0.3;
+gain.gain.setValueAtTime(
+0.0001,
+audioContext.currentTime
+);
+
+
+
+gain.gain.exponentialRampToValueAtTime(
+0.3,
+audioContext.currentTime + 0.05
+);
 
 
 
@@ -58,10 +67,11 @@ osc.start();
 
 
 
-sounds[note]={
+sounds[note] = {
 
-osc:osc,
-gain:gain
+osc: osc,
+
+gain: gain
 
 };
 
@@ -71,29 +81,33 @@ gain:gain
 
 
 
+
+
+
+
 function stopSound(note){
 
 
-let s=sounds[note];
+let sound = sounds[note];
 
 
-if(!s) return;
+if(!sound) return;
 
 
 
-s.gain.gain.exponentialRampToValueAtTime(
+sound.gain.gain.exponentialRampToValueAtTime(
 
 0.001,
 
-audioContext.currentTime+0.3
+audioContext.currentTime + 0.2
 
 );
 
 
 
-s.osc.stop(
+sound.osc.stop(
 
-audioContext.currentTime+0.3
+audioContext.currentTime + 0.2
 
 );
 
