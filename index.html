@@ -1,139 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-
-<meta name="theme-color" content="#111111">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-
-<meta name="mobile-web-app-capable" content="yes">
-
-<title>🎹 Piano Live Pro</title>
-
-<link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#111111">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <title>🎹 Piano Live Pro</title>
+    
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body oncontextmenu="return false;" draggable="false">
 
-<header class="top">
+    <header class="top">
+        <h1>🎹 Piano Live Pro</h1>
+        <div class="topButtons">
+            <button id="videoBtn" onclick="startVideo()">
+                🎥 Video Call
+            </button>
+        </div>
+    </header>
 
-<h1>🎹 Piano Live Pro</h1>
+    <section class="options">
+        <button id="keysBtn" class="active" onclick="toggleKeys()">
+            🎹 Keys ON
+        </button>
+        <button id="chordsBtn" class="active" onclick="toggleChords()">
+            🎵 Chords ON
+        </button>
+        <button id="holdBtn" onclick="toggleHold()">
+            ✋ HOLD OFF
+        </button>
+        <button onclick="connectMIDI()">
+            🎹 MIDI
+        </button>
+    </section>
 
-<div class="topButtons">
+    <div id="videoBox">
+        <iframe id="meet" allow="camera; microphone; fullscreen" allowfullscreen loading="lazy"></iframe>
+    </div>
 
-<button id="videoBtn" onclick="startVideo()">
-🎥 Video Call
-</button>
+    <section class="info">
+        <div class="card">
+            <h3>Keys</h3>
+            <span id="keyShow">-</span>
+        </div>
+        <div class="card">
+            <h3>Chord</h3>
+            <span id="chordShow">-</span>
+        </div>
+    </section>
 
-</div>
+    <section class="pianoArea">
+        <div id="piano"></div>
+    </section>
 
-</header>
+    <script src="sound.js"></script>
+    <script src="chords.js"></script>
+    <script src="piano.js"></script>
+    <script src="app.js"></script>
 
-
-<section class="options">
-
-<button
-id="keysBtn"
-class="active"
-onclick="toggleKeys()">
-
-🎹 Keys ON
-
-</button>
-
-<button
-id="chordsBtn"
-class="active"
-onclick="toggleChords()">
-
-🎵 Chords ON
-
-</button>
-
-<button
-id="holdBtn"
-onclick="toggleHold()">
-
-✋ HOLD OFF
-
-</button>
-  
-  <button onclick="connectMIDI()">
-🎹 MIDI
-  </button>
-
-</section>
-
-
-<div id="videoBox">
-
-<iframe
-id="meet"
-allow="camera; microphone; fullscreen"
-allowfullscreen
-loading="lazy">
-</iframe>
-
-</div>
-
-
-<section class="info">
-
-<div class="card">
-
-<h3>Keys</h3>
-
-<span id="keyShow">-</span>
-
-</div>
-
-<div class="card">
-
-<h3>Chord</h3>
-
-<span id="chordShow">-</span>
-
-</div>
-
-</section>
-
-
-<section class="pianoArea">
-
-<div id="piano"></div>
-
-</section>
-
-
-<script src="sound.js"></script>
-<script src="chords.js"></script>
-<script src="piano.js"></script>
-<script src="app.js"></script>
-
-<script>
-
-document.addEventListener("pointerdown",()=>{
-
-if(window.audioContext &&
-audioContext.state==="suspended"){
-
-audioContext.resume();
-
-}
-
-},{once:true});
-
-</script>
+    <script>
+        document.addEventListener("pointerdown", () => {
+            if (window.audioContext && audioContext.state === "suspended") {
+                audioContext.resume();
+            }
+        }, { once: true });
+    </script>
 
 </body>
-
 </html>
