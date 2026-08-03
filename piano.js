@@ -11,8 +11,8 @@ const notes = [
 let activeKeys = new Set();
 
 
-let start = 36; // C2
-let end = 96;   // C7
+let start = 36;
+let end = 96;
 
 
 
@@ -24,37 +24,38 @@ let white = 0;
 for(let i=start;i<=end;i++){
 
 
-let name = notes[i % 12];
+let name = notes[i%12];
 
-let octave = Math.floor(i / 12) - 1;
+let octave = Math.floor(i/12)-1;
 
 
 let key = document.createElement("div");
 
 
-key.dataset.note = i;
+key.dataset.note=i;
 
 
 
 if(name.includes("#")){
 
 
-key.className = "black";
+key.className="black";
 
 
 key.style.left =
-((white-1)*55 + 38) + "px";
+((white-1)*55+38)+"px";
 
 
 }
+
 else{
 
 
-key.className = "white";
+key.className="white";
 
 
 key.style.left =
-(white*55) + "px";
+(white*55)+"px";
 
 
 key.innerHTML =
@@ -62,7 +63,6 @@ key.innerHTML =
 
 
 white++;
-
 
 }
 
@@ -95,13 +95,11 @@ piano.appendChild(key);
 }
 
 
-
 piano.style.width =
 (white*55)+"px";
 
 
 }
-
 
 
 
@@ -115,20 +113,17 @@ key.classList.add("active");
 activeKeys.add(note);
 
 
-
-if(typeof playSound === "function"){
+if(typeof playSound==="function"){
 
 playSound(note);
 
 }
 
 
-
 updateDisplay();
 
 
 }
-
 
 
 
@@ -142,13 +137,11 @@ key.classList.remove("active");
 activeKeys.delete(note);
 
 
-
-if(typeof stopSound === "function"){
+if(typeof stopSound==="function"){
 
 stopSound(note);
 
 }
-
 
 
 updateDisplay();
@@ -163,12 +156,12 @@ updateDisplay();
 function updateDisplay(){
 
 
-let names = [...activeKeys]
+let names=[...activeKeys]
 .sort((a,b)=>a-b)
 .map(n=>{
 
 
-return notes[n%12] +
+return notes[n%12]+
 (Math.floor(n/12)-1);
 
 
@@ -182,9 +175,7 @@ names.length ? names.join(" ") : "-";
 
 
 
-
-
-if(typeof findChord === "function"){
+if(typeof findChord==="function"){
 
 
 document.getElementById("chordShow").innerHTML =
@@ -193,18 +184,16 @@ findChord([...activeKeys].sort((a,b)=>a-b));
 
 
 }
+
 else{
 
 
 document.getElementById("chordShow").innerHTML="-";
 
-
 }
 
 
-
 }
-
 
 
 
