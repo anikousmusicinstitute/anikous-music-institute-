@@ -1,102 +1,57 @@
-const AudioCtx =
-window.AudioContext ||
-window.webkitAudioContext;
-
-const audioContext =
-new AudioCtx();
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+const audioContext = new AudioCtx();
 
 const sounds = {};
 
-function getFrequency(note){
-
-return 440 *
-Math.pow(2,(note-69)/12);
-
+function getFrequency(note) {
+    return 440 * Math.pow(2, (note - 69) / 12);
 }
 
-async function playSound(note){
+async function playSound(note) {
+    if (audioContext.state === "suspended") {
+        await audioContext.resume();
+    }
 
-if(audioContext.state==="suspended"){
+    if (sounds[note]) return;
 
-await audioContext.resume();
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const filter = audioContext.createBiquadFilter();
 
+    filter.type = "lowpass";
+    filter.frequency.value = 4500;
+
+    osc.type = "triangle";
+    osc.frequency.value = getFrequency(note);
+
+    gain.gain.setValueAtTime(0, audioContext.currentTime);
+    gain.gain.linearRampToValueAtTime(0.28, audioContext.currentTime + 0.02);
+    gain.gain.linearRampToValueAtTime(0.22, audioContext.currentTime + 0.15);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioContext.destination);
+
+    osc.start();
+
+    sounds[note] = {
+        osc,
+        gain,
+        filter
+    };
+
+    osc.onended = () => {
+        delete sounds[note];
+    };
 }
 
-if(sounds[note]) return;
+function stopSound(note) {
+    const sound = sounds[note];
+    if (!sound) return;
 
-const osc =
-audioContext.createOscillator();
-
-const gain =
-audioContext.createGain();
-
-const filter =
-audioContext.createBiquadFilter();
-
-filter.type="lowpass";
-filter.frequency.value=4500;
-
-osc.type="triangle";
-osc.frequency.value=
-getFrequency(note);
-
-gain.gain.setValueAtTime(
-0,
-audioContext.currentTime
-);
-
-gain.gain.linearRampToValueAtTime(
-0.28,
-audioContext.currentTime+0.02
-);
-
-gain.gain.linearRampToValueAtTime(
-0.22,
-audioContext.currentTime+0.15
-);
-
-osc.connect(filter);
-filter.connect(gain);
-gain.connect(audioContext.destination);
-
-osc.start();
-
-sounds[note]={
-osc,
-gain,
-filter
-};
-
-osc.onended=()=>{
-
-delete sounds[note];
-
-};
-
-}
-
-function stopSound(note){
-
-const sound=sounds[note];
-
-if(!sound) return;
-
-sound.gain.gain.cancelScheduledValues(
-audioContext.currentTime
-);
-
-sound.gain.gain.setValueAtTime(
-sound.gain.gain.value,
-audioContext.currentTime
-);
-
-sound.gain.gain.exponentialRampToValueAtTime(
-0.0001,
-audioContext.currentTime+0.25
-);
-
-sound.osc.stop(
-audioContext.currentTime+0.3
-);
-
+    sound.gain.gain.cancelScheduledValues(audioContext.currentTime);
+    sound.gain.gain.setValueAtTime(sound.gain.gain.value, audioContext.currentTime);
+    
+    sound.gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.25);
+    sound.osc.stop(audioContext.currentTime + 0.3);
 }
