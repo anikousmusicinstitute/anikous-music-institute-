@@ -30,7 +30,7 @@ user-select:none;
 
 background:#151515;
 
-padding:15px;
+padding:12px;
 
 text-align:center;
 
@@ -43,15 +43,17 @@ border-bottom:1px solid #333;
 
 color:#ffd54f;
 
-font-size:26px;
+font-size:22px;
 
-margin-bottom:12px;
+margin-bottom:10px;
 
 }
 
 
 
-/* BUTTON AREA */
+
+
+/* BUTTONS */
 
 .options{
 
@@ -61,9 +63,9 @@ justify-content:center;
 
 flex-wrap:wrap;
 
-gap:8px;
+gap:5px;
 
-padding:10px;
+padding:8px;
 
 }
 
@@ -71,7 +73,7 @@ padding:10px;
 
 button{
 
-padding:10px 15px;
+padding:6px 10px;
 
 background:#1976d2;
 
@@ -79,9 +81,13 @@ color:white;
 
 border:none;
 
-border-radius:10px;
+border-radius:7px;
 
-font-size:14px;
+font-size:12px;
+
+margin:2px;
+
+min-width:70px;
 
 }
 
@@ -90,6 +96,14 @@ font-size:14px;
 button.active{
 
 background:#00c853;
+
+}
+
+
+
+button:hover{
+
+opacity:.85;
 
 }
 
@@ -110,6 +124,7 @@ overflow:hidden;
 }
 
 
+
 #meet{
 
 width:100%;
@@ -122,7 +137,7 @@ height:300px;
 
 
 
-/* DISPLAY */
+/* INFO */
 
 .info{
 
@@ -130,7 +145,7 @@ display:grid;
 
 grid-template-columns:1fr 1fr;
 
-gap:10px;
+gap:8px;
 
 margin:10px;
 
@@ -142,13 +157,15 @@ margin:10px;
 
 background:#181818;
 
-padding:15px;
+padding:12px;
 
-border-radius:12px;
+border-radius:10px;
 
 border:1px solid #333;
 
 text-align:center;
+
+font-size:14px;
 
 }
 
@@ -158,11 +175,9 @@ text-align:center;
 
 color:#4fc3f7;
 
-font-size:18px;
+font-size:16px;
 
 font-weight:bold;
-
-word-break:break-word;
 
 }
 
@@ -172,7 +187,7 @@ word-break:break-word;
 
 color:#00e676;
 
-font-size:22px;
+font-size:20px;
 
 font-weight:bold;
 
@@ -198,6 +213,8 @@ background:#111;
 
 -webkit-overflow-scrolling:touch;
 
+touch-action:none;
+
 }
 
 
@@ -216,7 +233,7 @@ margin:0;
 
 
 
-/* WHITE KEY */
+/* WHITE KEYS */
 
 .white{
 
@@ -228,7 +245,9 @@ width:45px;
 
 height:220px;
 
-background:linear-gradient(
+background:
+
+linear-gradient(
 90deg,
 #ddd,
 #fff,
@@ -251,7 +270,7 @@ touch-action:none;
 
 position:absolute;
 
-bottom:10px;
+bottom:8px;
 
 width:100%;
 
@@ -259,13 +278,15 @@ text-align:center;
 
 font-size:10px;
 
+font-weight:bold;
+
 }
 
 
 
 
 
-/* BLACK KEY */
+/* BLACK KEYS */
 
 .black{
 
@@ -291,7 +312,7 @@ touch-action:none;
 
 
 
-/* PRESS EFFECT */
+/* PRESS */
 
 .white.active{
 
@@ -315,14 +336,14 @@ transform:translateY(4px);
 
 
 
-/* SMALL MOBILE */
+/* MOBILE */
 
 @media(max-width:500px){
 
 
 .top h1{
 
-font-size:22px;
+font-size:20px;
 
 }
 
@@ -330,9 +351,11 @@ font-size:22px;
 
 button{
 
-font-size:13px;
+font-size:11px;
 
-padding:9px 12px;
+padding:5px 8px;
+
+min-width:65px;
 
 }
 
