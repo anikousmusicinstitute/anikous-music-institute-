@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
 
 <meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
 <title>🎹 Piano Live Pro</title>
 
@@ -15,9 +16,10 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 
 <body oncontextmenu="return false;">
 
+
 <!-- HEADER -->
 
-<div class="top">
+<header class="top">
 
 <h1>🎹 Piano Live Pro</h1>
 
@@ -25,12 +27,12 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 🎥 Video Call
 </button>
 
-</div>
+</header>
 
 
 <!-- OPTIONS -->
 
-<div class="options">
+<section class="options">
 
 <button id="keysBtn"
 class="active"
@@ -55,7 +57,7 @@ onclick="toggleHold()">
 
 </button>
 
-</div>
+</section>
 
 
 <!-- VIDEO -->
@@ -73,7 +75,7 @@ allowfullscreen>
 
 <!-- DISPLAY -->
 
-<div class="info">
+<section class="info">
 
 <div class="card">
 
@@ -91,16 +93,16 @@ allowfullscreen>
 
 </div>
 
-</div>
+</section>
 
 
 <!-- PIANO -->
 
-<div class="pianoArea">
+<section class="pianoArea">
 
 <div id="piano"></div>
 
-</div>
+</section>
 
 
 <script src="sound.js"></script>
@@ -112,4 +114,5 @@ allowfullscreen>
 <script src="app.js"></script>
 
 </body>
+
 </html>
