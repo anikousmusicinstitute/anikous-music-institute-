@@ -406,6 +406,7 @@ button.active{
 <script>
 let peer = null;
 let localStream = null;
+let useFrontCamera = true;
 let cameraOn = true;
 let micOn = true;
 let currentRole = "";
@@ -428,7 +429,11 @@ async function getCameraStream(){
 
   try{
     localStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+      video: {
+        facingMode: useFrontCamera ? "user" : "environment",
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      },
       audio: true
     });
 
@@ -674,31 +679,17 @@ function updateMediaButtons(){
 async function switchCamera(){
   if(!localStream) return;
 
+  useFrontCamera = !useFrontCamera;
+
   try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices.filter(device => device.kind === 'videoinput');
-
-    if (videoDevices.length < 2) {
-      alert("இந்த போனில் ஒரே ஒரு கேமரா மட்டுமே உள்ளது.");
-      return;
-    }
-
-    const currentTrack = localStream.getVideoTracks()[0];
-    const currentSettings = currentTrack.getSettings();
-    
-    let nextDeviceIndex = 0;
-    for (let i = 0; i < videoDevices.length; i++) {
-      if (videoDevices[i].deviceId === currentSettings.deviceId) {
-        nextDeviceIndex = (i + 1) % videoDevices.length;
-        break;
-      }
-    }
-
-    const nextDeviceId = videoDevices[nextDeviceIndex].deviceId;
     const oldStream = localStream;
     
     const newStream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: { exact: nextDeviceId }, width: { ideal: 1280 }, height: { ideal: 720 } },
+      video: {
+        facingMode: useFrontCamera ? "user" : "environment",
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      },
       audio: true
     });
 
@@ -726,11 +717,12 @@ async function switchCamera(){
       });
     }
 
-    status("Camera Switched Successfully");
+    status(useFrontCamera ? "Front Camera Active" : "Back Camera Active");
 
   } catch(error) {
     console.error("Camera switch error:", error);
-    status("Camera Switching Failed");
+    status("Camera Switching Failed On This Device");
+    useFrontCamera = !useFrontCamera;
   }
 }
 
@@ -861,6 +853,7 @@ function createPiano(){
         const key = document.createElement("div");
         key.className = "black";
         key.dataset.note = n;
+        key.style.left = (whiteIndex*48+32)+"px"; // Adjusted relative positioning logic if needed, keeping original intact
         key.style.left = (leftWhite*48+32)+"px";
         key.innerHTML = `<span>${noteName(n)}</span>`;
         addKeyEvents(key, n);
