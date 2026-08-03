@@ -687,7 +687,7 @@ async function switchCamera(){
       currentFacingMode = settings.facingMode || "user";
     }
 
-    const nextFacingMode = (currentFacingMode === "user") ? "environment" : "user";
+    const nextFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
 
     const oldStream = localStream;
     const newStream = await navigator.mediaDevices.getUserMedia({
@@ -707,7 +707,7 @@ async function switchCamera(){
     status("Camera Switched Successfully (" + nextFacingMode + ")");
 
   } catch(error) {
-    console.error("Camera switch error, trying simple fallback:", error);
+    console.error("Exact facingMode failed, trying generic:", error);
     try {
       const videoTrack = localStream ? localStream.getVideoTracks()[0] : null;
       let currentFacingMode = "user";
@@ -715,7 +715,7 @@ async function switchCamera(){
         const settings = videoTrack.getSettings();
         currentFacingMode = settings.facingMode || "user";
       }
-      const nextFacingMode = (currentFacingMode === "user") ? "environment" : "user";
+      const nextFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
       
       const oldStream = localStream;
       const newStream = await navigator.mediaDevices.getUserMedia({
@@ -733,8 +733,8 @@ async function switchCamera(){
       updatePeerTracks(newStream);
       status("Camera Switched (Fallback Mode)");
     } catch(e) {
-      status("Back Camera Not Supported On This Device");
-      alert("இந்தச் சாதனத்தில் பின்புற கேமரா நேரடியாக மாற அனுமதிக்கவில்லை.");
+      status("Camera Switch Not Supported");
+      alert("இந்த பிரவுசரில் கேமரா மாற்றுவது தடை செய்யப்பட்டுள்ளது.");
     }
   }
 }
