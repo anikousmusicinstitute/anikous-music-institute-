@@ -487,7 +487,19 @@ button.active{
 </head>
 
 <body>
+<div id="loginPage">
+  <h2>Login</h2>
 
+  <input type="email" id="email" placeholder="Email">
+  <br><br>
+
+  <input type="password" id="password" placeholder="Password">
+  <br><br>
+
+  <button onclick="login()">Login</button>
+</div>
+
+<div id="mainPage" style="display:none;">
 <header class="top">
   <h1>AMI ONLINE MUSIC CLASS</h1>
   <div class="sub">Teacher - Student - Live Piano - MIDI</div>
@@ -1638,6 +1650,7 @@ document.addEventListener("pointerdown", () => {
   if(audioContext && audioContext.state==="suspended") audioContext.resume();
 }, {once:true});
 </script>
-
+</div>
+  <script type="module" src="login.js"></script>
 </body>
 </html>
