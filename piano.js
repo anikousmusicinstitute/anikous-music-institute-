@@ -34,11 +34,15 @@ function updateDisplay() {
     const keyShow = document.getElementById("keyShow");
     const chordShow = document.getElementById("chordShow");
 
-    keyShow.textContent = (showKeys && names.length) ? names.join(" ") : "-";
+    if (keyShow) {
+        keyShow.textContent = (showKeys && names.length) ? names.join(" ") : "-";
+    }
 
-    chordShow.textContent = (showChords && activeKeys.size >= 3 && typeof findChord === "function")
-        ? findChord(sortedNotes)
-        : "-";
+    if (chordShow) {
+        chordShow.textContent = (showChords && activeKeys.size >= 3 && typeof findChord === "function")
+            ? findChord(sortedNotes)
+            : "-";
+    }
 }
 
 // --- Toggle Controls ---
@@ -47,8 +51,10 @@ function toggleKeys() {
     showKeys = !showKeys;
     const btn = document.getElementById("keysBtn");
     
-    btn.classList.toggle("active", showKeys);
-    btn.textContent = showKeys ? "🎹 Keys ON" : "🎹 Keys OFF";
+    if (btn) {
+        btn.classList.toggle("active", showKeys);
+        btn.textContent = showKeys ? "🎹 Keys ON" : "🎹 Keys OFF";
+    }
 
     updateDisplay();
 }
@@ -57,8 +63,10 @@ function toggleChords() {
     showChords = !showChords;
     const btn = document.getElementById("chordsBtn");
     
-    btn.classList.toggle("active", showChords);
-    btn.textContent = showChords ? "🎵 Chords ON" : "🎵 Chords OFF";
+    if (btn) {
+        btn.classList.toggle("active", showChords);
+        btn.textContent = showChords ? "🎵 Chords ON" : "🎵 Chords OFF";
+    }
 
     updateDisplay();
 }
@@ -67,8 +75,10 @@ function toggleHold() {
     holdMode = !holdMode;
     const btn = document.getElementById("holdBtn");
     
-    btn.classList.toggle("active", holdMode);
-    btn.textContent = holdMode ? "✋ HOLD ON" : "✋ HOLD OFF";
+    if (btn) {
+        btn.classList.toggle("active", holdMode);
+        btn.textContent = holdMode ? "✋ HOLD ON" : "✋ HOLD OFF";
+    }
 
     if (!holdMode) {
         activeKeys.forEach(note => {
@@ -79,7 +89,9 @@ function toggleHold() {
         });
 
         activeKeys.clear();
-        pointerMap?.clear();
+        if (typeof pointerMap !== "undefined" && pointerMap?.clear) {
+            pointerMap.clear();
+        }
         updateDisplay();
     }
 }
