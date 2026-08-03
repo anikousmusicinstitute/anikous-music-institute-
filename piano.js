@@ -103,7 +103,6 @@ releaseKey(i,key);
 });
 
 
-
 piano.appendChild(key);
 
 
@@ -189,7 +188,6 @@ let names=[...activeKeys]
 return notes[n%12]+
 (Math.floor(n/12)-1);
 
-
 });
 
 
@@ -200,7 +198,7 @@ names.length ? names.join(" ") : "-";
 
 
 
-if(typeof findChord==="function"){
+if(names.length >= 3 && typeof findChord==="function"){
 
 
 document.getElementById("chordShow").innerHTML =
@@ -213,6 +211,7 @@ else{
 
 
 document.getElementById("chordShow").innerHTML="-";
+
 
 }
 
