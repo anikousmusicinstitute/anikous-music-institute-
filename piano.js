@@ -35,10 +35,10 @@ let name = notes[i % 12];
 let octave = Math.floor(i/12)-1;
 
 
-let key = document.createElement("div");
+let key=document.createElement("div");
 
 
-key.dataset.note = i;
+key.dataset.note=i;
 
 
 
@@ -75,22 +75,18 @@ white++;
 
 
 
-// MOBILE MULTI TOUCH
+// TOUCH
 
-key.addEventListener("touchstart",(e)=>{
-
-e.preventDefault();
+key.addEventListener("touchstart",()=>{
 
 pressKey(i,key);
 
-},{passive:false});
+},{passive:true});
 
 
 
 
-key.addEventListener("touchend",(e)=>{
-
-e.preventDefault();
+key.addEventListener("touchend",()=>{
 
 
 if(!holdMode){
@@ -100,7 +96,7 @@ releaseKey(i,key);
 }
 
 
-},{passive:false});
+},{passive:true});
 
 
 
@@ -133,11 +129,13 @@ pressKey(i,key);
 
 key.addEventListener("mouseup",()=>{
 
+
 if(!holdMode){
 
 releaseKey(i,key);
 
 }
+
 
 });
 
@@ -151,8 +149,8 @@ piano.appendChild(key);
 }
 
 
-piano.style.width =
-(white*55)+"px";
+
+piano.style.width=(white*55)+"px";
 
 
 }
@@ -234,11 +232,12 @@ let names=[...activeKeys]
 .sort((a,b)=>a-b)
 .map(n=>{
 
+
 return notes[n%12]+
 (Math.floor(n/12)-1);
 
-});
 
+});
 
 
 
@@ -247,16 +246,10 @@ document.getElementById("keyShow").innerHTML =
 
 
 (showKeys && names.length)
-
 ?
-
 names.join(" ")
-
 :
-
 "-";
-
-
 
 
 
@@ -305,7 +298,6 @@ btn.classList.toggle("active");
 
 
 btn.innerHTML =
-
 showKeys
 ?
 "🎹 Keys ON"
@@ -314,7 +306,6 @@ showKeys
 
 
 updateDisplay();
-
 
 }
 
@@ -338,7 +329,6 @@ btn.classList.toggle("active");
 
 
 btn.innerHTML =
-
 showChords
 ?
 "🎵 Chords ON"
@@ -347,7 +337,6 @@ showChords
 
 
 updateDisplay();
-
 
 }
 
@@ -371,7 +360,6 @@ btn.classList.toggle("active");
 
 
 btn.innerHTML =
-
 holdMode
 ?
 "✋ HOLD ON"
@@ -380,7 +368,6 @@ holdMode
 
 
 }
-
 
 
 
