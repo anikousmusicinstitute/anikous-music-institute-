@@ -11,8 +11,10 @@ body{
 background:#090909;
 color:white;
 overflow-x:hidden;
+touch-action:none;
 
 }
+
 
 
 /* TOP */
@@ -78,6 +80,7 @@ margin:20px;
 }
 
 
+
 .info div{
 
 background:#181818;
@@ -105,6 +108,7 @@ font-size:22px;
 font-weight:bold;
 
 }
+
 
 
 #chordShow{
@@ -182,6 +186,8 @@ box-shadow:
 
 inset 0 -15px 15px rgba(0,0,0,.15);
 
+touch-action:none;
+
 }
 
 
@@ -235,11 +241,13 @@ box-shadow:
 
 0 8px 15px rgba(0,0,0,.9);
 
+touch-action:none;
+
 }
 
 
 
-/* PRESS */
+/* PRESS EFFECT */
 
 .white.active{
 
