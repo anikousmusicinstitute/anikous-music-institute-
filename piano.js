@@ -10,8 +10,6 @@ const notes = [
 
 let activeKeys = new Set();
 
-let activePointers = new Map();
-
 
 let start = 36;
 let end = 96;
@@ -76,54 +74,44 @@ white++;
 
 
 
-key.addEventListener("pointerdown",(e)=>{
 
+// MOBILE MULTI TOUCH
+
+key.addEventListener("touchstart",(e)=>{
+
+e.preventDefault();
+
+pressKey(i,key);
+
+},{passive:false});
+
+
+
+
+key.addEventListener("touchend",(e)=>{
 
 e.preventDefault();
 
 
-activePointers.set(
-e.pointerId,
-{
-note:i,
-key:key
+if(!holdMode){
+
+releaseKey(i,key);
+
 }
-);
 
 
-pressKey(i,key);
-
-
-});
+},{passive:false});
 
 
 
 
 
-key.addEventListener("pointerup",(e)=>{
-
-
-let data = activePointers.get(e.pointerId);
-
-
-if(data){
-
-
-activePointers.delete(e.pointerId);
-
+key.addEventListener("touchcancel",()=>{
 
 
 if(!holdMode){
 
-
-releaseKey(
-data.note,
-data.key
-);
-
-
-}
-
+releaseKey(i,key);
 
 }
 
@@ -134,55 +122,25 @@ data.key
 
 
 
-key.addEventListener("pointerleave",(e)=>{
+// MOUSE
 
+key.addEventListener("mousedown",()=>{
 
-let data = activePointers.get(e.pointerId);
-
-
-if(data && !holdMode){
-
-
-releaseKey(
-data.note,
-data.key
-);
-
-
-activePointers.delete(e.pointerId);
-
-
-}
-
+pressKey(i,key);
 
 });
 
 
+key.addEventListener("mouseup",()=>{
 
+if(!holdMode){
 
-
-key.addEventListener("pointercancel",(e)=>{
-
-
-let data = activePointers.get(e.pointerId);
-
-
-if(data){
-
-
-releaseKey(
-data.note,
-data.key
-);
-
-
-activePointers.delete(e.pointerId);
-
+releaseKey(i,key);
 
 }
 
-
 });
+
 
 
 
@@ -191,7 +149,6 @@ piano.appendChild(key);
 
 
 }
-
 
 
 piano.style.width =
@@ -277,12 +234,11 @@ let names=[...activeKeys]
 .sort((a,b)=>a-b)
 .map(n=>{
 
-
 return notes[n%12]+
 (Math.floor(n/12)-1);
 
-
 });
+
 
 
 
@@ -293,10 +249,13 @@ document.getElementById("keyShow").innerHTML =
 (showKeys && names.length)
 
 ?
+
 names.join(" ")
 
 :
+
 "-";
+
 
 
 
@@ -354,7 +313,6 @@ showKeys
 "🎹 Keys OFF";
 
 
-
 updateDisplay();
 
 
@@ -386,7 +344,6 @@ showChords
 "🎵 Chords ON"
 :
 "🎵 Chords OFF";
-
 
 
 updateDisplay();
