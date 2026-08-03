@@ -1,60 +1,116 @@
-#panel{
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+
+body{
+
+background:#090909;
+color:white;
+overflow-x:hidden;
+
+}
+
+
+header{
+
+background:#111;
+padding:20px;
+text-align:center;
+border-bottom:1px solid #333;
+
+}
+
+
+header h1{
+
+color:#ffd54f;
+font-size:32px;
+margin-bottom:20px;
+
+}
+
+
+.controls{
+
+display:flex;
+justify-content:center;
+gap:10px;
+flex-wrap:wrap;
+
+}
+
+
+button,select{
+
+background:#222;
+color:white;
+border:1px solid #555;
+padding:12px 18px;
+border-radius:8px;
+font-size:16px;
+
+}
+
+
+button:hover{
+
+background:#333;
+
+}
+
+
+
+#infoPanel{
 
 display:grid;
 
 grid-template-columns:
-
-repeat(auto-fit,minmax(170px,1fr));
+repeat(auto-fit,minmax(160px,1fr));
 
 gap:15px;
 
-margin:20px;
+padding:20px;
 
 }
 
 
 
-.box{
+.infoBox{
 
-background:#181818;
+background:#171717;
 
 border:1px solid #333;
 
-border-radius:12px;
+border-radius:15px;
 
 padding:15px;
 
-box-shadow:
+text-align:center;
 
-0 4px 12px rgba(0,0,0,.5);
+box-shadow:
+0 5px 15px rgba(0,0,0,.6);
 
 }
 
 
 
-.box h3{
-
-margin:0 0 10px;
-
-font-size:18px;
+.infoBox h3{
 
 color:#ffd54f;
+margin-bottom:10px;
 
 }
 
 
 
-.box div{
+.infoBox div{
 
-font-size:18px;
-
+font-size:20px;
 font-weight:bold;
-
-color:#fff;
-
-word-break:break-word;
-
-min-height:30px;
 
 }
 
@@ -62,51 +118,116 @@ min-height:30px;
 
 #keysPressed{
 
-color:#4fc3f7;
+color:#29b6f6;
 
 }
-
 
 
 #chordName{
 
 color:#00e676;
 
-font-size:22px;
+}
+
+
+
+#pianoWrapper{
+
+width:100%;
+overflow-x:auto;
+padding:20px;
 
 }
 
 
 
-#notesName{
+#piano{
 
-color:#ff8a65;
-
-}
-
-
-
-#rootName{
-
-color:#ffeb3b;
+position:relative;
+height:260px;
+margin:auto;
 
 }
 
 
 
-#inversionName{
+.whiteKey{
 
-color:#ba68c8;
+position:relative;
+display:inline-block;
+
+width:55px;
+height:250px;
+
+background:white;
+
+border:1px solid #aaa;
+
+border-radius:0 0 8px 8px;
+
+color:black;
 
 }
 
 
 
-@media(max-width:700px){
+.blackKey{
 
-#panel{
+position:absolute;
 
-grid-template-columns:1fr;
+width:35px;
+
+height:150px;
+
+background:#000;
+
+border-radius:0 0 6px 6px;
+
+z-index:5;
+
+}
+
+
+
+.whiteKey.active{
+
+background:#ffd54f;
+
+}
+
+
+
+.blackKey.active{
+
+background:#ff9800;
+
+}
+
+
+
+@media(max-width:600px){
+
+header h1{
+
+font-size:24px;
+
+}
+
+
+.whiteKey{
+
+width:45px;
+
+height:220px;
+
+}
+
+
+.blackKey{
+
+width:28px;
+
+height:130px;
 
 }
 
