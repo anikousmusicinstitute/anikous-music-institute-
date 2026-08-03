@@ -11,8 +11,8 @@ const notes = [
 let activeKeys = new Set();
 
 
-let start = 36;
-let end = 96;
+let start = 36; // C2
+let end = 96;   // C7
 
 
 let showKeys = true;
@@ -44,7 +44,7 @@ key.dataset.note = i;
 if(name.includes("#")){
 
 
-key.className = "black";
+key.className="black";
 
 
 key.style.left =
@@ -55,7 +55,7 @@ key.style.left =
 else{
 
 
-key.className = "white";
+key.className="white";
 
 
 key.style.left =
@@ -73,17 +73,27 @@ white++;
 
 
 
-key.addEventListener("pointerdown",(e)=>{
+key.addEventListener("touchstart",(e)=>{
 
 e.preventDefault();
 
 pressKey(i,key);
 
-});
+},{passive:false});
 
 
 
-key.addEventListener("pointerup",()=>{
+key.addEventListener("touchend",(e)=>{
+
+e.preventDefault();
+
+releaseKey(i,key);
+
+},{passive:false});
+
+
+
+key.addEventListener("touchcancel",()=>{
 
 releaseKey(i,key);
 
@@ -91,7 +101,14 @@ releaseKey(i,key);
 
 
 
-key.addEventListener("pointercancel",()=>{
+key.addEventListener("mousedown",()=>{
+
+pressKey(i,key);
+
+});
+
+
+key.addEventListener("mouseup",()=>{
 
 releaseKey(i,key);
 
@@ -119,6 +136,9 @@ piano.style.width =
 function pressKey(note,key){
 
 
+if(activeKeys.has(note)) return;
+
+
 key.classList.add("active");
 
 
@@ -138,8 +158,6 @@ updateDisplay();
 
 
 }
-
-
 
 
 
@@ -182,54 +200,6 @@ updateDisplay();
 
 
 
-// MULTI TOUCH RELEASE FIX
-
-document.addEventListener("pointerup",()=>{
-
-
-if(holdMode){
-
-return;
-
-}
-
-
-
-document.querySelectorAll(".active").forEach(key=>{
-
-key.classList.remove("active");
-
-});
-
-
-
-activeKeys.forEach(note=>{
-
-if(typeof stopSound==="function"){
-
-stopSound(note);
-
-}
-
-});
-
-
-
-activeKeys.clear();
-
-
-updateDisplay();
-
-
-});
-
-
-
-
-
-
-
-
 function updateDisplay(){
 
 
@@ -243,7 +213,6 @@ return notes[n%12]+
 
 
 });
-
 
 
 
@@ -261,7 +230,6 @@ document.getElementById("keyShow").innerHTML =
 
 
 
-
 if(showChords && activeKeys.size>=3 && typeof findChord==="function"){
 
 
@@ -272,7 +240,6 @@ findChord([...activeKeys].sort((a,b)=>a-b));
 
 
 }
-
 else{
 
 
@@ -283,6 +250,7 @@ document.getElementById("chordShow").innerHTML="-";
 
 
 }
+
 
 
 
