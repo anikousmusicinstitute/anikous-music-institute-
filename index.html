@@ -7,8 +7,6 @@
 <title>Anikous Music Institute</title>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<!-- Jitsi External API Script -->
-<script src="https://meet.jit.si/external_api.js"></script>
 
 <style>
 *{
@@ -114,15 +112,12 @@ button.active{
   border:1px solid #263044;
 }
 
-.videoCard video,
-.videoCard iframe,
-.videoCard div{
+.videoCard video{
   width:100%;
   height:100%;
   min-height:220px;
   object-fit:cover;
   background:#000;
-  border:0;
 }
 
 .videoName{
@@ -133,7 +128,6 @@ button.active{
   padding:6px 9px;
   border-radius:7px;
   font-size:12px;
-  z-index:10;
 }
 
 .controls{
@@ -300,9 +294,7 @@ button.active{
   }
 
   .videoCard,
-  .videoCard video,
-  .videoCard iframe,
-  .videoCard div{
+  .videoCard video{
     min-height:190px;
   }
 
@@ -365,7 +357,7 @@ button.active{
       <video id="localVideo" autoplay playsinline muted></video>
       <div class="videoName" id="localName">Teacher - My Camera</div>
     </div>
-    <div class="videoCard" id="remoteCard">
+    <div class="videoCard">
       <video id="remoteVideo" autoplay playsinline></video>
       <div class="videoName" id="remoteName">Student - Remote Camera</div>
     </div>
@@ -375,14 +367,7 @@ button.active{
     <button onclick="switchCamera()">Front / Back</button>
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
     <button onclick="toggleRemoteFullscreen()">Full View</button>
-    
-    <!-- Jitsi Meet Button -->
-    <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet</button>
-    
-    <!-- WhatsApp Direct Chat Button -->
-    <a href="https://wa.me/919344869322?text=Hello%2C%20Let's%20start%20the%20Music%20Class!" target="_blank" style="text-decoration:none;">
-      <button style="background:#25d366;">WhatsApp Direct</button>
-    </a>
+    <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet (Backup)</button>
   </div>
 </section>
 
@@ -746,85 +731,40 @@ async function switchCamera(){
 }
 
 /* =========================================================
-   JITSI MEET EMBEDDED FUNCTION (Camera & Flip Fix)
+   JITSI MEET BACKUP FUNCTION (Automatic Local Camera/Mic Stop)
 ========================================================= */
-let jitsiApi = null;
-
 function openJitsiMeet() {
   const room = document.getElementById("roomId").value.trim();
   if(!room) {
     alert("முதலில் Room ID-ஐ உள்ளிடவும்!");
     return;
   }
-  const remoteCard = document.getElementById("remoteCard");
-  
-  remoteCard.innerHTML = `
-    <div id="jitsiContainer" style="width:100%; height:100%; min-height:220px;"></div>
-    <div class="videoName" style="display:flex; justify-content:space-between; align-items:center; z-index:20;">
-      <span>Jitsi Meet Video</span>
-      <div style="display:flex; gap:5px;">
-        <button onclick="switchJitsiCamera()" style="padding:3px 8px; font-size:10px; background:#2563eb;">Flip Camera</button>
-      </div>
-    </div>
-  `;
 
-  const domain = "meet.jit.si";
-  const roomName = "AnikousMusicInstitute_" + room;
-
-  const options = {
-    roomName: roomName,
-    width: "100%",
-    height: "100%",
-    parentNode: document.querySelector('#jitsiContainer'),
-    userInfo: {
-      displayName: currentRole === "teacher" ? "Teacher" : "Student"
-    },
-    configOverwrite: {
-      startWithVideoMuted: false,
-      startWithAudioMuted: false,
-      disableThirdPartyRequests: true,
-      prejoinPageEnabled: false
-    },
-    interfaceConfigOverwrite: {
-      TOOLBAR_BUTTONS: [
-        'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
-        'fodeviceselection', 'hangup', 'chat', 'settings', 'videoquality'
-      ]
-    }
-  };
-
-  try {
-    if (window.JitsiMeetExternalAPI) {
-      jitsiApi = new JitsiMeetExternalAPI(domain, options);
-      status("Jitsi Meet Connected Successfully");
-    } else {
-      status("Jitsi Script Not Loaded");
-    }
-  } catch(e) {
-    console.error(e);
-    status("Jitsi Load Error");
+  // 1. Jitsi-க்குள் போவதற்கு முன், நமது ஆப்பில் ஓடும் கேமரா மற்றும் மைக்கை ஆட்டோமேட்டிக்காக ஆஃப் செய்கிறது
+  if(localStream) {
+    localStream.getTracks().forEach(track => {
+      track.stop();
+    });
+    localStream = null;
+    localVideo.srcObject = null;
   }
-}
 
-function switchJitsiCamera() {
-  if (jitsiApi) {
-    try {
-      jitsiApi.executeCommand('toggleSettings');
-    } catch(e) {
-      console.error(e);
-      alert("கேமராவை மாற்றுவதில் சிரமம் உள்ளது. ஜitsi ஸ்கிரீனில் உள்ள Settings ஐகானை அழுத்தவும்.");
-    }
-  } else {
-    alert("முதலில் Jitsi Meet-ஐ ஸ்டார்ட் செய்யவும்!");
-  }
+  cameraOn = false;
+  micOn = false;
+  updateMediaButtons();
+  status("Switched to Jitsi Meet Backup");
+
+  // 2. Jitsi Meet URL ஓபன் ஆகுதல்
+  const jitsiUrl = `https://meet.jit.si/AnikousMusicInstitute_${room}`;
+  window.open(jitsiUrl, '_blank');
 }
 
 function toggleRemoteFullscreen(){
-  const card = document.getElementById("remoteCard");
-  if(card.requestFullscreen){
-    card.requestFullscreen();
-  }else if(card.webkitEnterFullscreen){
-    card.webkitEnterFullscreen();
+  const v = document.getElementById("remoteVideo");
+  if(v.requestFullscreen){
+    v.requestFullscreen();
+  }else if(v.webkitEnterFullscreen){
+    v.webkitEnterFullscreen();
   }
 }
 
