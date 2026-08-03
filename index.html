@@ -30,7 +30,7 @@ body{
   overflow-x:hidden;
 }
 
-button{
+button, select{
   border:0;
   border-radius:10px;
   padding:10px 14px;
@@ -144,6 +144,58 @@ button.active{
   margin-top:10px;
 }
 
+/* VIDEO FULLSCREEN MODE */
+#videoFullscreenContainer {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #020617;
+  z-index: 99999;
+  flex-direction: column;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+#videoFullscreenContainer.active {
+  display: flex;
+}
+
+.fsVideoGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  height: calc(100vh - 75px);
+}
+
+.fsVideoCard {
+  position: relative;
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #334155;
+  height: 100%;
+}
+
+.fsVideoCard video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fsVideoToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e293b;
+  padding: 8px 14px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
 /* INFO */
 
 .info{
@@ -193,6 +245,50 @@ button.active{
   padding:7px;
 }
 
+.voiceControlsGroup{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.voiceSelectorContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #05070b;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  padding: 4px 10px;
+}
+
+.voiceSelectorContainer select {
+  background: transparent;
+  border: none;
+  color: #a7f3d0;
+  font-weight: bold;
+  outline: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.sustainControlBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #05070b;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+.sustainControlBox input[type="range"] {
+  width: 80px;
+  accent-color: #16a34a;
+  cursor: pointer;
+}
+
 .pianoScroll{
   width:100%;
   overflow-x:auto;
@@ -240,12 +336,6 @@ button.active{
   transform:translateY(3px);
 }
 
-.white.local-active.remote-active{
-  background:#c084fc !important;
-  box-shadow:0 0 18px rgba(192,132,252,1);
-  transform:translateY(3px);
-}
-
 .black{
   position:absolute;
   top:0;
@@ -279,13 +369,6 @@ button.active{
   transform:translateY(3px);
 }
 
-.black.local-active.remote-active{
-  background:#c084fc !important;
-  color:#111 !important;
-  box-shadow:0 0 18px rgba(192,132,252,1);
-  transform:translateY(3px);
-}
-
 .noteToggle{
   display:flex;
   flex-wrap:wrap;
@@ -293,7 +376,7 @@ button.active{
   margin-top:10px;
 }
 
-/* APP STYLE KEYBOARD FULLSCREEN MODE */
+/* PIANO FULLSCREEN MODE */
 #pianoFullscreenContainer {
   display: none;
   position: fixed;
@@ -301,7 +384,7 @@ button.active{
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #020617;
+  background: #080b12;
   z-index: 99999;
   flex-direction: column;
   box-sizing: border-box;
@@ -312,15 +395,14 @@ button.active{
   display: flex;
 }
 
-/* App Top Toolbar */
 .fsToolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1e293b;
-  padding: 6px 12px;
-  border-bottom: 2px solid #334155;
-  height: 48px;
+  background: #111827;
+  padding: 8px 14px;
+  border-bottom: 1px solid #263044;
+  height: 52px;
   flex-shrink: 0;
 }
 
@@ -331,47 +413,44 @@ button.active{
 }
 
 .fsIconBtn {
-  background: #334155;
+  background: #202938;
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 5px 10px;
+  border-radius: 8px;
+  padding: 6px 12px;
   font-size: 13px;
+  font-weight: bold;
   cursor: pointer;
-}
-
-.fsIconBtn:active {
-  background: #475569;
 }
 
 .fsMiniScrollPreview {
   flex: 1;
-  max-width: 350px;
-  height: 26px;
-  background: #020617;
-  border-radius: 4px;
-  border: 1px solid #475569;
+  max-width: 400px;
+  height: 32px;
+  background: #05070b;
+  border-radius: 8px;
+  border: 1px solid #374151;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 10px;
 }
 
 .fsMiniScrollPreview span {
-  font-size: 11px;
-  color: #94a3b8;
+  font-size: 12px;
+  font-weight: bold;
+  color: #a7f3d0;
 }
 
-/* Main Piano Area inside Fullscreen - Fills entire remaining screen */
 .fsPianoBody {
   flex: 1;
   width: 100%;
-  height: calc(100vh - 48px);
   overflow-x: auto;
   overflow-y: hidden;
   background: #020617;
-  padding: 10px 0;
+  padding: 16px 10px;
   -webkit-overflow-scrolling: touch;
   display: flex;
   align-items: flex-start;
@@ -379,34 +458,29 @@ button.active{
 
 #fsPiano {
   position: relative;
-  height: 100%;
-  min-height: calc(100vh - 70px);
+  height: 230px;
 }
 
-/* MOBILE */
+.fsFooterBar {
+  height: 36px;
+  background: #111827;
+  border-top: 1px solid #263044;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #9ca3af;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
 
 @media(max-width:650px){
-  .videoGrid{
-    grid-template-columns:1fr;
-  }
-
-  .videoCard,
-  .videoCard video{
-    min-height:190px;
-  }
-
-  .info{
-    grid-template-columns:1fr;
-  }
-
-  .top h1{
-    font-size:19px;
-  }
-
-  button{
-    padding:9px 10px;
-    font-size:12px;
-  }
+  .videoGrid, .fsVideoGrid{ grid-template-columns:1fr; }
+  .videoCard, .videoCard video{ min-height:190px; }
+  .info{ grid-template-columns:1fr; }
+  .top h1{ font-size:19px; }
+  button, select{ padding:9px 10px; font-size:12px; }
 }
 </style>
 </head>
@@ -449,9 +523,28 @@ button.active{
     <button id="cameraBtn" onclick="toggleCamera()">Camera ON</button>
     <button onclick="switchCamera()">Front / Back</button>
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
+    <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 Video Full View</button>
     <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet (Backup)</button>
   </div>
 </section>
+
+<!-- VIDEO FULLSCREEN POPUP -->
+<div id="videoFullscreenContainer">
+  <div class="fsVideoToolbar">
+    <span style="font-weight:bold; color:#a7f3d0;">Live Cameras (Teacher & Student)</span>
+    <button class="fsIconBtn" onclick="toggleVideoFullscreen()" style="background:#dc2626;">✕ Exit Full View</button>
+  </div>
+  <div class="fsVideoGrid">
+    <div class="fsVideoCard">
+      <video id="fsLocalVideo" autoplay playsinline muted></video>
+      <div class="videoName" id="fsLocalName">My Camera</div>
+    </div>
+    <div class="fsVideoCard">
+      <video id="fsRemoteVideo" autoplay playsinline></video>
+      <div class="videoName" id="fsRemoteName">Remote Camera</div>
+    </div>
+  </div>
+</div>
 
 <!-- INFORMATION -->
 <section class="panel">
@@ -470,12 +563,74 @@ button.active{
 <!-- PIANO -->
 <section class="panel">
   <div class="pianoHeader">
-    <h3>7 Octave Piano</h3>
-    <div class="controls">
+    <h3>7 Octave Piano (20 Instruments)</h3>
+    <div class="voiceControlsGroup">
+      <div class="voiceSelectorContainer">
+        <label style="font-size:11px; color:#9ca3af;">Voice 1:</label>
+        <select id="voiceSelect" onchange="changeVoice(this.value)">
+          <optgroup label="Pianos">
+            <option value="grand">1. Grand Piano</option>
+            <option value="bright">2. Bright Piano</option>
+            <option value="electric">3. Electric Piano</option>
+          </optgroup>
+          <optgroup label="Organs">
+            <option value="organ">4. Church Organ</option>
+            <option value="jazzorgan">5. Jazz Organ</option>
+          </optgroup>
+          <optgroup label="Strings & Pads">
+            <option value="strings">6. Strings / Violin</option>
+            <option value="synthlead">7. Synth Lead</option>
+            <option value="synthpad">8. Synth Pad</option>
+            <option value="choir">9. Choir / Vocal Pad</option>
+          </optgroup>
+          <optgroup label="Guitars & Plucks">
+            <option value="guitar">10. Acoustic Guitar</option>
+            <option value="pluck">11. Music Box / Pluck</option>
+          </optgroup>
+          <optgroup label="Wind Instruments">
+            <option value="flute">12. Flute</option>
+            <option value="panflute">13. Pan Flute</option>
+            <option value="brass">14. Brass / Trumpet</option>
+            <option value="harmonica">15. Harmonica</option>
+            <option value="accordion">16. Accordion</option>
+          </optgroup>
+          <optgroup label="Bass & Mallets">
+            <option value="synthbass">17. Synth Bass</option>
+            <option value="acousticbass">18. Acoustic Bass</option>
+            <option value="marimba">19. Marimba</option>
+            <option value="xylophone">20. Xylophone</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="voiceSelectorContainer">
+        <label style="font-size:11px; color:#9ca3af;">Dual:</label>
+        <select id="dualVoiceSelect" onchange="changeDualVoice(this.value)">
+          <option value="none">OFF</option>
+          <option value="strings" selected>Strings (Layer)</option>
+          <option value="grand">Grand Piano</option>
+          <option value="bright">Bright Piano</option>
+          <option value="electric">Electric Piano</option>
+          <option value="organ">Church Organ</option>
+          <option value="synthpad">Synth Pad</option>
+          <option value="choir">Choir</option>
+          <option value="flute">Flute</option>
+          <option value="guitar">Acoustic Guitar</option>
+        </select>
+      </div>
+
+      <div class="sustainControlBox">
+        <button id="sustainBtn" onclick="toggleSustain()">SUSTAIN OFF</button>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <span id="sustainTimeLabel" style="color:#a7f3d0; font-weight:bold;">Time: 2.0s</span>
+          <input type="range" id="sustainTimeRange" min="0.5" max="5.0" step="0.5" value="2.0" oninput="changeSustainTime(this.value)">
+        </div>
+      </div>
+
       <button onclick="zoomIn()">Zoom +</button>
       <button onclick="zoomOut()">Zoom -</button>
       <button id="holdBtn" onclick="toggleHold()">HOLD OFF</button>
-      <button onclick="togglePianoFullscreen()" style="background:#16a34a;">Full View</button>
+      <button onclick="togglePianoFullscreen()" style="background:#16a34a;">Piano Full View</button>
       <button onclick="connectMIDI()">MIDI CONNECT</button>
     </div>
   </div>
@@ -489,12 +644,11 @@ button.active{
   </div>
 </section>
 
-<!-- PROFESSIONAL APP STYLE FULLSCREEN KEYBOARD POPUP -->
+<!-- FULLSCREEN KEYBOARD POPUP -->
 <div id="pianoFullscreenContainer">
-  <!-- App Top Toolbar -->
   <div class="fsToolbar">
     <div class="fsToolbarLeft">
-      <button class="fsIconBtn" onclick="togglePianoFullscreen()" title="Exit">⬅️</button>
+      <button class="fsIconBtn" onclick="togglePianoFullscreen()">⬅️ Back</button>
       <button class="fsIconBtn" onclick="toggleHold()" id="fsHoldBtn">HOLD</button>
     </div>
     
@@ -508,9 +662,12 @@ button.active{
     </div>
   </div>
 
-  <!-- Keyboard Piano Area -->
   <div class="fsPianoBody" id="fsPianoScroll">
     <div id="fsPiano"></div>
+  </div>
+
+  <div class="fsFooterBar">
+    Anikous Music Institute
   </div>
 </div>
 
@@ -525,12 +682,43 @@ let currentRoom = "";
 let mediaCall = null;
 let dataConnection = null;
 
+let currentVoice = "grand";
+let currentDualVoice = "strings";
+let sustainMode = false;
+let sustainDuration = 2.0;
+
 const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
+const fsLocalVideo = document.getElementById("fsLocalVideo");
+const fsRemoteVideo = document.getElementById("fsRemoteVideo");
 const statusBox = document.getElementById("status");
 
 function status(text){
   statusBox.textContent = text;
+}
+
+function changeVoice(voice){
+  currentVoice = voice;
+  sendData({ type:"changeVoice", voice:voice });
+}
+
+function changeDualVoice(voice){
+  currentDualVoice = voice;
+  sendData({ type:"changeDualVoice", dual:voice });
+}
+
+function toggleSustain(){
+  sustainMode = !sustainMode;
+  const btn = document.getElementById("sustainBtn");
+  btn.textContent = sustainMode ? "SUSTAIN ON" : "SUSTAIN OFF";
+  btn.classList.toggle("active", sustainMode);
+  sendData({ type:"toggleSustain", sustain:sustainMode, duration:sustainDuration });
+}
+
+function changeSustainTime(val){
+  sustainDuration = parseFloat(val);
+  document.getElementById("sustainTimeLabel").textContent = `Time: ${sustainDuration.toFixed(1)}s`;
+  sendData({ type:"changeSustainTime", duration:sustainDuration });
 }
 
 async function getCameraStream(){
@@ -549,6 +737,7 @@ async function getCameraStream(){
     });
 
     localVideo.srcObject = localStream;
+    fsLocalVideo.srcObject = localStream;
     cameraOn = true;
     micOn = true;
     updateMediaButtons();
@@ -557,7 +746,7 @@ async function getCameraStream(){
   }catch(error){
     console.error(error);
     status("Camera or Microphone Permission Not Granted");
-    alert("Camera open ஆகவில்லை.\n\n1. HTTPS page-ல் open செய்யுங்கள்\n2. Camera permission Allow செய்யுங்கள்\n3. Microphone permission Allow செய்யுங்கள்");
+    alert("Camera open ஆகவில்லை. Permission Allow செய்யவும்.");
     throw error;
   }
 }
@@ -611,10 +800,12 @@ async function startClass(){
     call.answer(localStream);
     call.on("stream", remoteStream => {
       remoteVideo.srcObject = remoteStream;
+      fsRemoteVideo.srcObject = remoteStream;
       status("Live Teacher And Student Video Connected");
     });
     call.on("close", () => {
       remoteVideo.srcObject = null;
+      fsRemoteVideo.srcObject = null;
       status("Remote User Disconnected");
     });
   });
@@ -639,10 +830,12 @@ function callPeer(id){
   mediaCall = peer.call(id, localStream);
   mediaCall.on("stream", remoteStream => {
     remoteVideo.srcObject = remoteStream;
+    fsRemoteVideo.srcObject = remoteStream;
     status("Live Teacher And Student Video Connected");
   });
   mediaCall.on("close", () => {
     remoteVideo.srcObject = null;
+    fsRemoteVideo.srcObject = null;
     status("Remote User Disconnected");
   });
 }
@@ -683,6 +876,26 @@ function sendData(data){
 
 function handleRemoteData(data){
   if(!data || !data.type) return;
+  if(data.type==="changeVoice"){
+    currentVoice = data.voice;
+    document.getElementById("voiceSelect").value = data.voice;
+  }
+  if(data.type==="changeDualVoice"){
+    currentDualVoice = data.dual;
+    document.getElementById("dualVoiceSelect").value = data.dual;
+  }
+  if(data.type==="toggleSustain"){
+    sustainMode = data.sustain;
+    sustainDuration = data.duration || sustainDuration;
+    const btn = document.getElementById("sustainBtn");
+    btn.textContent = sustainMode ? "SUSTAIN ON" : "SUSTAIN OFF";
+    btn.classList.toggle("active", sustainMode);
+  }
+  if(data.type==="changeSustainTime"){
+    sustainDuration = data.duration;
+    document.getElementById("sustainTimeRange").value = sustainDuration;
+    document.getElementById("sustainTimeLabel").textContent = `Time: ${sustainDuration.toFixed(1)}s`;
+  }
   if(data.type==="keyDown"){
     const keys = document.querySelectorAll(`[data-note="${data.note}"]`);
     keys.forEach(key => pressRemoteKey(data.note, key));
@@ -700,61 +913,30 @@ function pressRemoteKey(note, key){
   if(remoteKeys.has(note)) return;
   remoteKeys.add(note);
   key.classList.add("remote-active");
-  playRemoteNote(note);
+  playMultiSound(note, currentVoice, currentDualVoice, remoteSounds, sustainMode ? sustainDuration : 1.0);
   updateDisplay();
 }
 
 function releaseRemoteKey(note, key){
   remoteKeys.delete(note);
   key.classList.remove("remote-active");
-  stopRemoteNote(note);
+  if(!sustainMode){
+    stopMultiSound(note, remoteSounds, 0.3);
+  }
   updateDisplay();
-}
-
-function playRemoteNote(note){
-  initAudio();
-  if(remoteSounds[note]) return;
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  const filter = audioContext.createBiquadFilter();
-
-  osc.type = "triangle";
-  osc.frequency.value = frequency(note);
-  filter.type = "lowpass";
-  filter.frequency.value = 4500;
-
-  gain.gain.setValueAtTime(0, audioContext.currentTime);
-  gain.gain.linearRampToValueAtTime(.18, audioContext.currentTime+.02);
-  gain.gain.linearRampToValueAtTime(.12, audioContext.currentTime+.15);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(audioContext.destination);
-  osc.start();
-
-  remoteSounds[note] = { osc, gain };
-}
-
-function stopRemoteNote(note){
-  const sound = remoteSounds[note];
-  if(!sound) return;
-  const now = audioContext.currentTime;
-  sound.gain.gain.cancelScheduledValues(now);
-  sound.gain.gain.setValueAtTime(sound.gain.gain.value, now);
-  sound.gain.gain.exponentialRampToValueAtTime(.0001, now+.2);
-  try{
-    sound.osc.stop(now+.25);
-  }catch(e){}
-  delete remoteSounds[note];
 }
 
 function updateRoleNames(){
   if(currentRole==="teacher"){
     document.getElementById("localName").textContent = "Teacher - My Camera";
     document.getElementById("remoteName").textContent = "Student - Remote Camera";
+    document.getElementById("fsLocalName").textContent = "Teacher (Me)";
+    document.getElementById("fsRemoteName").textContent = "Student (Remote)";
   }else{
     document.getElementById("localName").textContent = "Student - My Camera";
     document.getElementById("remoteName").textContent = "Teacher - Remote Camera";
+    document.getElementById("fsLocalName").textContent = "Student (Me)";
+    document.getElementById("fsRemoteName").textContent = "Teacher (Remote)";
   }
 }
 
@@ -781,101 +963,51 @@ function updateMediaButtons(){
   const micBtn = document.getElementById("micBtn");
 
   cameraBtn.textContent = cameraOn ? "Camera ON" : "Camera OFF";
-  micBtn.textContent = micOn ? (currentRole==="teacher" ? "Teacher Mic ON" : "Student Mic ON") : (currentRole==="teacher" ? "Teacher Mic OFF" : "Student Mic OFF");
+  micBtn.textContent = micOn ? "Mic ON" : "Mic OFF";
 
   cameraBtn.classList.toggle("active", cameraOn);
   micBtn.classList.toggle("active", micOn);
 }
 
+function toggleVideoFullscreen(){
+  const container = document.getElementById("videoFullscreenContainer");
+  container.classList.toggle("active");
+}
+
 async function switchCamera(){
   if(!localStream) return;
   currentFacing = (currentFacing === "user") ? "environment" : "user";
-
   try{
     localStream.getTracks().forEach(t => t.stop());
-
     const newStream = await navigator.mediaDevices.getUserMedia({
-      video:{ 
-        facingMode:{ exact: currentFacing },
-        width:{ ideal: 1280 },
-        height:{ ideal: 720 }
-      },
+      video:{ facingMode:{ exact: currentFacing }, width:{ ideal: 1280 }, height:{ ideal: 720 } },
       audio:true
     });
-
     localStream = newStream;
     localVideo.srcObject = newStream;
-    cameraOn = true;
-    micOn = true;
+    fsLocalVideo.srcObject = newStream;
+    cameraOn = true; micOn = true;
     updateMediaButtons();
-
-    if(mediaCall && mediaCall.peerConnection){
-      const senders = mediaCall.peerConnection.getSenders();
-      const newVideoTrack = newStream.getVideoTracks()[0];
-      const newAudioTrack = newStream.getAudioTracks()[0];
-      
-      senders.forEach(sender => {
-        if(sender.track && sender.track.kind === "video" && newVideoTrack){
-          sender.replaceTrack(newVideoTrack);
-        }
-        if(sender.track && sender.track.kind === "audio" && newAudioTrack){
-          sender.replaceTrack(newAudioTrack);
-        }
-      });
-    }
-
-    status(currentFacing === "user" ? "Front Camera Active" : "Back Camera Active");
-  }catch(error){
-    console.error("Exact facingMode failed, trying ideal:", error);
-    try{
-      const fallbackStream = await navigator.mediaDevices.getUserMedia({
-        video:{ facingMode:{ ideal: currentFacing } },
-        audio:true
-      });
-      localStream = fallbackStream;
-      localVideo.srcObject = fallbackStream;
-      status("Camera Switched Successfully");
-    }catch(e){
-      status("Camera Switching Not Supported On This Device");
-      alert("Indha device-il camera switch seiyavillai.");
-    }
+    status("Camera Switched");
+  }catch(e){
+    status("Camera Switch Not Supported");
   }
 }
 
 function openJitsiMeet() {
   const room = document.getElementById("roomId").value.trim();
-  if(!room) {
-    alert("முதலில் Room ID-ஐ உள்ளிடவும்!");
-    return;
-  }
-
-  if(mediaCall) {
-    try { mediaCall.close(); } catch(e) {}
-    mediaCall = null;
-  }
-  
-  if(peer) {
-    try { peer.destroy(); } catch(e) {}
-    peer = null;
-  }
-
-  if(localStream) {
-    localStream.getTracks().forEach(track => {
-      track.stop();
-    });
-    localStream = null;
-  }
-
+  if(!room) { alert("Room ID enter செய்யவும்!"); return; }
+  if(mediaCall) { try { mediaCall.close(); } catch(e) {} mediaCall = null; }
+  if(peer) { try { peer.destroy(); } catch(e) {} peer = null; }
+  if(localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
   if(localVideo) localVideo.srcObject = null;
   if(remoteVideo) remoteVideo.srcObject = null;
-
-  cameraOn = false;
-  micOn = false;
+  if(fsLocalVideo) fsLocalVideo.srcObject = null;
+  if(fsRemoteVideo) fsRemoteVideo.srcObject = null;
+  cameraOn = false; micOn = false;
   updateMediaButtons();
-  status("Switched to Jitsi Meet - Camera Released");
-
-  const jitsiUrl = `https://meet.jit.si/AnikousMusicInstitute_${room}`;
-  window.open(jitsiUrl, '_blank');
+  status("Switched to Jitsi Meet");
+  window.open(`https://meet.jit.si/AnikousMusicInstitute_${room}`, '_blank');
 }
 
 const NOTE_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
@@ -903,41 +1035,242 @@ function frequency(note){
   return 440 * Math.pow(2, (note-69)/12);
 }
 
-function playNote(note){
-  initAudio();
-  if(sounds[note]) return;
-  const osc = audioContext.createOscillator();
+function createVoiceChain(voiceType, freq, now, decayDuration){
+  const oscs = [];
   const gain = audioContext.createGain();
   const filter = audioContext.createBiquadFilter();
 
-  osc.type = "triangle";
-  osc.frequency.value = frequency(note);
-  filter.type = "lowpass";
-  filter.frequency.value = 4500;
+  if(voiceType === "grand"){
+    const o1 = audioContext.createOscillator();
+    const o2 = audioContext.createOscillator();
+    o1.type = "sine"; o1.frequency.value = freq;
+    o2.type = "triangle"; o2.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.setValueAtTime(3500, now);
+    filter.frequency.exponentialRampToValueAtTime(800, now + decayDuration);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.28, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
+    oscs.push(o1, o2);
+  } else if(voiceType === "bright"){
+    const o1 = audioContext.createOscillator();
+    const o2 = audioContext.createOscillator();
+    o1.type = "sawtooth"; o1.frequency.value = freq;
+    o2.type = "sine"; o2.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.value = 5000;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.22, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.03, now + decayDuration);
+    oscs.push(o1, o2);
+  } else if(voiceType === "electric"){
+    const o1 = audioContext.createOscillator();
+    const o2 = audioContext.createOscillator();
+    o1.type = "sine"; o1.frequency.value = freq;
+    o2.type = "square"; o2.frequency.value = freq * 2;
+    filter.type = "lowpass"; filter.frequency.setValueAtTime(2000, now);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.05, now + decayDuration);
+    oscs.push(o1, o2);
+  } else if(voiceType === "organ"){
+    const o1 = audioContext.createOscillator();
+    const o2 = audioContext.createOscillator();
+    o1.type = "sawtooth"; o1.frequency.value = freq;
+    o2.type = "sine"; o2.frequency.value = freq * 0.5;
+    filter.type = "lowpass"; filter.frequency.value = 4000;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.05, now + decayDuration);
+    oscs.push(o1, o2);
+  } else if(voiceType === "jazzorgan"){
+    const o1 = audioContext.createOscillator();
+    o1.type = "triangle"; o1.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.value = 3000;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.22, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
+    oscs.push(o1);
+  } else if(voiceType === "strings"){
+    const o1 = audioContext.createOscillator();
+    const o2 = audioContext.createOscillator();
+    o1.type = "sawtooth"; o1.frequency.value = freq;
+    o2.type = "sawtooth"; o2.frequency.value = freq * 1.006;
+    filter.type = "lowpass"; filter.frequency.setValueAtTime(900, now);
+    filter.frequency.linearRampToValueAtTime(2400, now + decayDuration * 0.5);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.16, now + 0.25);
+    gain.gain.exponentialRampToValueAtTime(0.02, now + decayDuration);
+    oscs.push(o1, o2);
+  } else if(voiceType === "synthlead"){
+    const o1 = audioContext.createOscillator();
+    o1.type = "sawtooth"; o1.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.setValueAtTime(4500, now);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.05, now + decayDuration);
+    oscs.push(o1);
+  } else if(voiceType === "synthpad"){
+    const o1 = audioContext.createOscillator();
+    const o2 = audioContext.createOscillator();
+    o1.type = "sine"; o1.frequency.value = freq;
+    o2.type = "triangle"; o2.frequency.value = freq * 1.5;
+    filter.type = "lowpass"; filter.frequency.value = 1800;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.18, now + 0.3);
+    gain.gain.exponentialRampToValueAtTime(0.03, now + decayDuration);
+    oscs.push(o1, o2);
+  } else if(voiceType === "choir"){
+    const o1 = audioContext.createOscillator();
+    const o2 = audioContext.createOscillator();
+    o1.type = "sine"; o1.frequency.value = freq;
+    o2.type = "triangle"; o2.frequency.value = freq * 1.003;
+    filter.type = "bandpass"; filter.frequency.value = 1200;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.2);
+    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
+    oscs.push(o1, o2);
+  } else if(voiceType === "guitar"){
+    const o1 = audioContext.createOscillator();
+    o1.type = "triangle"; o1.frequency.value = freq;
+    filter.type = "bandpass"; filter.frequency.value = freq * 1.5;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.28, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + Math.min(decayDuration, 1.2));
+    oscs.push(o1);
+  } else if(voiceType === "pluck"){
+    const o1 = audioContext.createOscillator();
+    o1.type = "sine"; o1.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.value = 5000;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.3, now + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + Math.min(decayDuration, 0.8));
+    oscs.push(o1);
+  } else if(voiceType === "flute"){
+    const o1 = audioContext.createOscillator();
+    o1.type = "sine"; o1.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.value = 1200;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.22, now + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
+    oscs.push(o1);
+  } else if(voiceType === "panflute"){
+    const o1 = audioContext.createOscillator();
+    const o2 = audioContext.createOscillator();
+    o1.type = "sine"; o1.frequency.value = freq;
+    o2.type = "triangle"; o2.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.value = 1600;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.24, now + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.03, now + decayDuration);
+    oscs.push(o1, o2);
+  } else if(voiceType === "brass"){
+    const o1 = audioContext.createOscillator();
+    const o2 = audioContext.createOscillator();
+    o1.type = "sawtooth"; o1.frequency.value = freq;
+    o2.type = "square"; o2.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.setValueAtTime(800, now);
+    filter.frequency.linearRampToValueAtTime(3200, now + 0.15);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.03, now + decayDuration);
+    oscs.push(o1, o2);
+  } else if(voiceType === "harmonica"){
+    const o1 = audioContext.createOscillator();
+    o1.type = "sawtooth"; o1.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.value = 2500;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.22, now + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
+    oscs.push(o1);
+  } else if(voiceType === "accordion"){
+    const o1 = audioContext.createOscillator();
+    const o2 = audioContext.createOscillator();
+    o1.type = "sawtooth"; o1.frequency.value = freq;
+    o2.type = "triangle"; o2.frequency.value = freq * 1.004;
+    filter.type = "lowpass"; filter.frequency.value = 2200;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
+    oscs.push(o1, o2);
+  } else if(voiceType === "synthbass"){
+    const o1 = audioContext.createOscillator();
+    o1.type = "sawtooth"; o1.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.setValueAtTime(1000, now);
+    filter.frequency.exponentialRampToValueAtTime(200, now + 0.2);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.3, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.02, now + Math.min(decayDuration, 1.0));
+    oscs.push(o1);
+  } else if(voiceType === "acousticbass"){
+    const o1 = audioContext.createOscillator();
+    o1.type = "triangle"; o1.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.value = 800;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.32, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.02, now + Math.min(decayDuration, 1.2));
+    oscs.push(o1);
+  } else if(voiceType === "marimba"){
+    const o1 = audioContext.createOscillator();
+    o1.type = "sine"; o1.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.value = 4000;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.3, now + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + Math.min(decayDuration, 0.6));
+    oscs.push(o1);
+  } else if(voiceType === "xylophone"){
+    const o1 = audioContext.createOscillator();
+    o1.type = "sine"; o1.frequency.value = freq;
+    filter.type = "lowpass"; filter.frequency.value = 6000;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.32, now + 0.003);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + Math.min(decayDuration, 0.4));
+    oscs.push(o1);
+  }
 
-  gain.gain.setValueAtTime(0, audioContext.currentTime);
-  gain.gain.linearRampToValueAtTime(.3, audioContext.currentTime+.02);
-  gain.gain.linearRampToValueAtTime(.20, audioContext.currentTime+.15);
-
-  osc.connect(filter);
+  oscs.forEach(o => {
+    o.connect(filter);
+    o.start(now);
+  });
   filter.connect(gain);
   gain.connect(audioContext.destination);
-  osc.start();
 
-  sounds[note] = { osc, gain };
+  return { oscs, gain };
 }
 
-function stopNote(note){
-  const sound = sounds[note];
+function playMultiSound(note, primaryVoice, dualVoice, soundStore, decay){
+  initAudio();
+  if(soundStore[note]) return;
+
+  const freq = frequency(note);
+  const now = audioContext.currentTime;
+  const activeChains = [];
+
+  const primary = createVoiceChain(primaryVoice, freq, now, decay);
+  activeChains.push(primary);
+
+  if(dualVoice && dualVoice !== "none"){
+    const dual = createVoiceChain(dualVoice, freq, now, decay);
+    dual.gain.gain.value *= 0.7;
+    activeChains.push(dual);
+  }
+
+  soundStore[note] = { chains: activeChains };
+}
+
+function stopMultiSound(note, soundStore, releaseTime = 0.3){
+  const sound = soundStore[note];
   if(!sound) return;
   const now = audioContext.currentTime;
-  sound.gain.gain.cancelScheduledValues(now);
-  sound.gain.gain.setValueAtTime(sound.gain.gain.value, now);
-  sound.gain.gain.exponentialRampToValueAtTime(.0001, now+.2);
-  try{
-    sound.osc.stop(now+.25);
-  }catch(e){}
-  delete sounds[note];
+  
+  sound.chains.forEach(chain => {
+    chain.gain.gain.cancelScheduledValues(now);
+    chain.gain.gain.setValueAtTime(chain.gain.gain.value, now);
+    chain.gain.gain.exponentialRampToValueAtTime(0.0001, now + releaseTime);
+    setTimeout(() => {
+      try { chain.oscs.forEach(o => o.stop()); } catch(e){}
+    }, (releaseTime + 0.05) * 1000);
+  });
+
+  delete soundStore[note];
 }
 
 function noteName(note){
@@ -952,45 +1285,49 @@ function pressKey(note, key){
   const keys = document.querySelectorAll(`[data-note="${note}"]`);
   keys.forEach(k => k.classList.add("local-active"));
 
-  playNote(note);
+  const duration = sustainMode ? sustainDuration : 1.0;
+  playMultiSound(note, currentVoice, currentDualVoice, sounds, duration);
   sendData({ type:"keyDown", note:note });
   updateDisplay();
 }
 
 function releaseKey(note, key){
   if(holdMode) return;
-  activeKeys.delete(note);
   
-  const keys = document.querySelectorAll(`[data-note="${note}"]`);
-  keys.forEach(k => k.classList.remove("local-active"));
-
-  stopNote(note);
-  sendData({ type:"keyUp", note:note });
-  updateDisplay();
+  if(!sustainMode){
+    activeKeys.delete(note);
+    const keys = document.querySelectorAll(`[data-note="${note}"]`);
+    keys.forEach(k => k.classList.remove("local-active"));
+    stopMultiSound(note, sounds, 0.3);
+    sendData({ type:"keyUp", note:note });
+    updateDisplay();
+  } else {
+    activeKeys.delete(note);
+    const keys = document.querySelectorAll(`[data-note="${note}"]`);
+    keys.forEach(k => k.classList.remove("local-active"));
+    setTimeout(() => {
+      stopMultiSound(note, sounds, 0.5);
+    }, sustainDuration * 1000);
+    sendData({ type:"keyUp", note:note });
+    updateDisplay();
+  }
 }
 
 let selectedOctaves = new Set();
-
 const totalWhiteKeys = 50;
 let pianoScrollBox = document.getElementById("pianoScroll");
 let availableWidth = pianoScrollBox ? pianoScrollBox.clientWidth - 24 : window.innerWidth - 40;
 let currentKeyWidth = Math.max(12, Math.floor(availableWidth / totalWhiteKeys));
 
 function zoomIn(){
-  if(currentKeyWidth < 70){
-    currentKeyWidth += 5;
-    updateKeyZoom();
-  }
+  if(currentKeyWidth < 70){ currentKeyWidth += 5; updateKeyZoom(); }
 }
 
 function zoomOut(){
   let pianoScrollBox = document.getElementById("pianoScroll");
   let availableWidth = pianoScrollBox ? pianoScrollBox.clientWidth - 24 : window.innerWidth - 40;
   const minLimit = Math.max(10, Math.floor(availableWidth / totalWhiteKeys));
-  if(currentKeyWidth > minLimit){
-    currentKeyWidth -= 5;
-    updateKeyZoom();
-  }
+  if(currentKeyWidth > minLimit){ currentKeyWidth -= 5; updateKeyZoom(); }
 }
 
 function updateKeyZoom(){
@@ -1010,9 +1347,7 @@ function createOctaveButtons(){
     const btn = document.createElement("button");
     btn.textContent = "Oct "+o;
     btn.dataset.octave = o;
-    if(selectedOctaves.has(o)){
-      btn.classList.add("active");
-    }
+    if(selectedOctaves.has(o)) btn.classList.add("active");
     
     btn.onclick = function(){
       const octaveNum = parseInt(this.dataset.octave);
@@ -1032,18 +1367,14 @@ function createOctaveButtons(){
 
 function buildPianoDOM(containerTarget, isFullscreen = false){
   containerTarget.innerHTML="";
-  const start = 24; // C1
-  const end = 108;  // C8
+  const start = 24; const end = 108;
   let whiteIndex = 0;
   const whitePositions = {};
 
   for(let n=start; n<=end; n++){
     const pc = n%12;
     const octaveNum = Math.floor((n - 12) / 12);
-
-    if(selectedOctaves.size > 0 && !selectedOctaves.has(octaveNum)){
-      continue;
-    }
+    if(selectedOctaves.size > 0 && !selectedOctaves.has(octaveNum)) continue;
 
     if(!BLACK_KEYS.includes(pc)){
       whitePositions[n] = whiteIndex;
@@ -1052,16 +1383,10 @@ function buildPianoDOM(containerTarget, isFullscreen = false){
       key.dataset.note = n;
       if(activeKeys.has(n)) key.classList.add("local-active");
       if(remoteKeys.has(n)) key.classList.add("remote-active");
-
       key.style.left = (whiteIndex * currentKeyWidth) + "px";
       
-      // Dynamic height adjustment for fullscreen mode to fill screen nicely
       if(isFullscreen) {
-        let fsBodyHeight = document.getElementById("fsPianoScroll").clientHeight - 20;
-        if(fsBodyHeight > 150) {
-          key.style.height = fsBodyHeight + "px";
-          key.style.borderRadius = "0";
-        }
+        key.style.height = "195px";
       }
 
       key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
@@ -1074,16 +1399,11 @@ function buildPianoDOM(containerTarget, isFullscreen = false){
   for(let n=start; n<=end; n++){
     const pc = n%12;
     const octaveNum = Math.floor((n - 12) / 12);
-
-    if(selectedOctaves.size > 0 && !selectedOctaves.has(octaveNum)){
-      continue;
-    }
+    if(selectedOctaves.size > 0 && !selectedOctaves.has(octaveNum)) continue;
 
     if(BLACK_KEYS.includes(pc)){
       let previous = n-1;
-      while(previous>=start && BLACK_KEYS.includes(previous%12)){
-        previous--;
-      }
+      while(previous>=start && BLACK_KEYS.includes(previous%12)) previous--;
       const leftWhite = whitePositions[previous];
       if(leftWhite!==undefined){
         const key = document.createElement("div");
@@ -1091,15 +1411,11 @@ function buildPianoDOM(containerTarget, isFullscreen = false){
         key.dataset.note = n;
         if(activeKeys.has(n)) key.classList.add("local-active");
         if(remoteKeys.has(n)) key.classList.add("remote-active");
-
         const blackWidth = currentKeyWidth * 0.6;
         key.style.left = (leftWhite * currentKeyWidth + (currentKeyWidth - blackWidth / 2) - (blackWidth / 2)) + "px";
         
         if(isFullscreen) {
-          let fsBodyHeight = document.getElementById("fsPianoScroll").clientHeight - 20;
-          if(fsBodyHeight > 150) {
-            key.style.height = (fsBodyHeight * 0.62) + "px";
-          }
+          key.style.height = "120px";
         }
 
         key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
@@ -1111,29 +1427,18 @@ function buildPianoDOM(containerTarget, isFullscreen = false){
   containerTarget.style.width = (whiteIndex * currentKeyWidth) + "px";
 }
 
-function createPiano(){
-  buildPianoDOM(piano, false);
-  createOctaveButtons();
-}
-
-function createFullscreenPiano(){
-  buildPianoDOM(fsPiano, true);
-}
+function createPiano(){ buildPianoDOM(piano, false); createOctaveButtons(); }
+function createFullscreenPiano(){ buildPianoDOM(fsPiano, true); }
 
 function togglePianoFullscreen(){
   const container = document.getElementById("pianoFullscreenContainer");
   container.classList.toggle("active");
   if(container.classList.contains("active")){
-    setTimeout(() => {
+    setTimeout(() => { 
       createFullscreenPiano();
+      const fsBox = document.getElementById("fsPianoScroll");
+      fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
     }, 50);
-    if(screen.orientation && screen.orientation.lock){
-      screen.orientation.lock("landscape").catch(() => {});
-    }
-  } else {
-    if(screen.orientation && screen.orientation.unlock){
-      screen.orientation.unlock();
-    }
   }
 }
 
@@ -1176,7 +1481,6 @@ function toggleHold(){
   holdMode = !holdMode;
   const btn = document.getElementById("holdBtn");
   const fsBtn = document.getElementById("fsHoldBtn");
-  
   const btnText = holdMode ? "HOLD ON" : "HOLD OFF";
   if(btn) { btn.textContent = btnText; btn.classList.toggle("active", holdMode); }
   if(fsBtn) { fsBtn.textContent = holdMode ? "HOLD ON" : "HOLD"; fsBtn.classList.toggle("active", holdMode); }
@@ -1185,7 +1489,7 @@ function toggleHold(){
     [...activeKeys].forEach(note=>{
       const keys = document.querySelectorAll(`[data-note="${note}"]`);
       keys.forEach(k => k.classList.remove("local-active"));
-      stopNote(note);
+      stopMultiSound(note, sounds, 0.3);
       sendData({ type:"keyUp", note:note });
     });
     activeKeys.clear();
@@ -1198,7 +1502,6 @@ function toggleKeyNames(){
   showKeyNames = !showKeyNames;
   const toggleBtn = document.getElementById("keyToggle");
   if(toggleBtn) toggleBtn.textContent = showKeyNames ? "Key Names ON" : "Key Names OFF";
-  
   document.querySelectorAll(".white span,.black span").forEach(el=>{
     el.style.display = showKeyNames ? "block" : "none";
   });
@@ -1208,7 +1511,6 @@ function updateDisplay(){
   const local = [...activeKeys];
   const remote = [...remoteKeys];
   const all = [...new Set([...local, ...remote])].sort((a,b)=>a-b);
-
   const keyText = all.length ? all.map(noteName).join(" ") : "-";
   const chordText = all.length>=3 ? findChord(all) : "-";
 
@@ -1222,20 +1524,8 @@ function updateDisplay(){
 }
 
 const CHORDS = {
-  "0,4,7":"Major",
-  "0,3,7":"Minor",
-  "0,3,6":"Diminished",
-  "0,4,8":"Augmented",
-  "0,5,7":"Sus4",
-  "0,2,7":"Sus2",
-  "0,4,7,10":"7",
-  "0,4,7,11":"Maj7",
-  "0,3,7,10":"m7",
-  "0,3,6,10":"m7b5",
-  "0,3,6,9":"Dim7",
-  "0,2,4,7":"Add9",
-  "0,4,7,9":"6",
-  "0,3,7,9":"m6"
+  "0,4,7":"Major", "0,3,7":"Minor", "0,3,6":"Diminished", "0,4,8":"Augmented",
+  "0,5,7":"Sus4", "0,2,7":"Sus2", "0,4,7,10":"7", "0,4,7,11":"Maj7", "0,3,7,10":"m7"
 };
 
 function findChord(notes){
@@ -1243,91 +1533,41 @@ function findChord(notes){
   for(const root of pcs){
     const intervals = pcs.map(n=>(n-root+12)%12).sort((a,b)=>a-b);
     const key = intervals.join(",");
-    if(CHORDS[key]){
-      return NOTE_NAMES[root] + " " + CHORDS[key];
-    }
+    if(CHORDS[key]) return NOTE_NAMES[root] + " " + CHORDS[key];
   }
   return "-";
 }
 
 let midiAccess = null;
-let midiConnected = false;
-let midiInputs = [];
 
 async function connectMIDI(){
-  if(!navigator.requestMIDIAccess){
-    status("Web MIDI Not Supported In This Browser");
-    alert("இந்த browser Web MIDI support செய்யவில்லை.");
-    return;
-  }
-
+  if(!navigator.requestMIDIAccess){ alert("Web MIDI not supported."); return; }
   try{
     midiAccess = await navigator.requestMIDIAccess();
-    midiInputs = [];
-    midiAccess.inputs.forEach(input=>{
-      midiInputs.push(input);
-      input.onmidimessage = handleMIDI;
-    });
-
-    const count = midiInputs.length;
-    if(count>0){
-      midiConnected = true;
-      status("MIDI Connected Successfully - " + count + " Device");
-      alert("MIDI Connected Successfully");
-    }else{
-      midiConnected = false;
-      status("MIDI Device Not Connected");
-      alert("MIDI Device Not Connected");
-    }
-
-    midiAccess.onstatechange = event => {
-      if(event.port.type==="input"){
-        if(event.port.state==="connected"){
-          event.port.onmidimessage = handleMIDI;
-          midiConnected = true;
-          status("MIDI Device Connected Successfully");
-        }
-        if(event.port.state==="disconnected"){
-          status("MIDI Device Disconnected");
-        }
-      }
-    };
-  }catch(error){
-    console.error(error);
-    midiConnected = false;
-    status("MIDI Permission Not Granted");
-    alert("MIDI permission கிடைக்கவில்லை.");
-  }
+    midiAccess.inputs.forEach(input => { input.onmidimessage = handleMIDI; });
+    alert("MIDI Connected Successfully");
+  }catch(e){ alert("MIDI permission error."); }
 }
 
-function handleMIDI(errorEvent){
-  if(!errorEvent || !errorEvent.data) return;
-  const data = errorEvent.data;
+function handleMIDI(event){
+  if(!event || !event.data) return;
+  const data = event.data;
   if(data.length<2) return;
-
   const command = data[0] & 0xf0;
   const note = data[1];
   const velocity = data[2] || 0;
 
   if(command===0x90 && velocity>0){
-    const keys = document.querySelectorAll(`[data-note="${note}"]`);
-    keys.active = true;
-    keys.forEach(key => pressKey(note, key));
-    return;
-  }
-
-  if(command===0x80 || (command===0x90 && velocity===0)){
-    const keys = document.querySelectorAll(`[data-note="${note}"]`);
-    keys.forEach(key => releaseKey(note, key));
+    document.querySelectorAll(`[data-note="${note}"]`).forEach(k => pressKey(note, k));
+  } else if(command===0x80 || (command===0x90 && velocity===0)){
+    document.querySelectorAll(`[data-note="${note}"]`).forEach(k => releaseKey(note, k));
   }
 }
 
 updateKeyZoom();
 
 document.addEventListener("pointerdown", () => {
-  if(audioContext && audioContext.state==="suspended"){
-    audioContext.resume();
-  }
+  if(audioContext && audioContext.state==="suspended") audioContext.resume();
 }, {once:true});
 </script>
 
