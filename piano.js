@@ -22,12 +22,13 @@ function createPiano(){
 let white = 0;
 
 
+
 for(let i=start;i<=end;i++){
 
 
-let name = notes[i%12];
+let name = notes[i % 12];
 
-let octave = Math.floor(i/12)-1;
+let octave = Math.floor(i / 12) - 1;
 
 
 let key = document.createElement("div");
@@ -40,24 +41,23 @@ key.dataset.note = i;
 if(name.includes("#")){
 
 
-key.className="black";
+key.className = "black";
 
-
-// black key correct position
 
 key.style.left =
-((white-1)*55 + 38)+"px";
+((white-1)*55 + 38) + "px";
 
 
 }
+
 else{
 
 
-key.className="white";
+key.className = "white";
 
 
 key.style.left =
-(white*55)+"px";
+(white*55) + "px";
 
 
 key.innerHTML =
@@ -68,6 +68,7 @@ white++;
 
 
 }
+
 
 
 
@@ -92,19 +93,20 @@ releaseKey(i,key);
 });
 
 
+
 piano.appendChild(key);
 
 
 }
 
 
-// piano size
 
 piano.style.width =
 (white*55)+"px";
 
 
 }
+
 
 
 
@@ -127,6 +129,7 @@ updateDisplay();
 
 
 
+
 function releaseKey(note,key){
 
 
@@ -146,10 +149,11 @@ updateDisplay();
 
 
 
+
 function updateDisplay(){
 
 
-let names=[...activeKeys].map(n=>{
+let names = [...activeKeys].map(n=>{
 
 
 return notes[n%12]+
@@ -161,6 +165,7 @@ return notes[n%12]+
 
 
 document.getElementById("keyShow").innerHTML =
+
 names.join(" ") || "-";
 
 
@@ -169,10 +174,20 @@ if(typeof findChord === "function"){
 
 
 document.getElementById("chordShow").innerHTML =
+
 findChord([...activeKeys]);
 
 
 }
+
+else{
+
+
+document.getElementById("chordShow").innerHTML = "-";
+
+
+}
+
 
 
 }
