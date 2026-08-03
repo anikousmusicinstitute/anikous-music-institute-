@@ -406,14 +406,13 @@ button.active{
 <script>
 let peer = null;
 let localStream = null;
+let useFrontCamera = true;
 let cameraOn = true;
 let micOn = true;
 let currentRole = "";
 let currentRoom = "";
 let mediaCall = null;
 let dataConnection = null;
-let videoDevices = [];
-let currentDeviceIndex = 0;
 
 const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
@@ -423,25 +422,16 @@ function status(text){
   statusBox.textContent = text;
 }
 
-async function getCameraStream(deviceId = null){
+async function getCameraStream(){
   if(localStream){
     localStream.getTracks().forEach(t=>t.stop());
   }
 
-  let videoConstraints = {
-    width: { ideal: 1280 },
-    height: { ideal: 720 }
-  };
-
-  if(deviceId){
-    videoConstraints.deviceId = { exact: deviceId };
-  } else {
-    videoConstraints.facingMode = "user";
-  }
-
   try{
     localStream = await navigator.mediaDevices.getUserMedia({
-      video: videoConstraints,
+      video: {
+        facingMode: useFrontCamera ? "user" : "environment"
+      },
       audio: true
     });
 
@@ -450,13 +440,10 @@ async function getCameraStream(deviceId = null){
     micOn = true;
     updateMediaButtons();
     status("Camera and Microphone Connected");
-    
-    // Load available video input devices for switching
-    loadVideoDevices();
     return localStream;
   }catch(error){
     console.error(error);
-    // Fallback without exact device/resolution if it fails
+    // Fallback if specific facingMode fails completely
     try {
       localStream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -467,22 +454,12 @@ async function getCameraStream(deviceId = null){
       micOn = true;
       updateMediaButtons();
       status("Camera Connected (Default Mode)");
-      loadVideoDevices();
       return localStream;
     } catch(e) {
       status("Camera or Microphone Permission Not Granted");
       alert("Camera open ஆகவில்லை.\n1. HTTPS page-ல் open செய்யுங்கள்\n2. Camera & Mic permission Allow செய்யுங்கள்");
       throw e;
     }
-  }
-}
-
-async function loadVideoDevices(){
-  try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    videoDevices = devices.filter(d => d.kind === 'videoinput');
-  } catch(e) {
-    console.error("Error loading devices:", e);
   }
 }
 
@@ -712,42 +689,26 @@ function updateMediaButtons(){
 }
 
 async function switchCamera(){
-  if(!localStream) return;
+  useFrontCamera = !useFrontCamera;
 
   try {
-    // Refresh device list
-    await loadVideoDevices();
-
-    if(videoDevices.length <= 1){
-      alert("இந்தச் சாதனத்தில் மாற்று கேமரா (Second Camera) கிடைக்கவில்லை.");
-      return;
-    }
-
-    // Move to next camera index
-    currentDeviceIndex = (currentDeviceIndex + 1) % videoDevices.length;
-    const selectedDeviceId = videoDevices[currentDeviceIndex].deviceId;
-
     const oldStream = localStream;
     
-    // Get new stream with exact device ID
     const newStream = await navigator.mediaDevices.getUserMedia({
       video: {
-        deviceId: { exact: selectedDeviceId },
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
+        facingMode: useFrontCamera ? "user" : "environment"
       },
       audio: true
     });
 
     localStream = newStream;
     localVideo.srcObject = newStream;
-    oldStream.getTracks().forEach(t => t.stop());
+    if(oldStream) oldStream.getTracks().forEach(t => t.stop());
 
     cameraOn = true;
     micOn = true;
     updateMediaButtons();
 
-    // Update active Peer connection track
     if(peer){
       peer.connections && Object.values(peer.connections).forEach(list=>{
         list.forEach(call=>{
@@ -764,12 +725,13 @@ async function switchCamera(){
       });
     }
 
-    status("Camera Switched Successfully");
+    status(useFrontCamera ? "Front Camera Active" : "Back Camera Active");
 
   } catch(error) {
     console.error("Camera switch error:", error);
-    status("Camera Switching Failed On This Device");
-    alert("இந்த மொபைலில் கேமரா மாற்றுவதில் பிழை ஏற்பட்டது.");
+    // Revert state if failed
+    useFrontCamera = !useFrontCamera;
+    status("Camera Switch Not Supported On This Device");
   }
 }
 
