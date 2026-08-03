@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <title>Piano Live Pro</title>
@@ -10,6 +11,7 @@
 
 </head>
 
+
 <body>
 
 
@@ -17,11 +19,15 @@
 
 <h1>🎹 Piano Live Pro</h1>
 
+
 <button onclick="startVideo()">
 🎥 Video Call
 </button>
 
+
 </div>
+
+
 
 
 
@@ -37,6 +43,51 @@ style="display:none;">
 
 
 
+
+
+<!-- OPTIONS -->
+
+<div class="options">
+
+
+<button id="keysBtn"
+class="active"
+onclick="toggleKeys()">
+
+🎹 Keys ON
+
+</button>
+
+
+
+<button id="chordsBtn"
+class="active"
+onclick="toggleChords()">
+
+🎵 Chords ON
+
+</button>
+
+
+
+<button id="holdBtn"
+onclick="toggleHold()">
+
+✋ HOLD OFF
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- DISPLAY -->
+
 <div class="info">
 
 
@@ -47,10 +98,13 @@ Keys
 <br>
 
 <span id="keyShow">
+
 -
+
 </span>
 
 </div>
+
 
 
 
@@ -61,7 +115,9 @@ Chord
 <br>
 
 <span id="chordShow">
+
 -
+
 </span>
 
 </div>
@@ -72,11 +128,23 @@ Chord
 
 
 
+
+
+
+
+<!-- PIANO -->
+
 <div class="pianoArea">
+
 
 <div id="piano"></div>
 
+
 </div>
+
+
+
+
 
 
 
@@ -87,6 +155,7 @@ Chord
 <script src="piano.js"></script>
 
 <script src="app.js"></script>
+
 
 
 </body>
