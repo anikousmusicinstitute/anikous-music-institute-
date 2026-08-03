@@ -16,7 +16,9 @@ overflow-x:hidden;
 
 
 
-header{
+/* TOP */
+
+.top{
 
 background:#151515;
 
@@ -29,7 +31,7 @@ border-bottom:1px solid #333;
 }
 
 
-header h1{
+.top h1{
 
 font-size:32px;
 
@@ -58,7 +60,6 @@ font-size:16px;
 cursor:pointer;
 
 }
-
 
 
 button:hover{
@@ -103,7 +104,6 @@ border:0;
 display:grid;
 
 grid-template-columns:
-
 repeat(auto-fit,minmax(170px,1fr));
 
 gap:15px;
@@ -170,7 +170,7 @@ font-weight:bold;
 
 
 
-/* PIANO */
+/* PIANO AREA */
 
 .pianoArea{
 
@@ -178,11 +178,15 @@ width:100%;
 
 overflow-x:auto;
 
+overflow-y:hidden;
+
 padding:30px 10px;
 
 }
 
 
+
+/* PIANO */
 
 #piano{
 
@@ -190,13 +194,15 @@ position:relative;
 
 height:260px;
 
+min-width:2500px;
+
 margin:auto;
 
 }
 
 
 
-/* WHITE KEYS */
+/* WHITE KEY */
 
 .white{
 
@@ -208,21 +214,27 @@ width:55px;
 
 height:250px;
 
-background:white;
+background:#fff;
 
 border:1px solid #999;
 
-border-radius:0 0 8px 8px;
+border-radius:
+
+0 0 8px 8px;
 
 color:black;
 
 z-index:1;
 
+box-shadow:
+
+inset 0 -5px 8px rgba(0,0,0,.2);
+
 }
 
 
 
-/* BLACK KEYS */
+/* BLACK KEY */
 
 .black{
 
@@ -234,21 +246,23 @@ width:35px;
 
 height:155px;
 
-background:#000;
+background:#050505;
 
-border-radius:0 0 7px 7px;
+border-radius:
+
+0 0 7px 7px;
 
 z-index:10;
 
 box-shadow:
 
-0 5px 8px rgba(0,0,0,.8);
+0 5px 10px rgba(0,0,0,.8);
 
 }
 
 
 
-/* PRESS EFFECT */
+/* KEY PRESS */
 
 .white.active{
 
@@ -257,6 +271,7 @@ background:#ffd54f;
 transform:translateY(3px);
 
 }
+
 
 
 .black.active{
@@ -269,14 +284,35 @@ transform:translateY(3px);
 
 
 
+/* KEY LABEL */
+
+.white span{
+
+position:absolute;
+
+bottom:15px;
+
+width:100%;
+
+text-align:center;
+
+font-size:12px;
+
+}
+
+
+
+/* MOBILE */
+
 @media(max-width:600px){
 
 
-header h1{
+.top h1{
 
 font-size:24px;
 
 }
+
 
 
 .white{
@@ -288,11 +324,20 @@ height:220px;
 }
 
 
+
 .black{
 
 width:28px;
 
 height:135px;
+
+}
+
+
+
+#piano{
+
+min-width:2100px;
 
 }
 
