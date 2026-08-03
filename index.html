@@ -367,7 +367,8 @@ button.active{
     <button onclick="switchCamera()">Front / Back</button>
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
     <button onclick="toggleRemoteFullscreen()">Full View</button>
-    <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet (Backup)</button>
+    <!-- Google Meet Backup Button -->
+    <button onclick="openGoogleMeet()" style="background:#1a73e8;">Google Meet (Backup)</button>
   </div>
 </section>
 
@@ -731,16 +732,16 @@ async function switchCamera(){
 }
 
 /* =========================================================
-   JITSI MEET BACKUP FUNCTION (Added properly)
+   GOOGLE MEET BACKUP FUNCTION
 ========================================================= */
-function openJitsiMeet() {
+function openGoogleMeet() {
   const room = document.getElementById("roomId").value.trim();
   if(!room) {
     alert("முதலில் Room ID-ஐ உள்ளிடவும்!");
     return;
   }
-  const jitsiUrl = `https://meet.jit.si/AnikousMusicInstitute_${room}`;
-  window.open(jitsiUrl, '_blank');
+  const meetUrl = `https://meet.google.com/new`;
+  window.open(meetUrl, '_blank');
 }
 
 function toggleRemoteFullscreen(){
