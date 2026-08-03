@@ -293,7 +293,7 @@ button.active{
   margin-top:10px;
 }
 
-/* APP STYLE KEYBOARD FULLSCREEN MODE (ORG 24 / Perfect Piano Look) */
+/* APP STYLE KEYBOARD FULLSCREEN MODE */
 #pianoFullscreenContainer {
   display: none;
   position: fixed;
@@ -301,7 +301,7 @@ button.active{
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #0f172a;
+  background: #020617;
   z-index: 99999;
   flex-direction: column;
   box-sizing: border-box;
@@ -318,15 +318,16 @@ button.active{
   justify-content: space-between;
   align-items: center;
   background: #1e293b;
-  padding: 8px 14px;
+  padding: 6px 12px;
   border-bottom: 2px solid #334155;
-  height: 52px;
+  height: 48px;
+  flex-shrink: 0;
 }
 
 .fsToolbarLeft, .fsToolbarRight {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .fsIconBtn {
@@ -334,8 +335,8 @@ button.active{
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 14px;
+  padding: 5px 10px;
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -346,7 +347,7 @@ button.active{
 .fsMiniScrollPreview {
   flex: 1;
   max-width: 350px;
-  height: 28px;
+  height: 26px;
   background: #020617;
   border-radius: 4px;
   border: 1px solid #475569;
@@ -362,23 +363,24 @@ button.active{
   color: #94a3b8;
 }
 
-/* Main Piano Area inside Fullscreen */
+/* Main Piano Area inside Fullscreen - Fills entire remaining screen */
 .fsPianoBody {
   flex: 1;
   width: 100%;
+  height: calc(100vh - 48px);
   overflow-x: auto;
   overflow-y: hidden;
   background: #020617;
-  padding: 8px;
+  padding: 10px 0;
   -webkit-overflow-scrolling: touch;
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
 }
 
 #fsPiano {
   position: relative;
   height: 100%;
-  min-height: 240px;
+  min-height: calc(100vh - 70px);
 }
 
 /* MOBILE */
@@ -489,7 +491,7 @@ button.active{
 
 <!-- PROFESSIONAL APP STYLE FULLSCREEN KEYBOARD POPUP -->
 <div id="pianoFullscreenContainer">
-  <!-- App Top Toolbar like ORG/Perfect Piano -->
+  <!-- App Top Toolbar -->
   <div class="fsToolbar">
     <div class="fsToolbarLeft">
       <button class="fsIconBtn" onclick="togglePianoFullscreen()" title="Exit">⬅️</button>
@@ -1028,7 +1030,7 @@ function createOctaveButtons(){
   }
 }
 
-function buildPianoDOM(containerTarget){
+function buildPianoDOM(containerTarget, isFullscreen = false){
   containerTarget.innerHTML="";
   const start = 24; // C1
   const end = 108;  // C8
@@ -1052,6 +1054,16 @@ function buildPianoDOM(containerTarget){
       if(remoteKeys.has(n)) key.classList.add("remote-active");
 
       key.style.left = (whiteIndex * currentKeyWidth) + "px";
+      
+      // Dynamic height adjustment for fullscreen mode to fill screen nicely
+      if(isFullscreen) {
+        let fsBodyHeight = document.getElementById("fsPianoScroll").clientHeight - 20;
+        if(fsBodyHeight > 150) {
+          key.style.height = fsBodyHeight + "px";
+          key.style.borderRadius = "0";
+        }
+      }
+
       key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
       addKeyEvents(key, n);
       containerTarget.appendChild(key);
@@ -1082,6 +1094,14 @@ function buildPianoDOM(containerTarget){
 
         const blackWidth = currentKeyWidth * 0.6;
         key.style.left = (leftWhite * currentKeyWidth + (currentKeyWidth - blackWidth / 2) - (blackWidth / 2)) + "px";
+        
+        if(isFullscreen) {
+          let fsBodyHeight = document.getElementById("fsPianoScroll").clientHeight - 20;
+          if(fsBodyHeight > 150) {
+            key.style.height = (fsBodyHeight * 0.62) + "px";
+          }
+        }
+
         key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
         addKeyEvents(key, n);
         containerTarget.appendChild(key);
@@ -1092,19 +1112,21 @@ function buildPianoDOM(containerTarget){
 }
 
 function createPiano(){
-  buildPianoDOM(piano);
+  buildPianoDOM(piano, false);
   createOctaveButtons();
 }
 
 function createFullscreenPiano(){
-  buildPianoDOM(fsPiano);
+  buildPianoDOM(fsPiano, true);
 }
 
 function togglePianoFullscreen(){
   const container = document.getElementById("pianoFullscreenContainer");
   container.classList.toggle("active");
   if(container.classList.contains("active")){
-    createFullscreenPiano();
+    setTimeout(() => {
+      createFullscreenPiano();
+    }, 50);
     if(screen.orientation && screen.orientation.lock){
       screen.orientation.lock("landscape").catch(() => {});
     }
