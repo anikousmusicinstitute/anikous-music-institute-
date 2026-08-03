@@ -406,13 +406,14 @@ button.active{
 <script>
 let peer = null;
 let localStream = null;
-let useFrontCamera = true;
 let cameraOn = true;
 let micOn = true;
 let currentRole = "";
 let currentRoom = "";
 let mediaCall = null;
 let dataConnection = null;
+let videoDevices = [];
+let currentDeviceIndex = 0;
 
 const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
@@ -422,18 +423,25 @@ function status(text){
   statusBox.textContent = text;
 }
 
-async function getCameraStream(){
+async function getCameraStream(deviceId = null){
   if(localStream){
     localStream.getTracks().forEach(t=>t.stop());
   }
 
+  let videoConstraints = {
+    width: { ideal: 1280 },
+    height: { ideal: 720 }
+  };
+
+  if(deviceId){
+    videoConstraints.deviceId = { exact: deviceId };
+  } else {
+    videoConstraints.facingMode = "user";
+  }
+
   try{
     localStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: useFrontCamera ? "user" : "environment",
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      },
+      video: videoConstraints,
       audio: true
     });
 
@@ -442,10 +450,13 @@ async function getCameraStream(){
     micOn = true;
     updateMediaButtons();
     status("Camera and Microphone Connected");
+    
+    // Load available video input devices for switching
+    loadVideoDevices();
     return localStream;
   }catch(error){
     console.error(error);
-    // Fallback without exact resolution if resolution fails
+    // Fallback without exact device/resolution if it fails
     try {
       localStream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -456,12 +467,22 @@ async function getCameraStream(){
       micOn = true;
       updateMediaButtons();
       status("Camera Connected (Default Mode)");
+      loadVideoDevices();
       return localStream;
     } catch(e) {
       status("Camera or Microphone Permission Not Granted");
       alert("Camera open ஆகவில்லை.\n1. HTTPS page-ல் open செய்யுங்கள்\n2. Camera & Mic permission Allow செய்யுங்கள்");
       throw e;
     }
+  }
+}
+
+async function loadVideoDevices(){
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    videoDevices = devices.filter(d => d.kind === 'videoinput');
+  } catch(e) {
+    console.error("Error loading devices:", e);
   }
 }
 
@@ -693,16 +714,25 @@ function updateMediaButtons(){
 async function switchCamera(){
   if(!localStream) return;
 
-  const previousState = useFrontCamera;
-  useFrontCamera = !useFrontCamera;
-
   try {
+    // Refresh device list
+    await loadVideoDevices();
+
+    if(videoDevices.length <= 1){
+      alert("இந்தச் சாதனத்தில் மாற்று கேமரா (Second Camera) கிடைக்கவில்லை.");
+      return;
+    }
+
+    // Move to next camera index
+    currentDeviceIndex = (currentDeviceIndex + 1) % videoDevices.length;
+    const selectedDeviceId = videoDevices[currentDeviceIndex].deviceId;
+
     const oldStream = localStream;
     
-    // Attempt switching with facingMode
+    // Get new stream with exact device ID
     const newStream = await navigator.mediaDevices.getUserMedia({
       video: {
-        facingMode: useFrontCamera ? "user" : "environment",
+        deviceId: { exact: selectedDeviceId },
         width: { ideal: 1280 },
         height: { ideal: 720 }
       },
@@ -717,6 +747,7 @@ async function switchCamera(){
     micOn = true;
     updateMediaButtons();
 
+    // Update active Peer connection track
     if(peer){
       peer.connections && Object.values(peer.connections).forEach(list=>{
         list.forEach(call=>{
@@ -733,13 +764,12 @@ async function switchCamera(){
       });
     }
 
-    status(useFrontCamera ? "Front Camera Active" : "Back Camera Active");
+    status("Camera Switched Successfully");
 
   } catch(error) {
     console.error("Camera switch error:", error);
-    // Revert state if failed
-    useFrontCamera = previousState;
-    status("Back Camera Not Available / Failed");
+    status("Camera Switching Failed On This Device");
+    alert("இந்த மொபைலில் கேமரா மாற்றுவதில் பிழை ஏற்பட்டது.");
   }
 }
 
