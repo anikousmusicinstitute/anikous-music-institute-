@@ -28,10 +28,22 @@ const CHORDS = {
 
 
 
+const NOTE_NAMES = [
+
+"C","C#","D","D#",
+
+"E","F","F#","G",
+
+"G#","A","A#","B"
+
+];
+
+
+
 function findChord(notes){
 
 
-if(notes.length<3){
+if(notes.length < 3){
 
 return "-";
 
@@ -39,13 +51,11 @@ return "-";
 
 
 
-let root =
-notes[0]%12;
+let root = notes[0] % 12;
 
 
 
-let intervals =
-notes.map(n=>{
+let intervals = notes.map(n=>{
 
 return (n%12-root+12)%12;
 
@@ -54,11 +64,17 @@ return (n%12-root+12)%12;
 
 
 
-let result =
-CHORDS[intervals.join(",")];
+let chord = CHORDS[intervals.join(",")];
 
 
+if(chord){
 
-return result ? result : "Unknown";
+return NOTE_NAMES[root]+" "+chord;
+
+}
+
+
+return "Unknown";
+
 
 }
