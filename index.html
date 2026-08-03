@@ -6,6 +6,7 @@
 
 <title>Anikous Music Institute</title>
 
+<!-- PeerJS CDN -->
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <style>
@@ -563,7 +564,7 @@ button.active{
 <!-- PIANO -->
 <section class="panel">
   <div class="pianoHeader">
-    <h3>7 Octave Piano (20 Instruments)</h3>
+    <h3 style="color:white">7 Octave Piano (20 Instruments)</h3>
     <div class="voiceControlsGroup">
       <div class="voiceSelectorContainer">
         <label style="font-size:11px; color:#9ca3af;">Voice 1:</label>
@@ -674,13 +675,14 @@ button.active{
 <script>
 let peer = null;
 let localStream = null;
-let currentFacing = "user";
+let currentCall = null;
+let dataConnection = null;
+
+let useFrontCamera = true;
 let cameraOn = true;
 let micOn = true;
 let currentRole = "";
 let currentRoom = "";
-let mediaCall = null;
-let dataConnection = null;
 
 let currentVoice = "grand";
 let currentDualVoice = "strings";
@@ -721,19 +723,12 @@ function changeSustainTime(val){
   sendData({ type:"changeSustainTime", duration:sustainDuration });
 }
 
+// Initial Media Stream Setup
 async function getCameraStream(){
-  if(localStream){
-    localStream.getTracks().forEach(t=>t.stop());
-  }
-
   try{
     localStream = await navigator.mediaDevices.getUserMedia({
-      video:{
-        facingMode:{ ideal: currentFacing },
-        width:{ ideal: 1280 },
-        height:{ ideal: 720 }
-      },
-      audio:true
+      video: { facingMode: useFrontCamera ? "user" : "environment" },
+      audio: true
     });
 
     localVideo.srcObject = localStream;
@@ -777,31 +772,26 @@ async function startClass(){
   }
 
   const peerId = "anikous-" + room + "-" + role;
-  status("Connecting To Class");
+  status("Connecting To Class...");
 
-  peer = new Peer(peerId, {
-    host:"0.peerjs.com",
-    port:443,
-    path:"/",
-    secure:true
-  });
+  peer = new Peer(peerId);
 
   peer.on("open", id => {
-    status("Connected - " + (role==="teacher" ? "Teacher" : "Student") + " - Room - " + room);
+    status("Connected - " + (role==="teacher" ? "Teacher" : "Student") + " - Room: " + room);
     if(role==="student"){
       const teacherId = "anikous-" + room + "-teacher";
-      callPeer(teacherId);
+      connectAndCall(teacherId);
       connectData(teacherId);
     }
   });
 
   peer.on("call", call => {
-    mediaCall = call;
+    currentCall = call;
     call.answer(localStream);
     call.on("stream", remoteStream => {
       remoteVideo.srcObject = remoteStream;
       fsRemoteVideo.srcObject = remoteStream;
-      status("Live Teacher And Student Video Connected");
+      status("Live Video Connected Successfully!");
     });
     call.on("close", () => {
       remoteVideo.srcObject = null;
@@ -811,7 +801,6 @@ async function startClass(){
   });
 
   peer.on("connection", connection => {
-    dataConnection = connection;
     setupDataConnection(connection);
   });
 
@@ -825,26 +814,29 @@ async function startClass(){
   });
 }
 
-function callPeer(id){
-  if(!peer || !localStream) return;
-  mediaCall = peer.call(id, localStream);
-  mediaCall.on("stream", remoteStream => {
-    remoteVideo.srcObject = remoteStream;
-    fsRemoteVideo.srcObject = remoteStream;
-    status("Live Teacher And Student Video Connected");
-  });
-  mediaCall.on("close", () => {
-    remoteVideo.srcObject = null;
-    fsRemoteVideo.srcObject = null;
-    status("Remote User Disconnected");
-  });
+function connectAndCall(targetPeerId){
+  setTimeout(() => {
+    const call = peer.call(targetPeerId, localStream);
+    if(call){
+      currentCall = call;
+      call.on("stream", remoteStream => {
+        remoteVideo.srcObject = remoteStream;
+        fsRemoteVideo.srcObject = remoteStream;
+        status("Live Video Connected Successfully!");
+      });
+      call.on("close", () => {
+        remoteVideo.srcObject = null;
+        fsRemoteVideo.srcObject = null;
+        status("Remote User Disconnected");
+      });
+    }
+  }, 1000);
 }
 
 function connectData(id){
   if(!peer) return;
   try{
     const connection = peer.connect(id, { reliable:true });
-    dataConnection = connection;
     setupDataConnection(connection);
   }catch(error){
     console.error("Data connection error:", error);
@@ -854,7 +846,7 @@ function connectData(id){
 function setupDataConnection(connection){
   connection.on("open", () => {
     dataConnection = connection;
-    status("Keyboard Sync Connected Successfully");
+    status("Keyboard & Music Sync Connected!");
   });
   connection.on("data", data => {
     handleRemoteData(data);
@@ -895,6 +887,42 @@ function handleRemoteData(data){
     sustainDuration = data.duration;
     document.getElementById("sustainTimeRange").value = sustainDuration;
     document.getElementById("sustainTimeLabel").textContent = `Time: ${sustainDuration.toFixed(1)}s`;
+  }
+  if(data.type==="zoomChange"){
+    currentKeyWidth = data.width;
+    updateKeyZoom(false);
+  }
+  if(data.type==="toggleHoldSync"){
+    holdMode = data.hold;
+    updateHoldUI();
+  }
+  if(data.type==="toggleKeyNamesSync"){
+    showKeyNames = data.show;
+    updateKeyNamesUI();
+  }
+  if(data.type==="octaveChange"){
+    selectedOctaves = new Set(data.octaves);
+    createPiano();
+    createFullscreenPiano();
+  }
+  if(data.type==="centerPianoSync"){
+    const box = document.getElementById("pianoScroll");
+    if(box) box.scrollLeft = (box.scrollWidth - box.clientWidth)/2;
+    const fsBox = document.getElementById("fsPianoScroll");
+    if(fsBox) fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
+  }
+  if(data.type==="toggleFullscreenSync"){
+    const container = document.getElementById("pianoFullscreenContainer");
+    if(data.open) {
+      container.classList.add("active");
+      setTimeout(() => { 
+        createFullscreenPiano();
+        const fsBox = document.getElementById("fsPianoScroll");
+        if(fsBox) fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
+      }, 50);
+    } else {
+      container.classList.remove("active");
+    }
   }
   if(data.type==="keyDown"){
     const keys = document.querySelectorAll(`[data-note="${data.note}"]`);
@@ -976,28 +1004,42 @@ function toggleVideoFullscreen(){
 
 async function switchCamera(){
   if(!localStream) return;
-  currentFacing = (currentFacing === "user") ? "environment" : "user";
+
+  useFrontCamera = !useFrontCamera;
+  const constraints = {
+    video: { facingMode: useFrontCamera ? "user" : "environment" },
+    audio: true
+  };
+
   try{
-    localStream.getTracks().forEach(t => t.stop());
-    const newStream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:{ exact: currentFacing }, width:{ ideal: 1280 }, height:{ ideal: 720 } },
-      audio:true
-    });
-    localStream = newStream;
-    localVideo.srcObject = newStream;
-    fsLocalVideo.srcObject = newStream;
-    cameraOn = true; micOn = true;
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    localVideo.srcObject = localStream;
+    fsLocalVideo.srcObject = localStream;
+    
+    cameraOn = true; 
+    micOn = true;
     updateMediaButtons();
-    status("Camera Switched");
-  }catch(e){
-    status("Camera Switch Not Supported");
+
+    if(currentCall && currentCall.peerConnection){
+      const videoTrack = localStream.getVideoTracks()[0];
+      const sender = currentCall.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+      if(sender){
+        sender.replaceTrack(videoTrack);
+      }
+    }
+
+    status("Camera Switched Successfully!");
+  }catch(err){
+    console.error("Error switching camera: ", err);
+    alert("Could not switch camera.");
   }
 }
 
 function openJitsiMeet() {
   const room = document.getElementById("roomId").value.trim();
   if(!room) { alert("Room ID enter செய்யவும்!"); return; }
-  if(mediaCall) { try { mediaCall.close(); } catch(e) {} mediaCall = null; }
+  if(currentCall) { try { currentCall.close(); } catch(e) {} currentCall = null; }
   if(peer) { try { peer.destroy(); } catch(e) {} peer = null; }
   if(localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
   if(localVideo) localVideo.srcObject = null;
@@ -1006,7 +1048,7 @@ function openJitsiMeet() {
   if(fsRemoteVideo) fsRemoteVideo.srcObject = null;
   cameraOn = false; micOn = false;
   updateMediaButtons();
-  status("Switched to Jitsi Meet");
+  status("Switched to Jitsi Meet Backup");
   window.open(`https://meet.jit.si/AnikousMusicInstitute_${room}`, '_blank');
 }
 
@@ -1320,17 +1362,23 @@ let availableWidth = pianoScrollBox ? pianoScrollBox.clientWidth - 24 : window.i
 let currentKeyWidth = Math.max(12, Math.floor(availableWidth / totalWhiteKeys));
 
 function zoomIn(){
-  if(currentKeyWidth < 70){ currentKeyWidth += 5; updateKeyZoom(); }
+  if(currentKeyWidth < 70){ 
+    currentKeyWidth += 5; 
+    updateKeyZoom(true); 
+  }
 }
 
 function zoomOut(){
   let pianoScrollBox = document.getElementById("pianoScroll");
   let availableWidth = pianoScrollBox ? pianoScrollBox.clientWidth - 24 : window.innerWidth - 40;
   const minLimit = Math.max(10, Math.floor(availableWidth / totalWhiteKeys));
-  if(currentKeyWidth > minLimit){ currentKeyWidth -= 5; updateKeyZoom(); }
+  if(currentKeyWidth > minLimit){ 
+    currentKeyWidth -= 5; 
+    updateKeyZoom(true); 
+  }
 }
 
-function updateKeyZoom(){
+function updateKeyZoom(send = false){
   const root = document.documentElement;
   root.style.setProperty('--key-width', currentKeyWidth + 'px');
   root.style.setProperty('--key-height', (currentKeyWidth * 4.5) + 'px');
@@ -1338,6 +1386,9 @@ function updateKeyZoom(){
   root.style.setProperty('--black-height', (currentKeyWidth * 2.8) + 'px');
   createPiano();
   createFullscreenPiano();
+  if(send){
+    sendData({ type:"zoomChange", width: currentKeyWidth });
+  }
 }
 
 function createOctaveButtons(){
@@ -1360,6 +1411,7 @@ function createOctaveButtons(){
       }
       createPiano();
       createFullscreenPiano();
+      sendData({ type:"octaveChange", octaves: Array.from(selectedOctaves) });
     };
     box.appendChild(btn);
   }
@@ -1433,13 +1485,15 @@ function createFullscreenPiano(){ buildPianoDOM(fsPiano, true); }
 function togglePianoFullscreen(){
   const container = document.getElementById("pianoFullscreenContainer");
   container.classList.toggle("active");
-  if(container.classList.contains("active")){
+  const isOpen = container.classList.contains("active");
+  if(isOpen){
     setTimeout(() => { 
       createFullscreenPiano();
       const fsBox = document.getElementById("fsPianoScroll");
-      fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
+      if(fsBox) fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
     }, 50);
   }
+  sendData({ type: "toggleFullscreenSync", open: isOpen });
 }
 
 function addKeyEvents(key, note){
@@ -1472,18 +1526,16 @@ function addKeyEvents(key, note){
 
 function centerPiano(){
   const box = document.getElementById("pianoScroll");
-  box.scrollLeft = (box.scrollWidth - box.clientWidth)/2;
+  if(box) box.scrollLeft = (box.scrollWidth - box.clientWidth)/2;
   const fsBox = document.getElementById("fsPianoScroll");
-  fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
+  if(fsBox) fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
+  sendData({ type: "centerPianoSync" });
 }
 
 function toggleHold(){
   holdMode = !holdMode;
-  const btn = document.getElementById("holdBtn");
-  const fsBtn = document.getElementById("fsHoldBtn");
-  const btnText = holdMode ? "HOLD ON" : "HOLD OFF";
-  if(btn) { btn.textContent = btnText; btn.classList.toggle("active", holdMode); }
-  if(fsBtn) { fsBtn.textContent = holdMode ? "HOLD ON" : "HOLD"; fsBtn.classList.toggle("active", holdMode); }
+  updateHoldUI();
+  sendData({ type: "toggleHoldSync", hold: holdMode });
 
   if(!holdMode){
     [...activeKeys].forEach(note=>{
@@ -1498,8 +1550,21 @@ function toggleHold(){
   }
 }
 
+function updateHoldUI(){
+  const btn = document.getElementById("holdBtn");
+  const fsBtn = document.getElementById("fsHoldBtn");
+  const btnText = holdMode ? "HOLD ON" : "HOLD OFF";
+  if(btn) { btn.textContent = btnText; btn.classList.toggle("active", holdMode); }
+  if(fsBtn) { fsBtn.textContent = holdMode ? "HOLD ON" : "HOLD"; fsBtn.classList.toggle("active", holdMode); }
+}
+
 function toggleKeyNames(){
   showKeyNames = !showKeyNames;
+  updateKeyNamesUI();
+  sendData({ type: "toggleKeyNamesSync", show: showKeyNames });
+}
+
+function updateKeyNamesUI(){
   const toggleBtn = document.getElementById("keyToggle");
   if(toggleBtn) toggleBtn.textContent = showKeyNames ? "Key Names ON" : "Key Names OFF";
   document.querySelectorAll(".white span,.black span").forEach(el=>{
@@ -1564,7 +1629,10 @@ function handleMIDI(event){
   }
 }
 
-updateKeyZoom();
+updateKeyZoom(false);
+
+const pScroll = document.getElementById("pianoScroll");
+if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth)/2;
 
 document.addEventListener("pointerdown", () => {
   if(audioContext && audioContext.state==="suspended") audioContext.resume();
