@@ -63,32 +63,40 @@ key.innerHTML =
 
 white++;
 
-
 }
 
 
 
-key.addEventListener("pointerdown",(e)=>{
+key.addEventListener("touchstart",(e)=>{
 
 e.preventDefault();
 
-key.setPointerCapture(e.pointerId);
+pressKey(i,key);
+
+
+},{passive:false});
+
+
+
+key.addEventListener("touchend",(e)=>{
+
+e.preventDefault();
+
+releaseKey(i,key);
+
+
+},{passive:false});
+
+
+
+key.addEventListener("mousedown",()=>{
 
 pressKey(i,key);
 
 });
 
 
-
-key.addEventListener("pointerup",()=>{
-
-releaseKey(i,key);
-
-});
-
-
-
-key.addEventListener("pointercancel",()=>{
+key.addEventListener("mouseup",()=>{
 
 releaseKey(i,key);
 
@@ -112,7 +120,11 @@ piano.style.width =
 
 
 
+
 function pressKey(note,key){
+
+
+if(activeKeys.has(note)) return;
 
 
 key.classList.add("active");
@@ -122,7 +134,7 @@ activeKeys.add(note);
 
 
 
-if(typeof playSound === "function"){
+if(typeof playSound==="function"){
 
 playSound(note);
 
@@ -149,7 +161,7 @@ activeKeys.delete(note);
 
 
 
-if(typeof stopSound === "function"){
+if(typeof stopSound==="function"){
 
 stopSound(note);
 
@@ -188,7 +200,7 @@ names.length ? names.join(" ") : "-";
 
 
 
-if(typeof findChord === "function"){
+if(typeof findChord==="function"){
 
 
 document.getElementById("chordShow").innerHTML =
@@ -200,11 +212,9 @@ findChord([...activeKeys].sort((a,b)=>a-b));
 else{
 
 
-document.getElementById("chordShow").innerHTML = "-";
-
+document.getElementById("chordShow").innerHTML="-";
 
 }
-
 
 
 }
