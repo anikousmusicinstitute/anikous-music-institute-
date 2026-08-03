@@ -9,6 +9,13 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <style>
+:root {
+  --key-width: 32px;
+  --key-height: 200px;
+  --black-width: 20px;
+  --black-height: 125px;
+}
+
 *{
   box-sizing:border-box;
   margin:0;
@@ -198,15 +205,15 @@ button.active{
 
 #piano{
   position:relative;
-  height:250px;
-  min-width:100px;
+  height: calc(var(--key-height) + 15px);
+  width: 100%;
 }
 
 .white{
   position:absolute;
   top:0;
-  width:48px;
-  height:235px;
+  width: var(--key-width);
+  height: var(--key-height);
   background:linear-gradient(to bottom,#fff,#d1d5db);
   border:1px solid #777;
   border-radius:0 0 7px 7px;
@@ -216,7 +223,7 @@ button.active{
   align-items:flex-end;
   justify-content:center;
   padding-bottom:8px;
-  font-size:10px;
+  font-size:9px;
   user-select:none;
   touch-action:none;
 }
@@ -242,8 +249,8 @@ button.active{
 .black{
   position:absolute;
   top:0;
-  width:30px;
-  height:145px;
+  width: var(--black-width);
+  height: var(--black-height);
   background:linear-gradient(#333,#000);
   border:1px solid #111;
   border-radius:0 0 6px 6px;
@@ -253,7 +260,7 @@ button.active{
   align-items:flex-end;
   justify-content:center;
   padding-bottom:6px;
-  font-size:8px;
+  font-size:7px;
   user-select:none;
   touch-action:none;
 }
@@ -286,6 +293,94 @@ button.active{
   margin-top:10px;
 }
 
+/* APP STYLE KEYBOARD FULLSCREEN MODE (ORG 24 / Perfect Piano Look) */
+#pianoFullscreenContainer {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0f172a;
+  z-index: 99999;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+#pianoFullscreenContainer.active {
+  display: flex;
+}
+
+/* App Top Toolbar */
+.fsToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e293b;
+  padding: 8px 14px;
+  border-bottom: 2px solid #334155;
+  height: 52px;
+}
+
+.fsToolbarLeft, .fsToolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fsIconBtn {
+  background: #334155;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.fsIconBtn:active {
+  background: #475569;
+}
+
+.fsMiniScrollPreview {
+  flex: 1;
+  max-width: 350px;
+  height: 28px;
+  background: #020617;
+  border-radius: 4px;
+  border: 1px solid #475569;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fsMiniScrollPreview span {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* Main Piano Area inside Fullscreen */
+.fsPianoBody {
+  flex: 1;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: #020617;
+  padding: 8px;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  align-items: stretch;
+}
+
+#fsPiano {
+  position: relative;
+  height: 100%;
+  min-height: 240px;
+}
+
 /* MOBILE */
 
 @media(max-width:650px){
@@ -300,20 +395,6 @@ button.active{
 
   .info{
     grid-template-columns:1fr;
-  }
-
-  .white{
-    width:44px;
-    height:220px;
-  }
-
-  .black{
-    width:28px;
-    height:135px;
-  }
-
-  #piano{
-    height:235px;
   }
 
   .top h1{
@@ -366,7 +447,6 @@ button.active{
     <button id="cameraBtn" onclick="toggleCamera()">Camera ON</button>
     <button onclick="switchCamera()">Front / Back</button>
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
-    <button onclick="toggleRemoteFullscreen()">Full View</button>
     <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet (Backup)</button>
   </div>
 </section>
@@ -390,7 +470,10 @@ button.active{
   <div class="pianoHeader">
     <h3>7 Octave Piano</h3>
     <div class="controls">
+      <button onclick="zoomIn()">Zoom +</button>
+      <button onclick="zoomOut()">Zoom -</button>
       <button id="holdBtn" onclick="toggleHold()">HOLD OFF</button>
+      <button onclick="togglePianoFullscreen()" style="background:#16a34a;">Full View</button>
       <button onclick="connectMIDI()">MIDI CONNECT</button>
     </div>
   </div>
@@ -403,6 +486,31 @@ button.active{
     <button onclick="centerPiano()">Center Piano</button>
   </div>
 </section>
+
+<!-- PROFESSIONAL APP STYLE FULLSCREEN KEYBOARD POPUP -->
+<div id="pianoFullscreenContainer">
+  <!-- App Top Toolbar like ORG/Perfect Piano -->
+  <div class="fsToolbar">
+    <div class="fsToolbarLeft">
+      <button class="fsIconBtn" onclick="togglePianoFullscreen()" title="Exit">⬅️</button>
+      <button class="fsIconBtn" onclick="toggleHold()" id="fsHoldBtn">HOLD</button>
+    </div>
+    
+    <div class="fsMiniScrollPreview">
+      <span id="fsChordDisplay">Anikous Piano Full View</span>
+    </div>
+
+    <div class="fsToolbarRight">
+      <button class="fsIconBtn" onclick="toggleKeyNames()">Notes</button>
+      <button class="fsIconBtn" onclick="togglePianoFullscreen()" style="background:#dc2626;">✕ Exit</button>
+    </div>
+  </div>
+
+  <!-- Keyboard Piano Area -->
+  <div class="fsPianoBody" id="fsPianoScroll">
+    <div id="fsPiano"></div>
+  </div>
+</div>
 
 <script>
 let peer = null;
@@ -574,12 +682,12 @@ function sendData(data){
 function handleRemoteData(data){
   if(!data || !data.type) return;
   if(data.type==="keyDown"){
-    const key = document.querySelector(`[data-note="${data.note}"]`);
-    if(key) pressRemoteKey(data.note, key);
+    const keys = document.querySelectorAll(`[data-note="${data.note}"]`);
+    keys.forEach(key => pressRemoteKey(data.note, key));
   }
   if(data.type==="keyUp"){
-    const key = document.querySelector(`[data-note="${data.note}"]`);
-    if(key) releaseRemoteKey(data.note, key);
+    const keys = document.querySelectorAll(`[data-note="${data.note}"]`);
+    keys.forEach(key => releaseRemoteKey(data.note, key));
   }
 }
 
@@ -679,60 +787,59 @@ function updateMediaButtons(){
 
 async function switchCamera(){
   if(!localStream) return;
-  currentFacing = currentFacing==="user" ? "environment" : "user";
+  currentFacing = (currentFacing === "user") ? "environment" : "user";
 
   try{
-    const oldStream = localStream;
+    localStream.getTracks().forEach(t => t.stop());
+
     const newStream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:{ exact: currentFacing } },
+      video:{ 
+        facingMode:{ exact: currentFacing },
+        width:{ ideal: 1280 },
+        height:{ ideal: 720 }
+      },
       audio:true
     });
 
     localStream = newStream;
     localVideo.srcObject = newStream;
-    oldStream.getTracks().forEach(t=>t.stop());
-
     cameraOn = true;
     micOn = true;
     updateMediaButtons();
 
-    if(peer){
-      peer.connections && Object.values(peer.connections).forEach(list=>{
-        list.forEach(call=>{
-          if(call.peerConnection){
-            const senders = call.peerConnection.getSenders();
-            const newVideo = newStream.getVideoTracks()[0];
-            const newAudio = newStream.getAudioTracks()[0];
-            senders.forEach(sender=>{
-              if(sender.track && sender.track.kind==="video" && newVideo) sender.replaceTrack(newVideo);
-              if(sender.track && sender.track.kind==="audio" && newAudio) sender.replaceTrack(newAudio);
-            });
-          }
-        });
+    if(mediaCall && mediaCall.peerConnection){
+      const senders = mediaCall.peerConnection.getSenders();
+      const newVideoTrack = newStream.getVideoTracks()[0];
+      const newAudioTrack = newStream.getAudioTracks()[0];
+      
+      senders.forEach(sender => {
+        if(sender.track && sender.track.kind === "video" && newVideoTrack){
+          sender.replaceTrack(newVideoTrack);
+        }
+        if(sender.track && sender.track.kind === "audio" && newAudioTrack){
+          sender.replaceTrack(newAudioTrack);
+        }
       });
     }
 
-    status(currentFacing==="user" ? "Front Camera Active" : "Back Camera Active");
+    status(currentFacing === "user" ? "Front Camera Active" : "Back Camera Active");
   }catch(error){
-    console.error(error);
+    console.error("Exact facingMode failed, trying ideal:", error);
     try{
-      const newStream = await navigator.mediaDevices.getUserMedia({
+      const fallbackStream = await navigator.mediaDevices.getUserMedia({
         video:{ facingMode:{ ideal: currentFacing } },
         audio:true
       });
-      localStream.getTracks().forEach(t=>t.stop());
-      localStream = newStream;
-      localVideo.srcObject = newStream;
+      localStream = fallbackStream;
+      localVideo.srcObject = fallbackStream;
       status("Camera Switched Successfully");
     }catch(e){
       status("Camera Switching Not Supported On This Device");
+      alert("Indha device-il camera switch seiyavillai.");
     }
   }
 }
 
-/* =========================================================
-   JITSI MEET BACKUP FUNCTION (Automatic Local Camera/Mic Stop)
-========================================================= */
 function openJitsiMeet() {
   const room = document.getElementById("roomId").value.trim();
   if(!room) {
@@ -740,32 +847,33 @@ function openJitsiMeet() {
     return;
   }
 
-  // 1. Jitsi-க்குள் போவதற்கு முன், நமது ஆப்பில் ஓடும் கேமரா மற்றும் மைக்கை ஆட்டோமேட்டிக்காக ஆஃப் செய்கிறது
+  if(mediaCall) {
+    try { mediaCall.close(); } catch(e) {}
+    mediaCall = null;
+  }
+  
+  if(peer) {
+    try { peer.destroy(); } catch(e) {}
+    peer = null;
+  }
+
   if(localStream) {
     localStream.getTracks().forEach(track => {
       track.stop();
     });
     localStream = null;
-    localVideo.srcObject = null;
   }
+
+  if(localVideo) localVideo.srcObject = null;
+  if(remoteVideo) remoteVideo.srcObject = null;
 
   cameraOn = false;
   micOn = false;
   updateMediaButtons();
-  status("Switched to Jitsi Meet Backup");
+  status("Switched to Jitsi Meet - Camera Released");
 
-  // 2. Jitsi Meet URL ஓபன் ஆகுதல்
   const jitsiUrl = `https://meet.jit.si/AnikousMusicInstitute_${room}`;
   window.open(jitsiUrl, '_blank');
-}
-
-function toggleRemoteFullscreen(){
-  const v = document.getElementById("remoteVideo");
-  if(v.requestFullscreen){
-    v.requestFullscreen();
-  }else if(v.webkitEnterFullscreen){
-    v.webkitEnterFullscreen();
-  }
 }
 
 const NOTE_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
@@ -777,6 +885,7 @@ let showKeyNames = true;
 let audioContext = null;
 let sounds = {};
 const piano = document.getElementById("piano");
+const fsPiano = document.getElementById("fsPiano");
 
 function initAudio(){
   if(!audioContext){
@@ -837,7 +946,10 @@ function noteName(note){
 function pressKey(note, key){
   if(activeKeys.has(note)) return;
   activeKeys.add(note);
-  key.classList.add("local-active");
+  
+  const keys = document.querySelectorAll(`[data-note="${note}"]`);
+  keys.forEach(k => k.classList.add("local-active"));
+
   playNote(note);
   sendData({ type:"keyDown", note:note });
   updateDisplay();
@@ -846,36 +958,115 @@ function pressKey(note, key){
 function releaseKey(note, key){
   if(holdMode) return;
   activeKeys.delete(note);
-  key.classList.remove("local-active");
+  
+  const keys = document.querySelectorAll(`[data-note="${note}"]`);
+  keys.forEach(k => k.classList.remove("local-active"));
+
   stopNote(note);
   sendData({ type:"keyUp", note:note });
   updateDisplay();
 }
 
-function createPiano(){
-  piano.innerHTML="";
-  const start = 24;
-  const end = 108;
+let selectedOctaves = new Set();
+
+const totalWhiteKeys = 50;
+let pianoScrollBox = document.getElementById("pianoScroll");
+let availableWidth = pianoScrollBox ? pianoScrollBox.clientWidth - 24 : window.innerWidth - 40;
+let currentKeyWidth = Math.max(12, Math.floor(availableWidth / totalWhiteKeys));
+
+function zoomIn(){
+  if(currentKeyWidth < 70){
+    currentKeyWidth += 5;
+    updateKeyZoom();
+  }
+}
+
+function zoomOut(){
+  let pianoScrollBox = document.getElementById("pianoScroll");
+  let availableWidth = pianoScrollBox ? pianoScrollBox.clientWidth - 24 : window.innerWidth - 40;
+  const minLimit = Math.max(10, Math.floor(availableWidth / totalWhiteKeys));
+  if(currentKeyWidth > minLimit){
+    currentKeyWidth -= 5;
+    updateKeyZoom();
+  }
+}
+
+function updateKeyZoom(){
+  const root = document.documentElement;
+  root.style.setProperty('--key-width', currentKeyWidth + 'px');
+  root.style.setProperty('--key-height', (currentKeyWidth * 4.5) + 'px');
+  root.style.setProperty('--black-width', (currentKeyWidth * 0.6) + 'px');
+  root.style.setProperty('--black-height', (currentKeyWidth * 2.8) + 'px');
+  createPiano();
+  createFullscreenPiano();
+}
+
+function createOctaveButtons(){
+  const box = document.getElementById("octaveButtons");
+  box.innerHTML = "";
+  for(let o=1; o<=7; o++){
+    const btn = document.createElement("button");
+    btn.textContent = "Oct "+o;
+    btn.dataset.octave = o;
+    if(selectedOctaves.has(o)){
+      btn.classList.add("active");
+    }
+    
+    btn.onclick = function(){
+      const octaveNum = parseInt(this.dataset.octave);
+      if(selectedOctaves.has(octaveNum)){
+        selectedOctaves.delete(octaveNum);
+        btn.classList.remove("active");
+      } else {
+        selectedOctaves.add(octaveNum);
+        btn.classList.add("active");
+      }
+      createPiano();
+      createFullscreenPiano();
+    };
+    box.appendChild(btn);
+  }
+}
+
+function buildPianoDOM(containerTarget){
+  containerTarget.innerHTML="";
+  const start = 24; // C1
+  const end = 108;  // C8
   let whiteIndex = 0;
   const whitePositions = {};
 
   for(let n=start; n<=end; n++){
     const pc = n%12;
+    const octaveNum = Math.floor((n - 12) / 12);
+
+    if(selectedOctaves.size > 0 && !selectedOctaves.has(octaveNum)){
+      continue;
+    }
+
     if(!BLACK_KEYS.includes(pc)){
       whitePositions[n] = whiteIndex;
       const key = document.createElement("div");
       key.className = "white";
       key.dataset.note = n;
-      key.style.left = (whiteIndex*48)+"px";
-      key.innerHTML = `<span>${noteName(n)}</span>`;
+      if(activeKeys.has(n)) key.classList.add("local-active");
+      if(remoteKeys.has(n)) key.classList.add("remote-active");
+
+      key.style.left = (whiteIndex * currentKeyWidth) + "px";
+      key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
       addKeyEvents(key, n);
-      piano.appendChild(key);
+      containerTarget.appendChild(key);
       whiteIndex++;
     }
   }
 
   for(let n=start; n<=end; n++){
     const pc = n%12;
+    const octaveNum = Math.floor((n - 12) / 12);
+
+    if(selectedOctaves.size > 0 && !selectedOctaves.has(octaveNum)){
+      continue;
+    }
+
     if(BLACK_KEYS.includes(pc)){
       let previous = n-1;
       while(previous>=start && BLACK_KEYS.includes(previous%12)){
@@ -886,15 +1077,42 @@ function createPiano(){
         const key = document.createElement("div");
         key.className = "black";
         key.dataset.note = n;
-        key.style.left = (leftWhite*48+32)+"px";
-        key.innerHTML = `<span>${noteName(n)}</span>`;
+        if(activeKeys.has(n)) key.classList.add("local-active");
+        if(remoteKeys.has(n)) key.classList.add("remote-active");
+
+        const blackWidth = currentKeyWidth * 0.6;
+        key.style.left = (leftWhite * currentKeyWidth + (currentKeyWidth - blackWidth / 2) - (blackWidth / 2)) + "px";
+        key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
         addKeyEvents(key, n);
-        piano.appendChild(key);
+        containerTarget.appendChild(key);
       }
     }
   }
-  piano.style.width = (whiteIndex*48)+"px";
+  containerTarget.style.width = (whiteIndex * currentKeyWidth) + "px";
+}
+
+function createPiano(){
+  buildPianoDOM(piano);
   createOctaveButtons();
+}
+
+function createFullscreenPiano(){
+  buildPianoDOM(fsPiano);
+}
+
+function togglePianoFullscreen(){
+  const container = document.getElementById("pianoFullscreenContainer");
+  container.classList.toggle("active");
+  if(container.classList.contains("active")){
+    createFullscreenPiano();
+    if(screen.orientation && screen.orientation.lock){
+      screen.orientation.lock("landscape").catch(() => {});
+    }
+  } else {
+    if(screen.orientation && screen.orientation.unlock){
+      screen.orientation.unlock();
+    }
+  }
 }
 
 function addKeyEvents(key, note){
@@ -925,38 +1143,26 @@ function addKeyEvents(key, note){
   });
 }
 
-function createOctaveButtons(){
-  const box = document.getElementById("octaveButtons");
-  box.innerHTML = "";
-  for(let o=1; o<=7; o++){
-    const btn = document.createElement("button");
-    btn.textContent = "Oct "+o;
-    btn.onclick = function(){
-      const note = 24 + (o-1)*12;
-      const el = document.querySelector(`[data-note="${note}"]`);
-      if(el){
-        el.scrollIntoView({ behavior:"smooth", inline:"center", block:"nearest" });
-      }
-    };
-    box.appendChild(btn);
-  }
-}
-
 function centerPiano(){
   const box = document.getElementById("pianoScroll");
   box.scrollLeft = (box.scrollWidth - box.clientWidth)/2;
+  const fsBox = document.getElementById("fsPianoScroll");
+  fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
 }
 
 function toggleHold(){
   holdMode = !holdMode;
   const btn = document.getElementById("holdBtn");
-  btn.textContent = holdMode ? "HOLD ON" : "HOLD OFF";
-  btn.classList.toggle("active", holdMode);
+  const fsBtn = document.getElementById("fsHoldBtn");
+  
+  const btnText = holdMode ? "HOLD ON" : "HOLD OFF";
+  if(btn) { btn.textContent = btnText; btn.classList.toggle("active", holdMode); }
+  if(fsBtn) { fsBtn.textContent = holdMode ? "HOLD ON" : "HOLD"; fsBtn.classList.toggle("active", holdMode); }
 
   if(!holdMode){
     [...activeKeys].forEach(note=>{
-      const key = document.querySelector(`[data-note="${note}"]`);
-      if(key) key.classList.remove("local-active");
+      const keys = document.querySelectorAll(`[data-note="${note}"]`);
+      keys.forEach(k => k.classList.remove("local-active"));
       stopNote(note);
       sendData({ type:"keyUp", note:note });
     });
@@ -968,7 +1174,9 @@ function toggleHold(){
 
 function toggleKeyNames(){
   showKeyNames = !showKeyNames;
-  document.getElementById("keyToggle").textContent = showKeyNames ? "Key Names ON" : "Key Names OFF";
+  const toggleBtn = document.getElementById("keyToggle");
+  if(toggleBtn) toggleBtn.textContent = showKeyNames ? "Key Names ON" : "Key Names OFF";
+  
   document.querySelectorAll(".white span,.black span").forEach(el=>{
     el.style.display = showKeyNames ? "block" : "none";
   });
@@ -979,8 +1187,16 @@ function updateDisplay(){
   const remote = [...remoteKeys];
   const all = [...new Set([...local, ...remote])].sort((a,b)=>a-b);
 
-  document.getElementById("keyShow").textContent = all.length ? all.map(noteName).join(" ") : "-";
-  document.getElementById("chordShow").textContent = all.length>=3 ? findChord(all) : "-";
+  const keyText = all.length ? all.map(noteName).join(" ") : "-";
+  const chordText = all.length>=3 ? findChord(all) : "-";
+
+  const keyShow = document.getElementById("keyShow");
+  const chordShow = document.getElementById("chordShow");
+  const fsChordDisplay = document.getElementById("fsChordDisplay");
+
+  if(keyShow) keyShow.textContent = keyText;
+  if(chordShow) chordShow.textContent = chordText;
+  if(fsChordDisplay) fsChordDisplay.textContent = all.length ? `${keyText} (${chordText})` : "Anikous Piano Full View";
 }
 
 const CHORDS = {
@@ -1070,19 +1286,21 @@ function handleMIDI(errorEvent){
   const command = data[0] & 0xf0;
   const note = data[1];
   const velocity = data[2] || 0;
-  const key = document.querySelector(`[data-note="${note}"]`);
 
   if(command===0x90 && velocity>0){
-    if(key) pressKey(note, key);
+    const keys = document.querySelectorAll(`[data-note="${note}"]`);
+    keys.active = true;
+    keys.forEach(key => pressKey(note, key));
     return;
   }
 
   if(command===0x80 || (command===0x90 && velocity===0)){
-    if(key) releaseKey(note, key);
+    const keys = document.querySelectorAll(`[data-note="${note}"]`);
+    keys.forEach(key => releaseKey(note, key));
   }
 }
 
-createPiano();
+updateKeyZoom();
 
 document.addEventListener("pointerdown", () => {
   if(audioContext && audioContext.state==="suspended"){
