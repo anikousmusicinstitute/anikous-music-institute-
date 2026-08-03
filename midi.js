@@ -1,115 +1,64 @@
-let midi = null;
-
+let midi=null;
 
 async function connectMIDI(){
 
-
-try{
-
-
-midi =
-await navigator.requestMIDIAccess();
-
-
-
-midi.inputs.forEach(device=>{
-
-
-device.onmidimessage =
-midiMessage;
-
-
-});
-
-
-
-alert("MIDI Connected 🎹");
-
-
-}
-
-catch(error){
-
+if(!navigator.requestMIDIAccess){
 
 alert("MIDI Not Supported");
 
+return;
 
 }
 
+try{
+
+midi=await navigator.requestMIDIAccess();
+
+midi.inputs.forEach(input=>{
+
+input.onmidimessage=midiMessage;
+
+});
+
+alert("🎹 MIDI Connected");
+
+}catch(err){
+
+alert("MIDI Connection Failed");
 
 }
 
+}
 
 
 function midiMessage(event){
 
+const [status,note,velocity]=event.data;
 
-let data =
-event.data;
+const command=status&0xf0;
 
-
-
-let command =
-data[0] & 0xf0;
-
-
-
-let note =
-data[1];
-
-
-
-let velocity =
-data[2];
-
-
+const key=document.querySelector(
+'[data-note="'+note+'"]'
+);
 
 if(command===144 && velocity>0){
 
+if(key){
 
-playSound(note);
-
-
-
-document.getElementById("keyShow").innerHTML =
-note;
-
-
+pressKey(note,key);
 
 }
 
+}
 
+if(command===128 || (command===144 && velocity===0)){
 
-if(command===128 || 
-(command===144 && velocity===0)){
+if(key){
 
-
-stopSound(note);
-
+releaseKey(note,key);
 
 }
 
-
 }
 
-
-
-window.addEventListener(
-"load",
-()=>{
-
-
-let btn =
-document.querySelector("button");
-
-
-if(btn){
-
-btn.onclick=connectMIDI;
-
 }
-
-
-}
-
-);
