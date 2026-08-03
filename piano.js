@@ -24,7 +24,6 @@ let holdMode = false;
 
 
 
-
 function createPiano(){
 
 let white = 0;
@@ -48,7 +47,7 @@ key.dataset.note = i;
 if(name.includes("#")){
 
 
-key.className = "black";
+key.className="black";
 
 
 key.style.left =
@@ -59,7 +58,7 @@ key.style.left =
 else{
 
 
-key.className = "white";
+key.className="white";
 
 
 key.style.left =
@@ -73,8 +72,6 @@ key.innerHTML =
 white++;
 
 }
-
-
 
 
 
@@ -94,13 +91,10 @@ key:key
 );
 
 
-
 pressKey(i,key);
 
 
 });
-
-
 
 
 
@@ -112,8 +106,10 @@ key.addEventListener("pointerup",(e)=>{
 let data = activePointers.get(e.pointerId);
 
 
-
 if(data){
+
+
+activePointers.delete(e.pointerId);
 
 
 
@@ -129,6 +125,29 @@ data.key
 }
 
 
+}
+
+
+});
+
+
+
+
+
+key.addEventListener("pointerleave",(e)=>{
+
+
+let data = activePointers.get(e.pointerId);
+
+
+if(data && !holdMode){
+
+
+releaseKey(
+data.note,
+data.key
+);
+
 
 activePointers.delete(e.pointerId);
 
@@ -136,10 +155,7 @@ activePointers.delete(e.pointerId);
 }
 
 
-
 });
-
-
 
 
 
@@ -149,7 +165,6 @@ key.addEventListener("pointercancel",(e)=>{
 
 
 let data = activePointers.get(e.pointerId);
-
 
 
 if(data){
@@ -167,9 +182,7 @@ activePointers.delete(e.pointerId);
 }
 
 
-
 });
-
 
 
 
@@ -194,20 +207,16 @@ piano.style.width =
 
 
 
-
 function pressKey(note,key){
 
 
-
 if(activeKeys.has(note)) return;
-
 
 
 key.classList.add("active");
 
 
 activeKeys.add(note);
-
 
 
 
@@ -231,16 +240,13 @@ updateDisplay();
 
 
 
-
 function releaseKey(note,key){
-
 
 
 key.classList.remove("active");
 
 
 activeKeys.delete(note);
-
 
 
 
@@ -264,9 +270,7 @@ updateDisplay();
 
 
 
-
 function updateDisplay(){
-
 
 
 let names=[...activeKeys]
@@ -283,23 +287,16 @@ return notes[n%12]+
 
 
 
-
-
 document.getElementById("keyShow").innerHTML =
 
 
 (showKeys && names.length)
 
 ?
-
 names.join(" ")
 
 :
-
 "-";
-
-
-
 
 
 
@@ -309,14 +306,12 @@ names.join(" ")
 if(showChords && activeKeys.size>=3 && typeof findChord==="function"){
 
 
-
 document.getElementById("chordShow").innerHTML =
 
 
 findChord(
 [...activeKeys].sort((a,b)=>a-b)
 );
-
 
 
 }
@@ -329,9 +324,7 @@ document.getElementById("chordShow").innerHTML="-";
 }
 
 
-
 }
-
 
 
 
@@ -374,7 +367,6 @@ updateDisplay();
 
 
 
-
 function toggleChords(){
 
 
@@ -409,7 +401,6 @@ updateDisplay();
 
 
 
-
 function toggleHold(){
 
 
@@ -429,7 +420,6 @@ holdMode
 "✋ HOLD ON"
 :
 "✋ HOLD OFF";
-
 
 
 }
