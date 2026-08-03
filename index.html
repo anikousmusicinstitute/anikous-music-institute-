@@ -406,13 +406,15 @@ button.active{
 <script>
 let peer = null;
 let localStream = null;
-let useFrontCamera = true;
 let cameraOn = true;
 let micOn = true;
 let currentRole = "";
 let currentRoom = "";
 let mediaCall = null;
 let dataConnection = null;
+
+let videoDevices = [];
+let currentDeviceIndex = 0;
 
 const localVideo = document.getElementById("localVideo");
 const remoteVideo = document.getElementById("remoteVideo");
@@ -422,19 +424,32 @@ function status(text){
   statusBox.textContent = text;
 }
 
+async function updateVideoDevices() {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    videoDevices = devices.filter(d => d.kind === 'videoinput');
+  } catch (e) {
+    console.error("Error enumerating devices:", e);
+  }
+}
+
 async function getCameraStream(){
   if(localStream){
     localStream.getTracks().forEach(t=>t.stop());
   }
 
-  try{
-    localStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: useFrontCamera ? "user" : "environment"
-      },
-      audio: true
-    });
+  await updateVideoDevices();
 
+  let constraints = { video: true, audio: true };
+
+  if(videoDevices.length > 0 && videoDevices[currentDeviceIndex]){
+    constraints.video = { deviceId: { exact: videoDevices[currentDeviceIndex].deviceId } };
+  } else {
+    constraints.video = { facingMode: "user" };
+  }
+
+  try{
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
     localVideo.srcObject = localStream;
     cameraOn = true;
     micOn = true;
@@ -442,12 +457,9 @@ async function getCameraStream(){
     status("Camera and Microphone Connected");
     return localStream;
   }catch(error){
-    console.error(error);
+    console.error("Constraint camera error, trying fallback:", error);
     try {
-      localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      });
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       localVideo.srcObject = localStream;
       cameraOn = true;
       micOn = true;
@@ -689,27 +701,48 @@ function updateMediaButtons(){
 
 async function switchCamera(){
   try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices.filter(d => d.kind === 'videoinput');
-    
+    await updateVideoDevices();
+
     if(videoDevices.length < 2){
-      alert("இந்த மொபைலில் கூடுதல் கேமரா கண்டறியப்படவில்லை.");
-      return;
+      // If enumerateDevices doesn't list multiple, try facingMode fallback toggle
+      try {
+        const oldStream = localStream;
+        const newStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { exact: "environment" } },
+          audio: true
+        });
+        localStream = newStream;
+        localVideo.srcObject = newStream;
+        if(oldStream) oldStream.getTracks().forEach(t => t.stop());
+        cameraOn = true;
+        micOn = true;
+        updateMediaButtons();
+        status("Camera Switched to Back (facingMode)");
+        updatePeerTracks(newStream);
+        return;
+      } catch(err2) {
+        const oldStream = localStream;
+        const newStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: true
+        });
+        localStream = newStream;
+        localVideo.srcObject = newStream;
+        if(oldStream) oldStream.getTracks().forEach(t => t.stop());
+        cameraOn = true;
+        micOn = true;
+        updateMediaButtons();
+        status("Camera Switched to Front (facingMode)");
+        updatePeerTracks(newStream);
+        return;
+      }
     }
 
-    const currentTrack = localStream ? localStream.getVideoTracks()[0] : null;
-    let currentDeviceId = "";
-    if(currentTrack && currentTrack.getSettings){
-      currentDeviceId = currentTrack.getSettings().deviceId;
-    }
-
-    let nextDevice = videoDevices.find(d => d.deviceId !== currentDeviceId);
-    if(!nextDevice){
-      nextDevice = videoDevices[0];
-    }
+    // Switch to next device index safely
+    currentDeviceIndex = (currentDeviceIndex + 1) % videoDevices.length;
+    const nextDevice = videoDevices[currentDeviceIndex];
 
     const oldStream = localStream;
-    
     const newStream = await navigator.mediaDevices.getUserMedia({
       video: { deviceId: { exact: nextDevice.deviceId } },
       audio: true
@@ -723,45 +756,31 @@ async function switchCamera(){
     micOn = true;
     updateMediaButtons();
 
-    if(peer){
-      peer.connections && Object.values(peer.connections).forEach(list=>{
-        list.forEach(call=>{
-          if(call.peerConnection){
-            const senders = call.peerConnection.getSenders();
-            const newVideo = newStream.getVideoTracks()[0];
-            const newAudio = newStream.getAudioTracks()[0];
-            senders.forEach(sender=>{
-              if(sender.track && sender.track.kind==="video" && newVideo) sender.replaceTrack(newVideo);
-              if(sender.track && sender.track.kind==="audio" && newAudio) sender.replaceTrack(newAudio);
-            });
-          }
-        });
-      });
-    }
-
+    updatePeerTracks(newStream);
     status("Camera Switched Successfully");
 
   } catch(error) {
     console.error("Camera switch error:", error);
-    // Fallback method using facingMode if deviceId exact match fails
-    try {
-      useFrontCamera = !useFrontCamera;
-      const oldStream = localStream;
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: useFrontCamera ? "user" : "environment" },
-        audio: true
+    status("Camera Switch Not Supported On This Device");
+    alert("இந்த மொபைலில் கேமரா மாற்றுவது ஆதரிக்கப்படவில்லை (Camera Switch Not Supported).");
+  }
+}
+
+function updatePeerTracks(newStream){
+  if(peer){
+    peer.connections && Object.values(peer.connections).forEach(list=>{
+      list.forEach(call=>{
+        if(call.peerConnection){
+          const senders = call.peerConnection.getSenders();
+          const newVideo = newStream.getVideoTracks()[0];
+          const newAudio = newStream.getAudioTracks()[0];
+          senders.forEach(sender=>{
+            if(sender.track && sender.track.kind==="video" && newVideo) sender.replaceTrack(newVideo);
+            if(sender.track && sender.track.kind==="audio" && newAudio) sender.replaceTrack(newAudio);
+          });
+        }
       });
-      localStream = newStream;
-      localVideo.srcObject = newStream;
-      if(oldStream) oldStream.getTracks().forEach(t => t.stop());
-      cameraOn = true;
-      micOn = true;
-      updateMediaButtons();
-      status("Camera Switched Successfully");
-    } catch(err) {
-      alert("இந்த மொபைலில் கேமரா மாற்றுவதில் பிழை ஏற்பட்டது.");
-      status("Camera Switch Failed On This Device");
-    }
+    });
   }
 }
 
