@@ -1,54 +1,36 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
 
-<title>Piano Live Pro</title>
+<meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>🎹 Piano Live Pro</title>
 
 <link rel="stylesheet" href="style.css">
 
 </head>
 
+<body oncontextmenu="return false;">
 
-<body>
-
+<!-- HEADER -->
 
 <div class="top">
 
 <h1>🎹 Piano Live Pro</h1>
 
-
-<button onclick="startVideo()">
+<button id="videoBtn" onclick="startVideo()">
 🎥 Video Call
 </button>
 
-
 </div>
-
-
-
-
-
-<div id="videoBox">
-
-<iframe
-id="meet"
-allow="camera; microphone"
-style="display:none;">
-</iframe>
-
-</div>
-
-
-
 
 
 <!-- OPTIONS -->
 
 <div class="options">
-
 
 <button id="keysBtn"
 class="active"
@@ -58,8 +40,6 @@ onclick="toggleKeys()">
 
 </button>
 
-
-
 <button id="chordsBtn"
 class="active"
 onclick="toggleChords()">
@@ -68,8 +48,6 @@ onclick="toggleChords()">
 
 </button>
 
-
-
 <button id="holdBtn"
 onclick="toggleHold()">
 
@@ -77,75 +55,52 @@ onclick="toggleHold()">
 
 </button>
 
-
 </div>
 
 
+<!-- VIDEO -->
 
+<div id="videoBox">
 
+<iframe
+id="meet"
+allow="camera; microphone"
+allowfullscreen>
+</iframe>
 
+</div>
 
 
 <!-- DISPLAY -->
 
 <div class="info">
 
+<div class="card">
 
-<div>
+<h3>Keys</h3>
 
-Keys
-
-<br>
-
-<span id="keyShow">
-
--
-
-</span>
+<span id="keyShow">-</span>
 
 </div>
 
+<div class="card">
 
+<h3>Chord</h3>
 
-
-<div>
-
-Chord
-
-<br>
-
-<span id="chordShow">
-
--
-
-</span>
+<span id="chordShow">-</span>
 
 </div>
 
-
-
 </div>
-
-
-
-
-
 
 
 <!-- PIANO -->
 
 <div class="pianoArea">
 
-
 <div id="piano"></div>
 
-
 </div>
-
-
-
-
-
 
 
 <script src="sound.js"></script>
@@ -156,8 +111,5 @@ Chord
 
 <script src="app.js"></script>
 
-
-
 </body>
-
 </html>
