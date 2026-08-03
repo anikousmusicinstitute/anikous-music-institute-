@@ -37,14 +37,14 @@ let octave = Math.floor(i / 12) - 1;
 let key = document.createElement("div");
 
 
-key.dataset.note=i;
+key.dataset.note = i;
 
 
 
 if(name.includes("#")){
 
 
-key.className="black";
+key.className = "black";
 
 
 key.style.left =
@@ -55,7 +55,7 @@ key.style.left =
 else{
 
 
-key.className="white";
+key.className = "white";
 
 
 key.style.left =
@@ -114,11 +114,13 @@ piano.appendChild(key);
 }
 
 
+
 piano.style.width =
 (white*55)+"px";
 
 
 }
+
 
 
 
@@ -154,13 +156,6 @@ updateDisplay();
 function releaseKey(note,key){
 
 
-if(holdMode){
-
-return;
-
-}
-
-
 key.classList.remove("active");
 
 
@@ -192,26 +187,35 @@ let names=[...activeKeys]
 .sort((a,b)=>a-b)
 .map(n=>{
 
+
 return notes[n%12]+
 (Math.floor(n/12)-1);
+
 
 });
 
 
 
+
 document.getElementById("keyShow").innerHTML =
 
+
 showKeys && names.length
+
 ? names.join(" ")
+
 : "-";
 
 
 
 
-if(showChords && names.length>=3 && typeof findChord==="function"){
+
+
+if(showChords && activeKeys.size>=3 && typeof findChord==="function"){
 
 
 document.getElementById("chordShow").innerHTML =
+
 
 findChord([...activeKeys].sort((a,b)=>a-b));
 
@@ -232,7 +236,10 @@ document.getElementById("chordShow").innerHTML="-";
 
 
 
+
+
 function toggleKeys(){
+
 
 showKeys=!showKeys;
 
@@ -244,10 +251,12 @@ btn.classList.toggle("active");
 
 
 btn.innerHTML =
+
 showKeys ? "🎹 Keys ON" : "🎹 Keys OFF";
 
 
 updateDisplay();
+
 
 }
 
@@ -255,7 +264,10 @@ updateDisplay();
 
 
 
+
+
 function toggleChords(){
+
 
 showChords=!showChords;
 
@@ -267,10 +279,12 @@ btn.classList.toggle("active");
 
 
 btn.innerHTML =
+
 showChords ? "🎵 Chords ON" : "🎵 Chords OFF";
 
 
 updateDisplay();
+
 
 }
 
@@ -278,7 +292,10 @@ updateDisplay();
 
 
 
+
+
 function toggleHold(){
+
 
 holdMode=!holdMode;
 
@@ -290,30 +307,13 @@ btn.classList.toggle("active");
 
 
 btn.innerHTML =
+
 holdMode ? "✋ HOLD ON" : "✋ HOLD OFF";
 
 
 
-if(!holdMode){
-
-
-activeKeys.clear();
-
-
-document.querySelectorAll(".active").forEach(k=>{
-
-k.classList.remove("active");
-
-});
-
-
-updateDisplay();
-
-
 }
 
-
-}
 
 
 
