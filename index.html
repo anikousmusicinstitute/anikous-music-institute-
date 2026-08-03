@@ -443,7 +443,6 @@ async function getCameraStream(){
     return localStream;
   }catch(error){
     console.error(error);
-    // Fallback if specific facingMode fails completely
     try {
       localStream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -689,15 +688,30 @@ function updateMediaButtons(){
 }
 
 async function switchCamera(){
-  useFrontCamera = !useFrontCamera;
-
   try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const videoDevices = devices.filter(d => d.kind === 'videoinput');
+    
+    if(videoDevices.length < 2){
+      alert("இந்த மொபைலில் கூடுதல் கேமரா கண்டறியப்படவில்லை.");
+      return;
+    }
+
+    const currentTrack = localStream ? localStream.getVideoTracks()[0] : null;
+    let currentDeviceId = "";
+    if(currentTrack && currentTrack.getSettings){
+      currentDeviceId = currentTrack.getSettings().deviceId;
+    }
+
+    let nextDevice = videoDevices.find(d => d.deviceId !== currentDeviceId);
+    if(!nextDevice){
+      nextDevice = videoDevices[0];
+    }
+
     const oldStream = localStream;
     
     const newStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: useFrontCamera ? "user" : "environment"
-      },
+      video: { deviceId: { exact: nextDevice.deviceId } },
       audio: true
     });
 
@@ -725,13 +739,29 @@ async function switchCamera(){
       });
     }
 
-    status(useFrontCamera ? "Front Camera Active" : "Back Camera Active");
+    status("Camera Switched Successfully");
 
   } catch(error) {
     console.error("Camera switch error:", error);
-    // Revert state if failed
-    useFrontCamera = !useFrontCamera;
-    status("Camera Switch Not Supported On This Device");
+    // Fallback method using facingMode if deviceId exact match fails
+    try {
+      useFrontCamera = !useFrontCamera;
+      const oldStream = localStream;
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: useFrontCamera ? "user" : "environment" },
+        audio: true
+      });
+      localStream = newStream;
+      localVideo.srcObject = newStream;
+      if(oldStream) oldStream.getTracks().forEach(t => t.stop());
+      cameraOn = true;
+      micOn = true;
+      updateMediaButtons();
+      status("Camera Switched Successfully");
+    } catch(err) {
+      alert("இந்த மொபைலில் கேமரா மாற்றுவதில் பிழை ஏற்பட்டது.");
+      status("Camera Switch Failed On This Device");
+    }
   }
 }
 
