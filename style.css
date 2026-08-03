@@ -1,208 +1,296 @@
-const piano = document.getElementById("piano");
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
 
 
-const notes = [
-"C","C#","D","D#",
-"E","F","F#","G",
-"G#","A","A#","B"
-];
+body{
 
-
-let activeKeys = new Set();
-
-
-let start = 36; // C2
-let end = 96;   // C7
-
-
-
-function createPiano(){
-
-let white = 0;
-
-
-for(let i=start;i<=end;i++){
-
-
-let name = notes[i % 12];
-
-let octave = Math.floor(i / 12) - 1;
-
-
-let key = document.createElement("div");
-
-
-key.dataset.note = i;
-
-
-
-if(name.includes("#")){
-
-
-key.className = "black";
-
-
-key.style.left =
-((white-1) * 55 + 38) + "px";
-
+background:#090909;
+color:white;
+overflow-x:hidden;
 
 }
-else{
 
 
-key.className = "white";
+/* TOP */
+
+.top{
+
+background:#151515;
+
+padding:20px;
+
+text-align:center;
+
+border-bottom:1px solid #333;
+
+}
 
 
-key.style.left =
-(white * 55) + "px";
+.top h1{
 
+color:#ffd54f;
 
-key.innerHTML =
-"<span>"+name+octave+"</span>";
+font-size:32px;
 
-
-white++;
+margin-bottom:15px;
 
 }
 
 
 
-key.addEventListener("pointerdown",()=>{
+button{
 
-pressKey(i,key);
+padding:12px 22px;
 
-});
+background:#1976d2;
 
+color:white;
 
+border:none;
 
-key.addEventListener("pointerup",()=>{
+border-radius:10px;
 
-releaseKey(i,key);
+font-size:16px;
 
-});
-
-
-
-key.addEventListener("pointerleave",()=>{
-
-releaseKey(i,key);
-
-});
-
-
-piano.appendChild(key);
-
-
-}
-
-
-piano.style.width = (white*55)+"px";
-
+cursor:pointer;
 
 }
 
 
 
+/* INFO */
 
+.info{
 
-function pressKey(note,key){
+display:grid;
 
+grid-template-columns:
+repeat(auto-fit,minmax(170px,1fr));
 
-key.classList.add("active");
+gap:15px;
 
-
-activeKeys.add(note);
-
-
-if(typeof playSound === "function"){
-
-playSound(note);
+margin:20px;
 
 }
 
 
-updateDisplay();
+.info div{
 
+background:#181818;
 
-}
+padding:18px;
 
+border-radius:12px;
 
+border:1px solid #333;
 
+text-align:center;
 
-
-function releaseKey(note,key){
-
-
-key.classList.remove("active");
-
-
-activeKeys.delete(note);
-
-
-if(typeof stopSound === "function"){
-
-stopSound(note);
-
-}
-
-
-updateDisplay();
-
+box-shadow:0 5px 15px rgba(0,0,0,.6);
 
 }
 
 
 
+#keyShow{
 
+color:#4fc3f7;
 
-function updateDisplay(){
+font-size:22px;
 
-
-let names = [...activeKeys]
-.sort((a,b)=>a-b)
-.map(n=>{
-
-
-return notes[n % 12] +
-
-(Math.floor(n / 12)-1);
-
-
-});
-
-
-
-document.getElementById("keyShow").innerHTML =
-
-names.length ? names.join(" ") : "-";
-
-
-
-
-
-if(typeof findChord === "function"){
-
-
-document.getElementById("chordShow").innerHTML =
-
-findChord([...activeKeys].sort((a,b)=>a-b));
-
+font-weight:bold;
 
 }
-else{
 
 
-document.getElementById("chordShow").innerHTML="-";
+#chordShow{
 
+color:#00e676;
+
+font-size:28px;
+
+font-weight:bold;
 
 }
 
 
 
+/* PIANO */
+
+.pianoArea{
+
+width:100%;
+
+overflow-x:auto;
+
+padding:30px 10px;
+
+background:#111;
+
 }
 
 
 
+#piano{
+
+position:relative;
+
+height:270px;
+
+margin:auto;
+
+}
 
 
-createPiano();
+
+/* WHITE KEYS */
+
+.white{
+
+position:absolute;
+
+top:0;
+
+width:55px;
+
+height:260px;
+
+background:
+
+linear-gradient(
+90deg,
+#ddd,
+#fff,
+#ddd
+);
+
+border:1px solid #777;
+
+border-radius:0 0 10px 10px;
+
+color:#111;
+
+z-index:1;
+
+box-shadow:
+
+0 5px 10px rgba(0,0,0,.6),
+
+inset 0 -15px 15px rgba(0,0,0,.15);
+
+}
+
+
+
+.white span{
+
+position:absolute;
+
+bottom:15px;
+
+width:100%;
+
+text-align:center;
+
+font-size:12px;
+
+font-weight:bold;
+
+}
+
+
+
+/* BLACK KEYS */
+
+.black{
+
+position:absolute;
+
+top:0;
+
+width:36px;
+
+height:160px;
+
+background:
+
+linear-gradient(
+90deg,
+#333,
+#000,
+#111
+);
+
+border-radius:
+
+0 0 8px 8px;
+
+z-index:10;
+
+box-shadow:
+
+0 8px 15px rgba(0,0,0,.9);
+
+}
+
+
+
+/* PRESS */
+
+.white.active{
+
+background:#ffd54f;
+
+transform:translateY(5px);
+
+}
+
+
+
+.black.active{
+
+background:#ff9800;
+
+transform:translateY(5px);
+
+}
+
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+
+.top h1{
+
+font-size:24px;
+
+}
+
+
+
+.white{
+
+width:45px;
+
+height:230px;
+
+}
+
+
+
+.black{
+
+width:30px;
+
+height:140px;
+
+}
+
+
+}
