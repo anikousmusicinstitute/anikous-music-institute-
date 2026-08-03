@@ -10,8 +10,10 @@ const notes = [
 
 let activeKeys = new Set();
 
+let activePointers = new Map();
 
-let start = 36; 
+
+let start = 36;
 let end = 96;
 
 
@@ -31,20 +33,20 @@ for(let i=start;i<=end;i++){
 
 let name = notes[i % 12];
 
-let octave = Math.floor(i / 12)-1;
+let octave = Math.floor(i/12)-1;
 
 
 let key = document.createElement("div");
 
 
-key.dataset.note = i;
+key.dataset.note=i;
 
 
 
 if(name.includes("#")){
 
 
-key.className = "black";
+key.className="black";
 
 
 key.style.left =
@@ -55,7 +57,7 @@ key.style.left =
 else{
 
 
-key.className = "white";
+key.className="white";
 
 
 key.style.left =
@@ -73,43 +75,93 @@ white++;
 
 
 
-// MULTI TOUCH SUPPORT
 
 key.addEventListener("pointerdown",(e)=>{
 
+
 e.preventDefault();
+
 
 key.setPointerCapture(e.pointerId);
 
+
+
+activePointers.set(
+e.pointerId,
+{
+note:i,
+key:key
+}
+);
+
+
+
 pressKey(i,key);
 
+
 });
+
+
+
 
 
 
 key.addEventListener("pointerup",(e)=>{
 
-e.preventDefault();
 
-releaseKey(i,key);
+let data = activePointers.get(e.pointerId);
+
+
+
+if(data){
+
+
+releaseKey(
+data.note,
+data.key
+);
+
+
+
+activePointers.delete(e.pointerId);
+
+
+}
+
 
 });
 
 
 
-key.addEventListener("pointercancel",()=>{
 
-releaseKey(i,key);
+
+
+key.addEventListener("pointercancel",(e)=>{
+
+
+let data = activePointers.get(e.pointerId);
+
+
+
+if(data){
+
+
+releaseKey(
+data.note,
+data.key
+);
+
+
+
+activePointers.delete(e.pointerId);
+
+
+}
+
 
 });
 
 
-
-key.addEventListener("lostpointercapture",()=>{
-
-releaseKey(i,key);
-
-});
 
 
 
@@ -132,16 +184,22 @@ piano.style.width =
 
 
 
+
+
 function pressKey(note,key){
+
 
 
 if(activeKeys.has(note)) return;
 
 
+
 key.classList.add("active");
 
 
+
 activeKeys.add(note);
+
 
 
 
@@ -156,7 +214,10 @@ playSound(note);
 updateDisplay();
 
 
+
 }
+
+
 
 
 
@@ -167,6 +228,7 @@ updateDisplay();
 function releaseKey(note,key){
 
 
+
 if(holdMode){
 
 return;
@@ -174,10 +236,14 @@ return;
 }
 
 
+
+
 key.classList.remove("active");
 
 
+
 activeKeys.delete(note);
+
 
 
 
@@ -192,6 +258,7 @@ stopSound(note);
 updateDisplay();
 
 
+
 }
 
 
@@ -200,7 +267,10 @@ updateDisplay();
 
 
 
+
+
 function updateDisplay(){
+
 
 
 let names=[...activeKeys]
@@ -217,14 +287,20 @@ return notes[n%12]+
 
 
 
+
 document.getElementById("keyShow").innerHTML =
+
 
 
 (showKeys && names.length)
 
-? names.join(" ")
+?
+names.join(" ")
 
-: "-";
+:
+"-";
+
+
 
 
 
@@ -234,10 +310,16 @@ document.getElementById("keyShow").innerHTML =
 if(showChords && activeKeys.size>=3 && typeof findChord==="function"){
 
 
+
 document.getElementById("chordShow").innerHTML =
 
 
-findChord([...activeKeys].sort((a,b)=>a-b));
+
+findChord(
+[...activeKeys]
+.sort((a,b)=>a-b)
+);
+
 
 
 }
@@ -251,7 +333,9 @@ document.getElementById("chordShow").innerHTML="-";
 }
 
 
+
 }
+
 
 
 
@@ -263,24 +347,35 @@ document.getElementById("chordShow").innerHTML="-";
 function toggleKeys(){
 
 
+
 showKeys=!showKeys;
+
 
 
 let btn=document.getElementById("keysBtn");
 
 
+
 btn.classList.toggle("active");
+
 
 
 btn.innerHTML =
 
-showKeys ? "🎹 Keys ON" : "🎹 Keys OFF";
+showKeys
+?
+"🎹 Keys ON"
+:
+"🎹 Keys OFF";
+
 
 
 updateDisplay();
 
 
+
 }
+
 
 
 
@@ -292,24 +387,35 @@ updateDisplay();
 function toggleChords(){
 
 
+
 showChords=!showChords;
+
 
 
 let btn=document.getElementById("chordsBtn");
 
 
+
 btn.classList.toggle("active");
+
 
 
 btn.innerHTML =
 
-showChords ? "🎵 Chords ON" : "🎵 Chords OFF";
+showChords
+?
+"🎵 Chords ON"
+:
+"🎵 Chords OFF";
+
 
 
 updateDisplay();
 
 
+
 }
+
 
 
 
@@ -321,21 +427,31 @@ updateDisplay();
 function toggleHold(){
 
 
+
 holdMode=!holdMode;
+
 
 
 let btn=document.getElementById("holdBtn");
 
 
+
 btn.classList.toggle("active");
+
 
 
 btn.innerHTML =
 
-holdMode ? "✋ HOLD ON" : "✋ HOLD OFF";
+holdMode
+?
+"✋ HOLD ON"
+:
+"✋ HOLD OFF";
+
 
 
 }
+
 
 
 
