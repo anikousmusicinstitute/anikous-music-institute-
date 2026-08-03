@@ -14,13 +14,13 @@ color:white;
 
 overflow-x:hidden;
 
-touch-action:none;
-
 user-select:none;
 
 -webkit-user-select:none;
 
 }
+
+
 
 
 
@@ -53,7 +53,7 @@ margin-bottom:10px;
 
 
 
-/* BUTTONS */
+/* BUTTON AREA */
 
 .options{
 
@@ -87,7 +87,7 @@ font-size:12px;
 
 margin:2px;
 
-min-width:70px;
+min-width:65px;
 
 }
 
@@ -96,14 +96,6 @@ min-width:70px;
 button.active{
 
 background:#00c853;
-
-}
-
-
-
-button:hover{
-
-opacity:.85;
 
 }
 
@@ -137,7 +129,7 @@ height:300px;
 
 
 
-/* INFO */
+/* DISPLAY */
 
 .info{
 
@@ -197,7 +189,7 @@ font-weight:bold;
 
 
 
-/* PIANO */
+/* PIANO AREA */
 
 .pianoArea{
 
@@ -213,9 +205,11 @@ background:#111;
 
 -webkit-overflow-scrolling:touch;
 
-touch-action:none;
+touch-action:pan-x;
 
 }
+
+
 
 
 
@@ -233,7 +227,7 @@ margin:0;
 
 
 
-/* WHITE KEYS */
+/* WHITE KEY */
 
 .white{
 
@@ -260,9 +254,9 @@ border-radius:0 0 8px 8px;
 
 color:#111;
 
-touch-action:none;
-
 }
+
+
 
 
 
@@ -286,7 +280,7 @@ font-weight:bold;
 
 
 
-/* BLACK KEYS */
+/* BLACK KEY */
 
 .black{
 
@@ -304,15 +298,13 @@ border-radius:0 0 6px 6px;
 
 z-index:10;
 
-touch-action:none;
-
 }
 
 
 
 
 
-/* PRESS */
+/* PRESS EFFECT */
 
 .white.active{
 
@@ -355,7 +347,7 @@ font-size:11px;
 
 padding:5px 8px;
 
-min-width:65px;
+min-width:60px;
 
 }
 
