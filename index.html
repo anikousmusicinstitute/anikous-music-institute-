@@ -445,9 +445,23 @@ async function getCameraStream(){
     return localStream;
   }catch(error){
     console.error(error);
-    status("Camera or Microphone Permission Not Granted");
-    alert("Camera open ஆகவில்லை.\n1. HTTPS page-ல் open செய்யுங்கள்\n2. Camera & Mic permission Allow செய்யுங்கள்");
-    throw error;
+    // Fallback without exact resolution if resolution fails
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
+      localVideo.srcObject = localStream;
+      cameraOn = true;
+      micOn = true;
+      updateMediaButtons();
+      status("Camera Connected (Default Mode)");
+      return localStream;
+    } catch(e) {
+      status("Camera or Microphone Permission Not Granted");
+      alert("Camera open ஆகவில்லை.\n1. HTTPS page-ல் open செய்யுங்கள்\n2. Camera & Mic permission Allow செய்யுங்கள்");
+      throw e;
+    }
   }
 }
 
@@ -679,11 +693,13 @@ function updateMediaButtons(){
 async function switchCamera(){
   if(!localStream) return;
 
+  const previousState = useFrontCamera;
   useFrontCamera = !useFrontCamera;
 
   try {
     const oldStream = localStream;
     
+    // Attempt switching with facingMode
     const newStream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: useFrontCamera ? "user" : "environment",
@@ -721,8 +737,9 @@ async function switchCamera(){
 
   } catch(error) {
     console.error("Camera switch error:", error);
-    status("Camera Switching Failed On This Device");
-    useFrontCamera = !useFrontCamera;
+    // Revert state if failed
+    useFrontCamera = previousState;
+    status("Back Camera Not Available / Failed");
   }
 }
 
@@ -853,7 +870,6 @@ function createPiano(){
         const key = document.createElement("div");
         key.className = "black";
         key.dataset.note = n;
-        key.style.left = (whiteIndex*48+32)+"px"; // Adjusted relative positioning logic if needed, keeping original intact
         key.style.left = (leftWhite*48+32)+"px";
         key.innerHTML = `<span>${noteName(n)}</span>`;
         addKeyEvents(key, n);
@@ -1036,9 +1052,9 @@ async function connectMIDI(){
   }
 }
 
-function handleMIDI(event){
-  if(!event || !event.data) return;
-  const data = event.data;
+function handleMIDI(errorEvent){
+  if(!errorEvent || !errorEvent.data) return;
+  const data = errorEvent.data;
   if(data.length<2) return;
 
   const command = data[0] & 0xf0;
