@@ -11,8 +11,8 @@ const notes = [
 let activeKeys = new Set();
 
 
-let start = 36; // C2
-let end = 96;   // C7
+let start = 36; 
+let end = 96;
 
 
 let showKeys = true;
@@ -44,7 +44,7 @@ key.dataset.note = i;
 if(name.includes("#")){
 
 
-key.className="black";
+key.className = "black";
 
 
 key.style.left =
@@ -55,7 +55,7 @@ key.style.left =
 else{
 
 
-key.className="white";
+key.className = "white";
 
 
 key.style.left =
@@ -73,27 +73,23 @@ white++;
 
 
 
-key.addEventListener("touchstart",(e)=>{
+// MULTI TOUCH SUPPORT
+
+key.addEventListener("pointerdown",(e)=>{
 
 e.preventDefault();
+
+key.setPointerCapture(e.pointerId);
 
 pressKey(i,key);
 
-},{passive:false});
+});
 
 
 
-key.addEventListener("touchend",(e)=>{
+key.addEventListener("pointerup",(e)=>{
 
 e.preventDefault();
-
-releaseKey(i,key);
-
-},{passive:false});
-
-
-
-key.addEventListener("touchcancel",()=>{
 
 releaseKey(i,key);
 
@@ -101,14 +97,15 @@ releaseKey(i,key);
 
 
 
-key.addEventListener("mousedown",()=>{
+key.addEventListener("pointercancel",()=>{
 
-pressKey(i,key);
+releaseKey(i,key);
 
 });
 
 
-key.addEventListener("mouseup",()=>{
+
+key.addEventListener("lostpointercapture",()=>{
 
 releaseKey(i,key);
 
@@ -122,11 +119,13 @@ piano.appendChild(key);
 }
 
 
+
 piano.style.width =
 (white*55)+"px";
 
 
 }
+
 
 
 
@@ -163,6 +162,8 @@ updateDisplay();
 
 
 
+
+
 function releaseKey(note,key){
 
 
@@ -171,7 +172,6 @@ if(holdMode){
 return;
 
 }
-
 
 
 key.classList.remove("active");
@@ -216,6 +216,7 @@ return notes[n%12]+
 
 
 
+
 document.getElementById("keyShow").innerHTML =
 
 
@@ -240,6 +241,7 @@ findChord([...activeKeys].sort((a,b)=>a-b));
 
 
 }
+
 else{
 
 
@@ -333,8 +335,8 @@ btn.innerHTML =
 holdMode ? "✋ HOLD ON" : "✋ HOLD OFF";
 
 
-
 }
+
 
 
 
