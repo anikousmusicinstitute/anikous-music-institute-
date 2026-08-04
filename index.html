@@ -10,52 +10,6 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <style>
-  #loginPage{
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-height:100vh;
-background:#0b1220;
-padding:20px;
-}
-
-#loginPage h2{
-font-size:28px;
-margin-bottom:25px;
-color:#fff;
-}
-
-#loginPage input{
-width:100%;
-max-width:320px;
-padding:14px;
-margin:8px 0;
-border:none;
-border-radius:10px;
-font-size:16px;
-outline:none;
-background:#1e293b;
-color:#fff;
-}
-
-#loginPage button{
-width:100%;
-max-width:320px;
-padding:14px;
-margin-top:15px;
-background:#16a34a;
-color:#fff;
-border:none;
-border-radius:10px;
-font-size:17px;
-font-weight:bold;
-cursor:pointer;
-}
-
-#loginPage button:hover{
-background:#15803d;
-}
 :root {
   --key-width: 32px;
   --key-height: 200px;
@@ -93,6 +47,111 @@ button:active{
 
 button.active{
   background:#16a34a;
+}
+
+/* LOGIN PAGE STYLING */
+#loginPage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    min-height: 100vh;
+    height: 100%;
+    background: 
+        linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.9)),
+        url("https://images.unsplash.com/photo-1520523839897-bd0b52f945a0");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    z-index: 99999;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.login-box {
+    width: 90%;
+    max-width: 380px;
+    padding: 35px 25px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 215, 0, .6);
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(255, 215, 0, .3);
+    text-align: center;
+    margin: auto;
+}
+
+.logo {
+    font-size: 45px;
+    margin-bottom: 10px;
+}
+
+.login-box h1 {
+    color: #ffd54f;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.login-box p {
+    color: #ccc;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 18px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #555;
+    background: #111;
+    color: white;
+    font-size: 15px;
+    outline: none;
+}
+
+.input-group input:focus {
+    border-color: #ffd54f;
+}
+
+.eye {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    color: #ffd54f;
+    cursor: pointer;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #00c853;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    background: #00e676;
+}
+
+.forgot {
+    margin-top: 18px;
+    color: #ffd54f;
+    font-size: 14px;
 }
 
 .top{
@@ -150,7 +209,6 @@ button.active{
 }
 
 /* VIDEO */
-
 .videoGrid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -244,7 +302,6 @@ button.active{
 }
 
 /* INFO */
-
 .info{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -270,7 +327,6 @@ button.active{
 }
 
 /* PIANO */
-
 .pianoHeader{
   display:flex;
   align-items:center;
@@ -533,196 +589,31 @@ button.active{
 </head>
 
 <body>
+
+<!-- LOGIN PAGE -->
 <div id="loginPage">
+  <div class="login-box">
+    <div class="logo">🎹</div>
+    <h1>ANIKOUS</h1>
+    <h1>MUSIC INSTITUTE</h1>
+    <p>Premium Online Music Learning</p>
 
-<style>
-#loginPage{
-    min-height:100vh;
-    background:
-    linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.9)),
-    url("https://images.unsplash.com/photo-1520523839897-bd0b52f945a0");
-    background-size:cover;
-    background-position:center;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:Arial,sans-serif;
-}
+    <div class="input-group">
+      <input id="email" type="email" placeholder="Email Address">
+    </div>
 
+    <div class="input-group">
+      <input id="password" type="password" placeholder="Password">
+      <span class="eye" onclick="showPass()">👁</span>
+    </div>
 
-.login-box{
-    width:90%;
-    max-width:380px;
-    padding:35px 25px;
-    background:rgba(255,255,255,0.08);
-    backdrop-filter:blur(15px);
-    border:1px solid rgba(255,215,0,.6);
-    border-radius:20px;
-    box-shadow:
-    0 0 25px rgba(255,215,0,.3);
-    text-align:center;
-}
+    <button class="login-btn" onclick="loginUser()">LOGIN</button>
 
-
-.logo{
-    font-size:45px;
-    margin-bottom:10px;
-}
-
-
-.login-box h1{
-    color:#ffd54f;
-    font-size:24px;
-    letter-spacing:1px;
-}
-
-
-.login-box p{
-    color:#ccc;
-    font-size:14px;
-    margin-bottom:25px;
-}
-
-
-.input-group{
-    position:relative;
-    margin-bottom:18px;
-}
-
-
-.input-group input{
-    width:100%;
-    padding:15px;
-    border-radius:12px;
-    border:1px solid #555;
-    background:#111;
-    color:white;
-    font-size:15px;
-    outline:none;
-}
-
-
-.input-group input:focus{
-    border-color:#ffd54f;
-}
-
-
-.eye{
-    position:absolute;
-    right:15px;
-    top:15px;
-    color:#ffd54f;
-    cursor:pointer;
-}
-
-
-.login-btn{
-    width:100%;
-    padding:15px;
-    border:none;
-    border-radius:12px;
-    background:#00c853;
-    color:white;
-    font-size:17px;
-    font-weight:bold;
-    cursor:pointer;
-    margin-top:10px;
-}
-
-
-.login-btn:hover{
-    background:#00e676;
-}
-
-
-.forgot{
-    margin-top:18px;
-    color:#ffd54f;
-    font-size:14px;
-}
-
-
-@media(max-width:400px){
-.login-box{
-    padding:30px 20px;
-}
-}
-
-</style>
-
-
-<div class="login-box">
-
-<div class="logo">
-🎹
+    <div class="forgot">Forgot Password?</div>
+  </div>
 </div>
 
-<h1>ANIKOUS</h1>
-<h1>MUSIC INSTITUTE</h1>
-
-<p>Premium Online Music Learning</p>
-
-
-<div class="input-group">
-
-<input id="email"
-type="email"
-placeholder="Email Address">
-
-</div>
-
-
-<div class="input-group">
-
-<input id="password"
-type="password"
-placeholder="Password">
-
-<span class="eye"
-onclick="showPass()">
-👁
-</span>
-
-</div>
-
-
-<button class="login-btn"
-onclick="loginUser()">
-
-LOGIN
-
-</button>
-
-
-<div class="forgot">
-Forgot Password?
-</div>
-
-
-</div>
-
-</div>
-
-
-
-<script>
-
-function showPass(){
-
-let p=document.getElementById("password");
-
-if(p.type==="password"){
-p.type="text";
-}
-else{
-p.type="password";
-}
-
-}
-
-
-</script>
-
+<!-- MAIN PAGE -->
 <div id="mainPage" style="display:none;">
 <header class="top">
   <h1>AMI ONLINE MUSIC CLASS</h1>
@@ -762,6 +653,7 @@ p.type="password";
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
     <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 Video Full View</button>
     <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet (Backup)</button>
+    <button onclick="logoutUser()" style="background:#dc2626;">Logout</button>
   </div>
 </section>
 
@@ -880,6 +772,7 @@ p.type="password";
     <button onclick="centerPiano()">Center Piano</button>
   </div>
 </section>
+</div>
 
 <!-- FULLSCREEN KEYBOARD POPUP -->
 <div id="pianoFullscreenContainer">
@@ -908,6 +801,99 @@ p.type="password";
   </div>
 </div>
 
+<!-- FIREBASE & APP SCRIPT (MODULE) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import {
+  getAuth,
+  setPersistence,
+  indexedDBLocalPersistence,
+  browserLocalPersistence,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCxZ_pqLanqJgcQrVmFsFouQ17fmaYPy30",
+  authDomain: "anikous-music-institute.firebaseapp.com",
+  projectId: "anikous-music-institute",
+  storageBucket: "anikous-music-institute.firebasestorage.app",
+  messagingSenderId: "529726639589",
+  appId: "1:529726639589:web:573382dd91e4a3be8a330c"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// iPhone/Safari மற்றும் அனைத்து பிரவுசர்களுக்கும் லாகின் சேமிக்கப்பட
+setPersistence(auth, indexedDBLocalPersistence)
+  .catch(() => {
+    return setPersistence(auth, browserLocalPersistence);
+  })
+  .catch((error) => {
+    console.error("Persistence error: ", error);
+  });
+
+window.showPass = function() {
+  let p = document.getElementById("password");
+  if(p.type === "password"){
+    p.type = "text";
+  } else {
+    p.type = "password";
+  }
+}
+
+window.loginUser = function() {
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+
+  if (!emailInput || !passwordInput) return;
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if(!email || !password){
+    alert("Email மற்றும் Password-ஐ உள்ளிடவும்!");
+    return;
+  }
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("mainPage").style.display = "block";
+      setTimeout(() => {
+        const pScroll = document.getElementById("pianoScroll");
+        if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth)/2;
+      }, 100);
+    })
+    .catch((error) => {
+      alert("Login Failed: " + error.message);
+    });
+};
+
+window.logoutUser = function() {
+  signOut(auth).then(() => {
+    document.getElementById("loginPage").style.display = "flex";
+    document.getElementById("mainPage").style.display = "none";
+  });
+};
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("mainPage").style.display = "block";
+    setTimeout(() => {
+      const pScroll = document.getElementById("pianoScroll");
+      if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth)/2;
+    }, 100);
+  } else {
+    document.getElementById("loginPage").style.display = "flex";
+    document.getElementById("mainPage").style.display = "none";
+  }
+});
+</script>
+
+<!-- CLASS & PIANO LOGIC SCRIPT -->
 <script>
 let peer = null;
 let localStream = null;
@@ -959,7 +945,6 @@ function changeSustainTime(val){
   sendData({ type:"changeSustainTime", duration:sustainDuration });
 }
 
-// Initial Media Stream Setup
 async function getCameraStream(){
   try{
     localStream = await navigator.mediaDevices.getUserMedia({
@@ -1874,7 +1859,6 @@ document.addEventListener("pointerdown", () => {
   if(audioContext && audioContext.state==="suspended") audioContext.resume();
 }, {once:true});
 </script>
-</div>
-  <script type="module" src="login.js"></script>
+
 </body>
 </html>
