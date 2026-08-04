@@ -18,7 +18,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-window.login = function () {
+// HTML-ல் உள்ள loginUser() பங்க்ஷனுடன் இது இணைக்கilmiştir
+window.loginUser = function () {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -26,9 +27,15 @@ window.login = function () {
     .then(() => {
       document.getElementById("loginPage").style.display = "none";
       document.getElementById("mainPage").style.display = "block";
+      
+      // பியானோ ஸ்கிரீன் சரியாக சென்டர் ஆக
+      setTimeout(() => {
+        const pScroll = document.getElementById("pianoScroll");
+        if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth)/2;
+      }, 100);
     })
-    .catch(() => {
-      alert("Wrong Email or Password");
+    .catch((error) => {
+      alert("Wrong Email or Password: " + error.message);
     });
 };
 
