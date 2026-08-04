@@ -1,6 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import {
   getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  indexedDBLocalPersistence,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut
@@ -18,29 +21,54 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// HTML-ல் உள்ள loginUser() பங்க்ஷனுடன் இது இணைக்கilmiştir
+// Safari / iPhone-ல் லாகின் ஸ்டக் ஆகாமல் இருக்க இது அவசியம்
+setPersistence(auth, indexedDBLocalPersistence)
+  .catch(() => {
+    // ஒருவேளை IndexedDB வேலை செய்யவில்லை என்றால் LocalStorage-க்கு மாறும்
+    return setPersistence(auth, browserLocalPersistence);
+  })
+  .catch((error) => {
+    console.error("Persistence setting error: ", error);
+  });
+
 window.loginUser = function () {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+
+  if (!emailInput || !passwordInput) {
+    alert("Email அல்லது Password ஃபார்ம் கிடைக்கவில்லை.");
+    return;
+  }
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if (!email || !password) {
+    alert("தயவுசெய்து Email மற்றும் Password-ஐ உள்ளிடவும்.");
+    return;
+  }
 
   signInWithEmailAndPassword(auth, email, password)
     .then(() => {
       document.getElementById("loginPage").style.display = "none";
       document.getElementById("mainPage").style.display = "block";
       
-      // பியானோ ஸ்கிரீன் சரியாக சென்டர் ஆக
       setTimeout(() => {
         const pScroll = document.getElementById("pianoScroll");
-        if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth)/2;
+        if (pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth) / 2;
       }, 100);
     })
     .catch((error) => {
-      alert("Wrong Email or Password: " + error.message);
+      // என்ன பிழை என்பதை போன் ஸ்கிரீன்லயே காட்டும்
+      alert("Login Error: " + error.message);
     });
 };
 
 window.logout = function () {
-  signOut(auth);
+  signOut(auth).then(() => {
+    document.getElementById("loginPage").style.display = "block";
+    document.getElementById("mainPage").style.display = "none";
+  });
 };
 
 onAuthStateChanged(auth, (user) => {
