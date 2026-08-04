@@ -826,7 +826,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// iPhone/Safari மற்றும் அனைத்து பிரவுசர்களுக்கும் லாகின் சேமிக்கப்பட
 setPersistence(auth, indexedDBLocalPersistence)
   .catch(() => {
     return setPersistence(auth, browserLocalPersistence);
@@ -936,6 +935,13 @@ function toggleSustain(){
   const btn = document.getElementById("sustainBtn");
   btn.textContent = sustainMode ? "SUSTAIN ON" : "SUSTAIN OFF";
   btn.classList.toggle("active", sustainMode);
+
+  if(!sustainMode) {
+    Object.keys(sounds).forEach(note => {
+      stopMultiSound(parseInt(note), sounds, 0.05);
+    });
+  }
+
   sendData({ type:"toggleSustain", sustain:sustainMode, duration:sustainDuration });
 }
 
@@ -1103,6 +1109,12 @@ function handleRemoteData(data){
     const btn = document.getElementById("sustainBtn");
     btn.textContent = sustainMode ? "SUSTAIN ON" : "SUSTAIN OFF";
     btn.classList.toggle("active", sustainMode);
+
+    if(!sustainMode){
+      Object.keys(remoteSounds).forEach(note => {
+        stopMultiSound(parseInt(note), remoteSounds, 0.05);
+      });
+    }
   }
   if(data.type==="changeSustainTime"){
     sustainDuration = data.duration;
@@ -1162,16 +1174,15 @@ function pressRemoteKey(note, key){
   if(remoteKeys.has(note)) return;
   remoteKeys.add(note);
   key.classList.add("remote-active");
-  playMultiSound(note, currentVoice, currentDualVoice, remoteSounds, sustainMode ? sustainDuration : 1.0);
+  playMultiSound(note, currentVoice, currentDualVoice, remoteSounds, sustainMode ? sustainDuration : 3.0);
   updateDisplay();
 }
 
 function releaseRemoteKey(note, key){
   remoteKeys.delete(note);
   key.classList.remove("remote-active");
-  if(!sustainMode){
-    stopMultiSound(note, remoteSounds, 0.3);
-  }
+  const releaseTime = sustainMode ? (sustainDuration || 1.0) : 0.05;
+  stopMultiSound(note, remoteSounds, releaseTime);
   updateDisplay();
 }
 
@@ -1507,11 +1518,11 @@ function playMultiSound(note, primaryVoice, dualVoice, soundStore, decay){
   const now = audioContext.currentTime;
   const activeChains = [];
 
-  const primary = createVoiceChain(primaryVoice, freq, now, decay);
+  const primary = createVoiceChain(primaryVoice, freq, now, sustainMode ? decay : 3.0);
   activeChains.push(primary);
 
   if(dualVoice && dualVoice !== "none"){
-    const dual = createVoiceChain(dualVoice, freq, now, decay);
+    const dual = createVoiceChain(dualVoice, freq, now, sustainMode ? decay : 3.0);
     dual.gain.gain.value *= 0.7;
     activeChains.push(dual);
   }
@@ -1519,18 +1530,20 @@ function playMultiSound(note, primaryVoice, dualVoice, soundStore, decay){
   soundStore[note] = { chains: activeChains };
 }
 
-function stopMultiSound(note, soundStore, releaseTime = 0.3){
+function stopMultiSound(note, soundStore, releaseTime = 0.05){
   const sound = soundStore[note];
   if(!sound) return;
   const now = audioContext.currentTime;
   
+  const actualRelease = sustainMode ? (sustainDuration || 1.0) : 0.05;
+
   sound.chains.forEach(chain => {
     chain.gain.gain.cancelScheduledValues(now);
     chain.gain.gain.setValueAtTime(chain.gain.gain.value, now);
-    chain.gain.gain.exponentialRampToValueAtTime(0.0001, now + releaseTime);
+    chain.gain.gain.exponentialRampToValueAtTime(0.0001, now + actualRelease);
     setTimeout(() => {
       try { chain.oscs.forEach(o => o.stop()); } catch(e){}
-    }, (releaseTime + 0.05) * 1000);
+    }, (actualRelease + 0.05) * 1000);
   });
 
   delete soundStore[note];
@@ -1548,7 +1561,7 @@ function pressKey(note, key){
   const keys = document.querySelectorAll(`[data-note="${note}"]`);
   keys.forEach(k => k.classList.add("local-active"));
 
-  const duration = sustainMode ? sustainDuration : 1.0;
+  const duration = sustainMode ? sustainDuration : 3.0;
   playMultiSound(note, currentVoice, currentDualVoice, sounds, duration);
   sendData({ type:"keyDown", note:note });
   updateDisplay();
@@ -1557,23 +1570,14 @@ function pressKey(note, key){
 function releaseKey(note, key){
   if(holdMode) return;
   
-  if(!sustainMode){
-    activeKeys.delete(note);
-    const keys = document.querySelectorAll(`[data-note="${note}"]`);
-    keys.forEach(k => k.classList.remove("local-active"));
-    stopMultiSound(note, sounds, 0.3);
-    sendData({ type:"keyUp", note:note });
-    updateDisplay();
-  } else {
-    activeKeys.delete(note);
-    const keys = document.querySelectorAll(`[data-note="${note}"]`);
-    keys.forEach(k => k.classList.remove("local-active"));
-    setTimeout(() => {
-      stopMultiSound(note, sounds, 0.5);
-    }, sustainDuration * 1000);
-    sendData({ type:"keyUp", note:note });
-    updateDisplay();
-  }
+  activeKeys.delete(note);
+  const keys = document.querySelectorAll(`[data-note="${note}"]`);
+  keys.forEach(k => k.classList.remove("local-active"));
+  
+  const releaseTime = sustainMode ? (sustainDuration || 1.0) : 0.05;
+  stopMultiSound(note, sounds, releaseTime);
+  sendData({ type:"keyUp", note:note });
+  updateDisplay();
 }
 
 let selectedOctaves = new Set();
@@ -1762,7 +1766,7 @@ function toggleHold(){
     [...activeKeys].forEach(note=>{
       const keys = document.querySelectorAll(`[data-note="${note}"]`);
       keys.forEach(k => k.classList.remove("local-active"));
-      stopMultiSound(note, sounds, 0.3);
+      stopMultiSound(note, sounds, 0.05);
       sendData({ type:"keyUp", note:note });
     });
     activeKeys.clear();
