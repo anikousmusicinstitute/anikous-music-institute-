@@ -152,6 +152,7 @@ button.active{
     margin-top: 18px;
     color: #ffd54f;
     font-size: 14px;
+    cursor: pointer;
 }
 
 .top{
@@ -609,7 +610,7 @@ button.active{
 
     <button class="login-btn" onclick="loginUser()">LOGIN</button>
 
-    <div class="forgot">Forgot Password?</div>
+    <div class="forgot" onclick="forgotPassword()">Forgot Password?</div>
   </div>
 </div>
 
@@ -811,6 +812,7 @@ import {
   browserLocalPersistence,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   signOut
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
@@ -867,6 +869,24 @@ window.loginUser = function() {
     })
     .catch((error) => {
       alert("Login Failed: " + error.message);
+    });
+};
+
+window.forgotPassword = function() {
+  const emailInput = document.getElementById("email");
+  const email = emailInput ? emailInput.value.trim() : "";
+  
+  if(!email){
+    alert("தயவுசெய்து உங்களது Email Address-ஐ உள்ளிடவும், பின் Forgot Password கிளிக் செய்யவும்.");
+    return;
+  }
+
+  sendPasswordResetEmail(auth, email)
+    .then(() => {
+      alert("Password reset link உங்கள் Email-க்கு அனுப்பப்பட்டுள்ளது. சரிபார்க்கவும்.");
+    })
+    .catch((error) => {
+      alert("Error: " + error.message);
     });
 };
 
