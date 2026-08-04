@@ -209,10 +209,10 @@ button.active{
   min-height:38px;
 }
 
-/* VIDEO GRID SYSTEM */
+/* VIDEO */
 .videoGrid{
   display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns:1fr 1fr;
   gap:10px;
 }
 
@@ -241,23 +241,6 @@ button.active{
   padding:6px 9px;
   border-radius:7px;
   font-size:12px;
-  z-index: 5;
-}
-
-.camControlOverlay {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  display: flex;
-  gap: 5px;
-  z-index: 6;
-}
-
-.camControlOverlay button {
-  padding: 5px 8px;
-  font-size: 11px;
-  background: rgba(0,0,0,0.7);
-  border: 1px solid rgba(255,255,255,0.2);
 }
 
 .controls{
@@ -265,7 +248,6 @@ button.active{
   flex-wrap:wrap;
   gap:7px;
   margin-top:10px;
-  align-items: center;
 }
 
 /* VIDEO FULLSCREEN MODE */
@@ -290,10 +272,9 @@ button.active{
 .fsVideoGrid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
-  overflow-y: auto;
-  max-height: calc(100vh - 75px);
+  height: calc(100vh - 75px);
 }
 
 .fsVideoCard {
@@ -302,14 +283,13 @@ button.active{
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid #334155;
-  min-height: 250px;
+  height: 100%;
 }
 
 .fsVideoCard video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  min-height: 250px;
 }
 
 .fsVideoToolbar {
@@ -600,6 +580,8 @@ button.active{
 }
 
 @media(max-width:650px){
+  .videoGrid, .fsVideoGrid{ grid-template-columns:1fr; }
+  .videoCard, .videoCard video{ min-height:190px; }
   .info{ grid-template-columns:1fr; }
   .top h1{ font-size:19px; }
   button, select{ padding:9px 10px; font-size:12px; }
@@ -636,13 +618,13 @@ button.active{
 <div id="mainPage" style="display:none;">
 <header class="top">
   <h1>AMI ONLINE MUSIC CLASS</h1>
-  <div class="sub">Teacher - Student - Live Piano - Multi Camera Sync</div>
+  <div class="sub">Teacher - Student - Live Piano - MIDI</div>
 </header>
 
 <!-- ROOM -->
 <section class="panel">
   <div class="roomRow">
-    <input id="roomId" placeholder="Enter Room ID (e.g. 101)">
+    <input id="roomId" placeholder="Enter Room ID">
     <select id="userRole">
       <option value="teacher">Teacher</option>
       <option value="student">Student</option>
@@ -656,23 +638,20 @@ button.active{
 
 <!-- VIDEO -->
 <section class="panel">
-  <div class="videoGrid" id="videoContainerGrid">
-    <!-- Primary My Camera Card -->
-    <div class="videoCard" id="card-local-primary">
+  <div class="videoGrid">
+    <div class="videoCard">
       <video id="localVideo" autoplay playsinline muted></video>
-      <div class="videoName" id="localName">My Main Camera</div>
-      <div class="camControlOverlay">
-        <button onclick="switchCameraSpecific('localVideo', 0)">F/B</button>
-      </div>
+      <div class="videoName" id="localName">Teacher - My Camera</div>
     </div>
-    <!-- Remote Camera Cards will be dynamically appended here -->
+    <div class="videoCard">
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div class="videoName" id="remoteName">Student - Remote Camera</div>
+    </div>
   </div>
-
   <div class="controls">
     <button id="cameraBtn" onclick="toggleCamera()">Camera ON</button>
+    <button onclick="switchCamera()">Front / Back</button>
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
-    <button onclick="addExtraCamera()" style="background:#16a34a; font-size:16px; padding:8px 14px;">➕ Extra Cam</button>
-    <button onclick="removeExtraCamera()" style="background:#dc2626; font-size:16px; padding:8px 14px;">➖ Remove Cam</button>
     <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 Video Full View</button>
     <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet (Backup)</button>
     <button onclick="logoutUser()" style="background:#dc2626;">Logout</button>
@@ -682,11 +661,18 @@ button.active{
 <!-- VIDEO FULLSCREEN POPUP -->
 <div id="videoFullscreenContainer">
   <div class="fsVideoToolbar">
-    <span style="font-weight:bold; color:#a7f3d0;" id="fsHeaderTitle">Live Multi-Camera View</span>
+    <span style="font-weight:bold; color:#a7f3d0;">Live Cameras (Teacher & Student)</span>
     <button class="fsIconBtn" onclick="toggleVideoFullscreen()" style="background:#dc2626;">✕ Exit Full View</button>
   </div>
-  <div class="fsVideoGrid" id="fsVideoGridContainer">
-    <!-- Cloned live videos for fullscreen -->
+  <div class="fsVideoGrid">
+    <div class="fsVideoCard">
+      <video id="fsLocalVideo" autoplay playsinline muted></video>
+      <div class="videoName" id="fsLocalName">My Camera</div>
+    </div>
+    <div class="fsVideoCard">
+      <video id="fsRemoteVideo" autoplay playsinline></video>
+      <div class="videoName" id="fsRemoteName">Remote Camera</div>
+    </div>
   </div>
 </div>
 
@@ -930,12 +916,10 @@ onAuthStateChanged(auth, (user) => {
 <script>
 let peer = null;
 let localStream = null;
-let activeCalls = []; // Multi calls array
+let currentCall = null;
 let dataConnection = null;
 
-let extraStreams = []; // Array of extra camera streams (MediaStream)
-let extraFrontCameras = []; // Tracks facing mode for extra streams
-
+let useFrontCamera = true;
 let cameraOn = true;
 let micOn = true;
 let currentRole = "";
@@ -947,6 +931,9 @@ let sustainMode = false;
 let sustainDuration = 2.0;
 
 const localVideo = document.getElementById("localVideo");
+const remoteVideo = document.getElementById("remoteVideo");
+const fsLocalVideo = document.getElementById("fsLocalVideo");
+const fsRemoteVideo = document.getElementById("fsRemoteVideo");
 const statusBox = document.getElementById("status");
 
 function status(text){
@@ -987,11 +974,12 @@ function changeSustainTime(val){
 async function getCameraStream(){
   try{
     localStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" },
+      video: { facingMode: useFrontCamera ? "user" : "environment" },
       audio: true
     });
 
     localVideo.srcObject = localStream;
+    fsLocalVideo.srcObject = localStream;
     cameraOn = true;
     micOn = true;
     updateMediaButtons();
@@ -1045,16 +1033,16 @@ async function startClass(){
   });
 
   peer.on("call", call => {
-    activeCalls.push(call);
+    currentCall = call;
     call.answer(localStream);
-    
-    let remoteStreamIndex = 0;
     call.on("stream", remoteStream => {
-      appendRemoteStreamCard(call.peer, remoteStream, remoteStreamIndex++);
+      remoteVideo.srcObject = remoteStream;
+      fsRemoteVideo.srcObject = remoteStream;
       status("Live Video Connected Successfully!");
     });
     call.on("close", () => {
-      removeRemoteCards(call.peer);
+      remoteVideo.srcObject = null;
+      fsRemoteVideo.srcObject = null;
       status("Remote User Disconnected");
     });
   });
@@ -1077,14 +1065,15 @@ function connectAndCall(targetPeerId){
   setTimeout(() => {
     const call = peer.call(targetPeerId, localStream);
     if(call){
-      activeCalls.push(call);
-      let remoteStreamIndex = 0;
+      currentCall = call;
       call.on("stream", remoteStream => {
-        appendRemoteStreamCard(call.peer, remoteStream, remoteStreamIndex++);
+        remoteVideo.srcObject = remoteStream;
+        fsRemoteVideo.srcObject = remoteStream;
         status("Live Video Connected Successfully!");
       });
       call.on("close", () => {
-        removeRemoteCards(call.peer);
+        remoteVideo.srcObject = null;
+        fsRemoteVideo.srcObject = null;
         status("Remote User Disconnected");
       });
     }
@@ -1218,11 +1207,16 @@ function releaseRemoteKey(note, key){
 }
 
 function updateRoleNames(){
-  const localNameEl = document.getElementById("localName");
   if(currentRole==="teacher"){
-    localNameEl.textContent = "Teacher - My Camera (Main)";
+    document.getElementById("localName").textContent = "Teacher - My Camera";
+    document.getElementById("remoteName").textContent = "Student - Remote Camera";
+    document.getElementById("fsLocalName").textContent = "Teacher (Me)";
+    document.getElementById("fsRemoteName").textContent = "Student (Remote)";
   }else{
-    localNameEl.textContent = "Student - My Camera (Main)";
+    document.getElementById("localName").textContent = "Student - My Camera";
+    document.getElementById("remoteName").textContent = "Teacher - Remote Camera";
+    document.getElementById("fsLocalName").textContent = "Student (Me)";
+    document.getElementById("fsRemoteName").textContent = "Teacher (Remote)";
   }
 }
 
@@ -1257,179 +1251,63 @@ function updateMediaButtons(){
 
 function toggleVideoFullscreen(){
   const container = document.getElementById("videoFullscreenContainer");
-  const isActive = container.classList.toggle("active");
-  
-  if(isActive) {
-    syncFullscreenVideoGrid();
-  }
+  container.classList.toggle("active");
 }
 
-function syncFullscreenVideoGrid() {
-  const fsGrid = document.getElementById("fsVideoGridContainer");
-  fsGrid.innerHTML = "";
-  
-  // Clone all current video cards from main grid
-  const originalCards = document.querySelectorAll("#videoContainerGrid .videoCard");
-  originalCards.forEach((card, idx) => {
-    const clone = card.cloneNode(true);
-    const videoEl = clone.querySelector("video");
-    const origVideo = card.querySelector("video");
-    if(videoEl && origVideo) {
-      videoEl.srcObject = origVideo.srcObject;
-      videoEl.muted = origVideo.muted;
-    }
-    fsGrid.appendChild(clone);
-  });
-}
+async function switchCamera(){
+  if(!localStream) return;
 
-// MULTI CAMERA ADD/REMOVE LOGIC
-async function addExtraCamera() {
-  try {
-    const extraStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" },
-      audio: false
-    });
-    
-    extraStreams.push(extraStream);
-    extraFrontCameras.push(false);
-    
-    const camIndex = extraStreams.length;
-    const grid = document.getElementById("videoContainerGrid");
-    
-    const cardId = `extra-cam-card-${camIndex}`;
-    const videoId = `extra-cam-video-${camIndex}`;
-    
-    const card = document.createElement("div");
-    card.className = "videoCard";
-    card.id = cardId;
-    card.innerHTML = `
-      <video id="${videoId}" autoplay playsinline muted></video>
-      <div class="videoName">Extra Camera ${camIndex}</div>
-      <div class="camControlOverlay">
-        <button onclick="switchExtraCamera(${camIndex - 1})">F/B</button>
-      </div>
-    `;
-    
-    grid.appendChild(card);
-    document.getElementById(videoId).srcObject = extraStream;
+  useFrontCamera = !useFrontCamera;
+  const constraints = {
+    video: { facingMode: useFrontCamera ? "user" : "environment" },
+    audio: true
+  };
 
-    // Send extra stream via peer connection if connected
-    if(peer && currentRoom) {
-      const targetId = currentRole === "teacher" ? `anikous-${currentRoom}-student` : `anikous-${currentRoom}-teacher`;
-      const call = peer.call(targetId, extraStream);
-      if(call) activeCalls.push(call);
-    }
+  try{
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    localVideo.srcObject = localStream;
+    fsLocalVideo.srcObject = localStream;
     
-    status(`Extra Camera ${camIndex} Added Successfully`);
-  } catch(err) {
-    console.error(err);
-    alert("Extra camera open செய்ய முடியவில்லை. Permission சரிபார்க்கவும்.");
-  }
-}
+    cameraOn = true; 
+    micOn = true;
+    updateMediaButtons();
 
-function removeExtraCamera() {
-  if(extraStreams.length === 0) {
-    alert("அகற்றுவதற்கு Extra cameras எதுவும் இல்லை.");
-    return;
-  }
-  
-  const camIndex = extraStreams.length;
-  const streamToRemove = extraStreams.pop();
-  extraFrontCameras.pop();
-  
-  streamToRemove.getTracks().forEach(t => t.stop());
-  
-  const card = document.getElementById(`extra-cam-card-${camIndex}`);
-  if(card) card.remove();
-  
-  status(`Extra Camera ${camIndex} Removed`);
-}
-
-async function switchExtraCamera(index) {
-  try {
-    extraFrontCameras[index] = !extraFrontCameras[index] + ""; // toggle
-    const isFront = extraFrontCameras[index] === "true";
-    
-    const constraints = {
-      video: { facingMode: isFront ? "user" : "environment" },
-      audio: false
-    };
-    
-    extraStreams[index].getTracks().forEach(t => t.stop());
-    const newStream = await navigator.mediaDevices.getUserMedia(constraints);
-    extraStreams[index] = newStream;
-    
-    const videoId = `extra-cam-video-${index + 1}`;
-    document.getElementById(videoId).srcObject = newStream;
-    status(`Extra Camera ${index + 1} Switched`);
-  } catch(e) {
-    console.error(e);
-  }
-}
-
-async function switchCameraSpecific(videoIdStr, index = -1){
-  if(index === -1) {
-    // Primary local camera switch
-    if(!localStream) return;
-    const currentFacing = localStream.getVideoTracks()[0].getSettings().facingMode;
-    const useFront = currentFacing !== "user";
-
-    try{
-      localStream.getVideoTracks().forEach(t => t.stop());
-      localStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: useFront ? "user" : "environment" },
-        audio: true
-      });
-      localVideo.srcObject = localStream;
+    if(currentCall && currentCall.peerConnection){
+      const videoTrack = localStream.getVideoTracks()[0];
+      const audioTrack = localStream.getAudioTracks()[0];
       
-      // Update peer connections
-      activeCalls.forEach(call => {
-        if(call && call.peerConnection) {
-          const senders = call.peerConnection.getSenders();
-          const videoTrack = localStream.getVideoTracks()[0];
-          senders.forEach(s => {
-            if(s.track && s.track.kind === 'video' && videoTrack) s.replaceTrack(videoTrack);
-          });
+      const senders = currentCall.peerConnection.getSenders();
+      
+      senders.forEach(sender => {
+        if(sender.track && sender.track.kind === 'video' && videoTrack){
+          sender.replaceTrack(videoTrack);
+        }
+        if(sender.track && sender.track.kind === 'audio' && audioTrack){
+          sender.replaceTrack(audioTrack);
         }
       });
-      status("Main Camera Switched Successfully!");
-    } catch(err){
-      console.error(err);
     }
+
+    status("Camera & Mic Switched Successfully!");
+  }catch(err){
+    console.error("Error switching camera: ", err);
+    alert("Camera அல்லது Mic மாற்றுவதில் சிக்கல் உள்ளது. Permission சரிபார்க்கவும்.");
   }
-}
-
-function appendRemoteStreamCard(peerId, remoteStream, streamIndex) {
-  const grid = document.getElementById("videoContainerGrid");
-  const cardId = `remote-card-${peerId}-${streamIndex}`;
-  
-  if(document.getElementById(cardId)) return; // already exists
-  
-  const card = document.createElement("div");
-  card.className = "videoCard";
-  card.id = cardId;
-  card.innerHTML = `
-    <video autoplay playsinline></video>
-    <div class="videoName">Remote Stream (${peerId.includes('teacher') ? 'Teacher' : 'Student'})</div>
-  `;
-  grid.appendChild(card);
-  card.querySelector("video").srcObject = remoteStream;
-}
-
-function removeRemoteCards(peerId) {
-  const cards = document.querySelectorAll(`[id*="remote-card-${peerId}"]`);
-  cards.forEach(c => c.remove());
 }
 
 function openJitsiMeet() {
   const room = document.getElementById("roomId").value.trim();
   if(!room) { alert("Room ID enter செய்யவும்!"); return; }
-  activeCalls.forEach(c => { try { c.close(); } catch(e) {} });
-  activeCalls = [];
+  if(currentCall) { try { currentCall.close(); } catch(e) {} currentCall = null; }
   if(peer) { try { peer.destroy(); } catch(e) {} peer = null; }
   if(localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
-  extraStreams.forEach(s => s.getTracks().forEach(t => t.stop()));
-  extraStreams = [];
+  if(localVideo) localVideo.srcObject = null;
+  if(remoteVideo) remoteVideo.srcObject = null;
+  if(fsLocalVideo) fsLocalVideo.srcObject = null;
+  if(fsRemoteVideo) fsRemoteVideo.srcObject = null;
+  cameraOn = false; micOn = false;
+  updateMediaButtons();
   status("Switched to Jitsi Meet Backup");
   window.open(`https://meet.jit.si/AnikousMusicInstitute_${room}`, '_blank');
 }
