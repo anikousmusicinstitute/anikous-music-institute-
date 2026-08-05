@@ -231,6 +231,11 @@ button.active{
   min-height:220px;
   object-fit:cover;
   background:#000;
+  transform: scaleX(1);
+}
+
+.videoCard video.front-cam {
+  transform: scaleX(-1);
 }
 
 .videoName{
@@ -290,6 +295,11 @@ button.active{
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scaleX(1);
+}
+
+.fsVideoCard video.front-cam {
+  transform: scaleX(-1);
 }
 
 .fsVideoToolbar {
@@ -971,6 +981,16 @@ function changeSustainTime(val){
   sendData({ type:"changeSustainTime", duration:sustainDuration });
 }
 
+function updateVideoMirror() {
+  if (useFrontCamera) {
+    localVideo.classList.add("front-cam");
+    fsLocalVideo.classList.add("front-cam");
+  } else {
+    localVideo.classList.remove("front-cam");
+    fsLocalVideo.classList.remove("front-cam");
+  }
+}
+
 async function getCameraStream(){
   try{
     localStream = await navigator.mediaDevices.getUserMedia({
@@ -980,6 +1000,9 @@ async function getCameraStream(){
 
     localVideo.srcObject = localStream;
     fsLocalVideo.srcObject = localStream;
+    
+    updateVideoMirror();
+
     cameraOn = true;
     micOn = true;
     updateMediaButtons();
@@ -1258,33 +1281,45 @@ async function switchCamera(){
   if(!localStream) return;
 
   useFrontCamera = !useFrontCamera;
+  
+  localStream.getVideoTracks().forEach(track => track.stop());
+
   const constraints = {
-    video: { facingMode: useFrontCamera ? "user" : "environment" },
+    video: { facingMode: useFrontCamera ? "user" : { exact: "environment" } },
     audio: true
   };
 
   try{
-    localStream.getTracks().forEach(track => track.stop());
-    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    let newStream;
+    try {
+      newStream = await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (err) {
+      constraints.video.facingMode = "environment";
+      newStream = await navigator.mediaDevices.getUserMedia(constraints);
+    }
+
+    const videoTrack = newStream.getVideoTracks()[0];
+    const audioTrack = newStream.getAudioTracks()[0];
+
+    localStream = newStream;
     localVideo.srcObject = localStream;
     fsLocalVideo.srcObject = localStream;
+    
+    updateVideoMirror();
     
     cameraOn = true; 
     micOn = true;
     updateMediaButtons();
 
     if(currentCall && currentCall.peerConnection){
-      const videoTrack = localStream.getVideoTracks()[0];
-      const audioTrack = localStream.getAudioTracks()[0];
-      
       const senders = currentCall.peerConnection.getSenders();
       
       senders.forEach(sender => {
         if(sender.track && sender.track.kind === 'video' && videoTrack){
-          sender.replaceTrack(videoTrack);
+          sender.replaceTrack(videoTrack).catch(e => console.error("Video track replace error:", e));
         }
         if(sender.track && sender.track.kind === 'audio' && audioTrack){
-          sender.replaceTrack(audioTrack);
+          sender.replaceTrack(audioTrack).catch(e => console.error("Audio track replace error:", e));
         }
       });
     }
@@ -1292,6 +1327,7 @@ async function switchCamera(){
     status("Camera & Mic Switched Successfully!");
   }catch(err){
     console.error("Error switching camera: ", err);
+    useFrontCamera = !useFrontCamera;
     alert("Camera அல்லது Mic மாற்றுவதில் சிக்கல் உள்ளது. Permission சரிபார்க்கவும்.");
   }
 }
@@ -1894,4 +1930,3 @@ document.addEventListener("pointerdown", () => {
 
 </body>
 </html>
-
