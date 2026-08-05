@@ -209,10 +209,10 @@ button.active{
   min-height:38px;
 }
 
-/* VIDEO */
+/* 1080p OPTIMIZED VIDEO GRID */
 .videoGrid{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap:10px;
 }
 
@@ -221,21 +221,29 @@ button.active{
   background:#020617;
   border-radius:14px;
   overflow:hidden;
-  min-height:220px;
+  min-height:240px;
   border:1px solid #263044;
 }
 
-.videoCard video{
-  width:100%;
-  height:100%;
-  min-height:220px;
-  object-fit:cover;
-  background:#000;
-  transform: scaleX(1);
+.videoCard.hidden-card {
+  display: none !important;
 }
 
-.videoCard video.front-cam {
+.videoCard video, .fsVideoCard video{
+  width:100%;
+  height:100%;
+  min-height:240px;
+  object-fit:cover;
+  background:#000;
+}
+
+/* Local Video mirror only when using Front Camera */
+#localVideo.front-cam, #fsLocalVideo.front-cam {
   transform: scaleX(-1);
+}
+
+.videoCard video:not(#localVideo), .fsVideoCard video:not(#fsLocalVideo) {
+  transform: scaleX(-1) !important;
 }
 
 .videoName{
@@ -246,6 +254,7 @@ button.active{
   padding:6px 9px;
   border-radius:7px;
   font-size:12px;
+  z-index: 5;
 }
 
 .controls{
@@ -277,7 +286,7 @@ button.active{
 .fsVideoGrid {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   height: calc(100vh - 75px);
 }
@@ -291,15 +300,8 @@ button.active{
   height: 100%;
 }
 
-.fsVideoCard video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scaleX(1);
-}
-
-.fsVideoCard video.front-cam {
-  transform: scaleX(-1);
+.fsVideoCard.hidden-card {
+  display: none !important;
 }
 
 .fsVideoToolbar {
@@ -591,7 +593,7 @@ button.active{
 
 @media(max-width:650px){
   .videoGrid, .fsVideoGrid{ grid-template-columns:1fr; }
-  .videoCard, .videoCard video{ min-height:190px; }
+  .videoCard, .videoCard video{ min-height:220px; }
   .info{ grid-template-columns:1fr; }
   .top h1{ font-size:19px; }
   button, select{ padding:9px 10px; font-size:12px; }
@@ -627,8 +629,8 @@ button.active{
 <!-- MAIN PAGE -->
 <div id="mainPage" style="display:none;">
 <header class="top">
-  <h1>AMI ONLINE MUSIC CLASS</h1>
-  <div class="sub">Teacher - Student - Live Piano - MIDI</div>
+  <h1>AMI ONLINE MUSIC CLASS (1080p HD)</h1>
+  <div class="sub">Teacher - Student - Extra Cameras - Live Piano</div>
 </header>
 
 <!-- ROOM -->
@@ -638,8 +640,10 @@ button.active{
     <select id="userRole">
       <option value="teacher">Teacher</option>
       <option value="student">Student</option>
+      <option value="extra1">Extra Camera 1</option>
+      <option value="extra2">Extra Camera 2</option>
     </select>
-    <button onclick="startClass()">Start Class</button>
+    <button onclick="startClass()">Start 1080p Class</button>
   </div>
   <div id="status" class="status">
     Ready - Enter Room ID and Start Class
@@ -648,21 +652,31 @@ button.active{
 
 <!-- VIDEO -->
 <section class="panel">
-  <div class="videoGrid">
+  <div class="videoGrid" id="videoGridContainer">
     <div class="videoCard">
       <video id="localVideo" autoplay playsinline muted></video>
-      <div class="videoName" id="localName">Teacher - My Camera</div>
+      <div class="videoName" id="localName">My Camera (1080p)</div>
     </div>
     <div class="videoCard">
-      <video id="remoteVideo" autoplay playsinline></video>
-      <div class="videoName" id="remoteName">Student - Remote Camera</div>
+      <video id="remoteVideo1" autoplay playsinline></video>
+      <div class="videoName" id="remoteName1">Participant 2 (1080p)</div>
+    </div>
+    <div class="videoCard hidden-card" id="extraCard1">
+      <video id="remoteVideo2" autoplay playsinline></video>
+      <div class="videoName" id="remoteName2">Extra Camera 1</div>
+    </div>
+    <div class="videoCard hidden-card" id="extraCard2">
+      <video id="remoteVideo3" autoplay playsinline></video>
+      <div class="videoName" id="remoteName3">Extra Camera 2</div>
     </div>
   </div>
   <div class="controls">
     <button id="cameraBtn" onclick="toggleCamera()">Camera ON</button>
     <button onclick="switchCamera()">Front / Back</button>
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
-    <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 Video Full View</button>
+    <button id="extra1ToggleBtn" onclick="toggleExtra1()">📷 E1: OFF</button>
+    <button id="extra2ToggleBtn" onclick="toggleExtra2()">📷 E2: OFF</button>
+    <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 HD Full View</button>
     <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet (Backup)</button>
     <button onclick="logoutUser()" style="background:#dc2626;">Logout</button>
   </div>
@@ -671,17 +685,25 @@ button.active{
 <!-- VIDEO FULLSCREEN POPUP -->
 <div id="videoFullscreenContainer">
   <div class="fsVideoToolbar">
-    <span style="font-weight:bold; color:#a7f3d0;">Live Cameras (Teacher & Student)</span>
+    <span style="font-weight:bold; color:#a7f3d0;">Live 1080p HD Multi-View</span>
     <button class="fsIconBtn" onclick="toggleVideoFullscreen()" style="background:#dc2626;">✕ Exit Full View</button>
   </div>
-  <div class="fsVideoGrid">
+  <div class="fsVideoGrid" id="fsVideoGridContainer">
     <div class="fsVideoCard">
       <video id="fsLocalVideo" autoplay playsinline muted></video>
-      <div class="videoName" id="fsLocalName">My Camera</div>
+      <div class="videoName" id="fsLocalName">My Camera (1080p)</div>
     </div>
     <div class="fsVideoCard">
-      <video id="fsRemoteVideo" autoplay playsinline></video>
-      <div class="videoName" id="fsRemoteName">Remote Camera</div>
+      <video id="fsRemoteVideo1" autoplay playsinline></video>
+      <div class="videoName" id="fsRemoteName1">Participant 2</div>
+    </div>
+    <div class="fsVideoCard fsExtraCard1 hidden-card">
+      <video id="fsRemoteVideo2" autoplay playsinline></video>
+      <div class="videoName" id="fsRemoteName2">Extra Camera 1</div>
+    </div>
+    <div class="fsVideoCard fsExtraCard2 hidden-card">
+      <video id="fsRemoteVideo3" autoplay playsinline></video>
+      <div class="videoName" id="fsRemoteName3">Extra Camera 2</div>
     </div>
   </div>
 </div>
@@ -812,7 +834,7 @@ button.active{
   </div>
 </div>
 
-<!-- FIREBASE & APP SCRIPT (MODULE) -->
+<!-- FIREBASE SCRIPT -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import {
@@ -926,12 +948,14 @@ onAuthStateChanged(auth, (user) => {
 <script>
 let peer = null;
 let localStream = null;
-let currentCall = null;
-let dataConnection = null;
+let activeCalls = {};
+let dataConnections = {};
 
 let useFrontCamera = true;
 let cameraOn = true;
 let micOn = true;
+let extra1Visible = false;
+let extra2Visible = false;
 let currentRole = "";
 let currentRoom = "";
 
@@ -941,10 +965,16 @@ let sustainMode = false;
 let sustainDuration = 2.0;
 
 const localVideo = document.getElementById("localVideo");
-const remoteVideo = document.getElementById("remoteVideo");
 const fsLocalVideo = document.getElementById("fsLocalVideo");
-const fsRemoteVideo = document.getElementById("fsRemoteVideo");
 const statusBox = document.getElementById("status");
+
+const remoteVideoSlots = [
+  { video: document.getElementById("remoteVideo1"), fsVideo: document.getElementById("fsRemoteVideo1"), nameEl: document.getElementById("remoteName1"), fsNameEl: document.getElementById("fsRemoteName1") },
+  { video: document.getElementById("remoteVideo2"), fsVideo: document.getElementById("fsRemoteVideo2"), nameEl: document.getElementById("remoteName2"), fsNameEl: document.getElementById("fsRemoteName2") },
+  { video: document.getElementById("remoteVideo3"), fsVideo: document.getElementById("fsRemoteVideo3"), nameEl: document.getElementById("remoteName3"), fsNameEl: document.getElementById("fsRemoteName3") }
+];
+
+let connectedPeersMap = new Map();
 
 function status(text){
   statusBox.textContent = text;
@@ -952,12 +982,12 @@ function status(text){
 
 function changeVoice(voice){
   currentVoice = voice;
-  sendData({ type:"changeVoice", voice:voice });
+  broadcastData({ type:"changeVoice", voice:voice });
 }
 
 function changeDualVoice(voice){
   currentDualVoice = voice;
-  sendData({ type:"changeDualVoice", dual:voice });
+  broadcastData({ type:"changeDualVoice", dual:voice });
 }
 
 function toggleSustain(){
@@ -972,13 +1002,49 @@ function toggleSustain(){
     });
   }
 
-  sendData({ type:"toggleSustain", sustain:sustainMode, duration:sustainDuration });
+  broadcastData({ type:"toggleSustain", sustain:sustainMode, duration:sustainDuration });
 }
 
 function changeSustainTime(val){
   sustainDuration = parseFloat(val);
   document.getElementById("sustainTimeLabel").textContent = `Time: ${sustainDuration.toFixed(1)}s`;
-  sendData({ type:"changeSustainTime", duration:sustainDuration });
+  broadcastData({ type:"changeSustainTime", duration:sustainDuration });
+}
+
+function toggleExtra1() {
+  extra1Visible = !extra1Visible;
+  const btn = document.getElementById("extra1ToggleBtn");
+  btn.textContent = extra1Visible ? "📷 E1: ON" : "📷 E1: OFF";
+  btn.classList.toggle("active", extra1Visible);
+
+  const extraCard1 = document.getElementById("extraCard1");
+  const fsExtra1 = document.querySelector(".fsExtraCard1");
+
+  if(extra1Visible) {
+    if(extraCard1) extraCard1.classList.remove("hidden-card");
+    if(fsExtra1) fsExtra1.classList.remove("hidden-card");
+  } else {
+    if(extraCard1) extraCard1.classList.add("hidden-card");
+    if(fsExtra1) fsExtra1.classList.add("hidden-card");
+  }
+}
+
+function toggleExtra2() {
+  extra2Visible = !extra2Visible;
+  const btn = document.getElementById("extra2ToggleBtn");
+  btn.textContent = extra2Visible ? "📷 E2: ON" : "📷 E2: OFF";
+  btn.classList.toggle("active", extra2Visible);
+
+  const extraCard2 = document.getElementById("extraCard2");
+  const fsExtra2 = document.querySelector(".fsExtraCard2");
+
+  if(extra2Visible) {
+    if(extraCard2) extraCard2.classList.remove("hidden-card");
+    if(fsExtra2) fsExtra2.classList.remove("hidden-card");
+  } else {
+    if(extraCard2) extraCard2.classList.add("hidden-card");
+    if(fsExtra2) fsExtra2.classList.add("hidden-card");
+  }
 }
 
 function updateVideoMirror() {
@@ -996,11 +1062,15 @@ async function getCameraStream(){
     localStream = await navigator.mediaDevices.getUserMedia({
       video: { 
         facingMode: useFrontCamera ? "user" : "environment",
-        width: { ideal: 1920 },
-        height: { ideal: 1080 },
-        frameRate: { ideal: 30 }
+        width: { ideal: 1920, max: 1920 },
+        height: { ideal: 1080, max: 1080 },
+        frameRate: { ideal: 30, max: 60 }
       },
-      audio: true
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      }
     });
 
     localVideo.srcObject = localStream;
@@ -1011,13 +1081,25 @@ async function getCameraStream(){
     cameraOn = true;
     micOn = true;
     updateMediaButtons();
-    status("Camera and Microphone Connected");
+    status("1080p HD Camera and High Quality Audio Connected");
     return localStream;
   }catch(error){
     console.error(error);
-    status("Camera or Microphone Permission Not Granted");
-    alert("Camera open ஆகவில்லை. Permission Allow செய்யவும்.");
-    throw error;
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
+      localVideo.srcObject = localStream;
+      fsLocalVideo.srcObject = localStream;
+      updateVideoMirror();
+      status("Connected in standard resolution");
+      return localStream;
+    } catch(err2) {
+      status("Camera or Microphone Permission Not Granted");
+      alert("Camera open ஆகவில்லை. Permission Allow செய்யவும்.");
+      throw err2;
+    }
   }
 }
 
@@ -1047,31 +1129,45 @@ async function startClass(){
   }
 
   const peerId = "anikous-" + room + "-" + role;
-  status("Connecting To Class...");
+  status("Connecting To 1080p Class...");
+
+  if(peer) {
+    try { peer.destroy(); } catch(e){}
+  }
 
   peer = new Peer(peerId);
 
   peer.on("open", id => {
-    status("Connected - " + (role==="teacher" ? "Teacher" : "Student") + " - Room: " + room);
-    if(role==="student"){
-      const teacherId = "anikous-" + room + "-teacher";
-      connectAndCall(teacherId);
-      connectData(teacherId);
-    }
+    status("Connected - 1080p HD - Role: " + role + " - Room: " + room);
+    
+    const allRoles = ["teacher", "student", "extra1", "extra2"];
+    allRoles.forEach(r => {
+      if(r !== role) {
+        const targetId = "anikous-" + room + "-" + r;
+        connectAndCall(targetId);
+        connectData(targetId);
+      }
+    });
   });
 
   peer.on("call", call => {
-    currentCall = call;
+    activeCalls[call.peer] = call;
     call.answer(localStream);
+    
+    // Force high bitrate when ICE connection succeeds
+    call.peerConnection.oniceconnectionstatechange = () => {
+      if(call.peerConnection.iceConnectionState === "connected" || call.peerConnection.iceConnectionState === "completed") {
+        enforceHighBitrate(call);
+      }
+    };
+
     call.on("stream", remoteStream => {
-      remoteVideo.srcObject = remoteStream;
-      fsRemoteVideo.srcObject = remoteStream;
-      status("Live Video Connected Successfully!");
+      assignRemoteStream(call.peer, remoteStream);
+      status("1080p HD Video Connected Successfully!");
     });
     call.on("close", () => {
-      remoteVideo.srcObject = null;
-      fsRemoteVideo.srcObject = null;
-      status("Remote User Disconnected");
+      removeRemoteStream(call.peer);
+      status("A User Disconnected");
     });
   });
 
@@ -1081,31 +1177,55 @@ async function startClass(){
 
   peer.on("error", err => {
     console.error(err);
-    if(err.type==="peer-unavailable"){
-      status("Other User Has Not Joined Yet");
-    }else{
-      status("Connection Error - " + err.type);
-    }
   });
 }
 
 function connectAndCall(targetPeerId){
   setTimeout(() => {
+    if(!peer) return;
     const call = peer.call(targetPeerId, localStream);
     if(call){
-      currentCall = call;
+      activeCalls[targetPeerId] = call;
+      
+      call.peerConnection.oniceconnectionstatechange = () => {
+        if(call.peerConnection.iceConnectionState === "connected" || call.peerConnection.iceConnectionState === "completed") {
+          enforceHighBitrate(call);
+        }
+      };
+
       call.on("stream", remoteStream => {
-        remoteVideo.srcObject = remoteStream;
-        fsRemoteVideo.srcObject = remoteStream;
-        status("Live Video Connected Successfully!");
+        assignRemoteStream(targetPeerId, remoteStream);
+        status("1080p HD Video Connected Successfully!");
       });
       call.on("close", () => {
-        remoteVideo.srcObject = null;
-        fsRemoteVideo.srcObject = null;
-        status("Remote User Disconnected");
+        removeRemoteStream(targetPeerId);
       });
     }
-  }, 1000);
+  }, 1500);
+}
+
+// 1080p உயர் தரம் மற்றும் தெளிவுக்காக Bitrate-ஐ அதிகரிக்கச் செய்யும் வசதி
+function enforceHighBitrate(call) {
+  try {
+    const pc = call.peerConnection;
+    if (!pc) return;
+    const senders = pc.getSenders();
+    senders.forEach(sender => {
+      if (sender.track && sender.track.kind === 'video') {
+        const parameters = sender.getParameters();
+        if (!parameters.encodings) {
+          parameters.encodings = [{}];
+        }
+        parameters.encodings.forEach(encoding => {
+          encoding.maxBitrate = 4000000; // 4 Mbps for crystal clear 1080p
+          encoding.maxFramerate = 30;
+        });
+        sender.setParameters(parameters).catch(e => console.log(e));
+      }
+    });
+  } catch (err) {
+    console.error("Bitrate enforcement error:", err);
+  }
 }
 
 function connectData(id){
@@ -1120,24 +1240,62 @@ function connectData(id){
 
 function setupDataConnection(connection){
   connection.on("open", () => {
-    dataConnection = connection;
+    dataConnections[connection.peer] = connection;
     status("Keyboard & Music Sync Connected!");
   });
   connection.on("data", data => {
     handleRemoteData(data);
   });
   connection.on("close", () => {
-    dataConnection = null;
+    delete dataConnections[connection.peer];
   });
 }
 
-function sendData(data){
-  if(dataConnection && dataConnection.open){
-    try{
-      dataConnection.send(data);
-    }catch(error){
-      console.error("Data send error:", error);
+function broadcastData(data){
+  Object.values(dataConnections).forEach(conn => {
+    if(conn && conn.open){
+      try { conn.send(data); } catch(e){}
     }
+  });
+}
+
+function assignRemoteStream(peerId, stream){
+  connectedPeersMap.set(peerId, stream);
+  updateRemoteVideoUI();
+}
+
+function removeRemoteStream(peerId){
+  connectedPeersMap.delete(peerId);
+  delete activeCalls[peerId];
+  updateRemoteVideoUI();
+}
+
+function updateRemoteVideoUI(){
+  let index = 0;
+  connectedPeersMap.forEach((stream, peerId) => {
+    if(index < remoteVideoSlots.length){
+      let slot = remoteVideoSlots[index];
+      slot.video.srcObject = stream;
+      slot.fsVideo.srcObject = stream;
+      
+      slot.video.style.transform = "scaleX(-1)";
+      slot.fsVideo.style.transform = "scaleX(-1)";
+      
+      let parts = peerId.split("-");
+      let roleName = parts[parts.length - 1];
+      slot.nameEl.textContent = roleName.toUpperCase() + " (1080p)";
+      slot.fsNameEl.textContent = roleName.toUpperCase() + " (1080p)";
+      index++;
+    }
+  });
+
+  for(let i = index; i < remoteVideoSlots.length; i++){
+    remoteVideoSlots[i].video.srcObject = null;
+    remoteVideoSlots[i].fsVideo.srcObject = null;
+    remoteVideoSlots[i].video.style.transform = "scaleX(-1)";
+    remoteVideoSlots[i].fsVideo.style.transform = "scaleX(-1)";
+    remoteVideoSlots[i].nameEl.textContent = "Waiting...";
+    remoteVideoSlots[i].fsNameEl.textContent = "Waiting...";
   }
 }
 
@@ -1235,17 +1393,8 @@ function releaseRemoteKey(note, key){
 }
 
 function updateRoleNames(){
-  if(currentRole==="teacher"){
-    document.getElementById("localName").textContent = "Teacher - My Camera";
-    document.getElementById("remoteName").textContent = "Student - Remote Camera";
-    document.getElementById("fsLocalName").textContent = "Teacher (Me)";
-    document.getElementById("fsRemoteName").textContent = "Student (Remote)";
-  }else{
-    document.getElementById("localName").textContent = "Student - My Camera";
-    document.getElementById("remoteName").textContent = "Teacher - Remote Camera";
-    document.getElementById("fsLocalName").textContent = "Student (Me)";
-    document.getElementById("fsRemoteName").textContent = "Teacher (Remote)";
-  }
+  document.getElementById("localName").textContent = currentRole.toUpperCase() + " (Me - 1080p)";
+  document.getElementById("fsLocalName").textContent = currentRole.toUpperCase() + " (Me - 1080p)";
 }
 
 function toggleCamera(){
@@ -1291,10 +1440,10 @@ async function switchCamera(){
 
   const constraints = {
     video: { 
-      facingMode: useFrontCamera ? "user" : { exact: "environment" },
-      width: { ideal: 1920 },
-      height: { ideal: 1080 },
-      frameRate: { ideal: 30 }
+      facingMode: useFrontCamera ? "user" : "environment",
+      width: { ideal: 1920, max: 1920 },
+      height: { ideal: 1080, max: 1080 },
+      frameRate: { ideal: 30, max: 60 }
     },
     audio: true
   };
@@ -1321,43 +1470,37 @@ async function switchCamera(){
     micOn = true;
     updateMediaButtons();
 
-    if(currentCall && currentCall.peerConnection){
-      const senders = currentCall.peerConnection.getSenders();
-      
-      senders.forEach(sender => {
-        if(sender.track && sender.track.kind === 'video' && videoTrack){
-          sender.replaceTrack(videoTrack).catch(e => console.error("Video track replace error:", e));
-        }
-        if(sender.track && sender.track.kind === 'audio' && audioTrack){
-          sender.replaceTrack(audioTrack).catch(e => console.error("Audio track replace error:", e));
-        }
-      });
-    }
+    Object.values(activeCalls).forEach(call => {
+      if(call && call.peerConnection){
+        const senders = call.peerConnection.getSenders();
+        senders.forEach(sender => {
+          if(sender.track && sender.track.kind === 'video' && videoTrack){
+            sender.replaceTrack(videoTrack).then(() => {
+              enforceHighBitrate(call);
+            }).catch(e => {});
+          }
+          if(sender.track && sender.track.kind === 'audio' && audioTrack){
+            sender.replaceTrack(audioTrack).catch(e => {});
+          }
+        });
+      }
+    });
 
-    status("Camera & Mic Switched Successfully!");
+    status("1080p HD Camera Switched Successfully!");
   }catch(err){
     console.error("Error switching camera: ", err);
     useFrontCamera = !useFrontCamera;
-    alert("Camera அல்லது Mic மாற்றுவதில் சிக்கல் உள்ளது. Permission சரிபார்க்கவும்.");
+    alert("Camera அல்லது Mic மாற்றுவதில் சிக்கல் உள்ளது.");
   }
 }
 
 function openJitsiMeet() {
   const room = document.getElementById("roomId").value.trim();
   if(!room) { alert("Room ID enter செய்யவும்!"); return; }
-  if(currentCall) { try { currentCall.close(); } catch(e) {} currentCall = null; }
-  if(peer) { try { peer.destroy(); } catch(e) {} peer = null; }
-  if(localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
-  if(localVideo) localVideo.srcObject = null;
-  if(remoteVideo) remoteVideo.srcObject = null;
-  if(fsLocalVideo) fsLocalVideo.srcObject = null;
-  if(fsRemoteVideo) fsRemoteVideo.srcObject = null;
-  cameraOn = false; micOn = false;
-  updateMediaButtons();
-  status("Switched to Jitsi Meet Backup");
   window.open(`https://meet.jit.si/AnikousMusicInstitute_${room}`, '_blank');
 }
 
+/* PIANO SYNTHESIZER LOGIC */
 const NOTE_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const BLACK_KEYS = [1,3,6,8,10];
 let activeKeys = new Set();
@@ -1388,227 +1531,34 @@ function createVoiceChain(voiceType, freq, now, decayDuration){
   const gain = audioContext.createGain();
   const filter = audioContext.createBiquadFilter();
 
-  if(voiceType === "grand"){
-    const o1 = audioContext.createOscillator();
-    const o2 = audioContext.createOscillator();
-    o1.type = "sine"; o1.frequency.value = freq;
-    o2.type = "triangle"; o2.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.setValueAtTime(3500, now);
-    filter.frequency.exponentialRampToValueAtTime(800, now + decayDuration);
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.28, now + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
-    oscs.push(o1, o2);
-  } else if(voiceType === "bright"){
-    const o1 = audioContext.createOscillator();
-    const o2 = audioContext.createOscillator();
-    o1.type = "sawtooth"; o1.frequency.value = freq;
-    o2.type = "sine"; o2.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.value = 5000;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.22, now + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.03, now + decayDuration);
-    oscs.push(o1, o2);
-  } else if(voiceType === "electric"){
-    const o1 = audioContext.createOscillator();
-    const o2 = audioContext.createOscillator();
-    o1.type = "sine"; o1.frequency.value = freq;
-    o2.type = "square"; o2.frequency.value = freq * 2;
-    filter.type = "lowpass"; filter.frequency.setValueAtTime(2000, now);
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.05, now + decayDuration);
-    oscs.push(o1, o2);
-  } else if(voiceType === "organ"){
-    const o1 = audioContext.createOscillator();
-    const o2 = audioContext.createOscillator();
-    o1.type = "sawtooth"; o1.frequency.value = freq;
-    o2.type = "sine"; o2.frequency.value = freq * 0.5;
-    filter.type = "lowpass"; filter.frequency.value = 4000;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.05, now + decayDuration);
-    oscs.push(o1, o2);
-  } else if(voiceType === "jazzorgan"){
-    const o1 = audioContext.createOscillator();
-    o1.type = "triangle"; o1.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.value = 3000;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.22, now + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
-    oscs.push(o1);
-  } else if(voiceType === "strings"){
-    const o1 = audioContext.createOscillator();
-    const o2 = audioContext.createOscillator();
-    o1.type = "sawtooth"; o1.frequency.value = freq;
-    o2.type = "sawtooth"; o2.frequency.value = freq * 1.006;
-    filter.type = "lowpass"; filter.frequency.setValueAtTime(900, now);
-    filter.frequency.linearRampToValueAtTime(2400, now + decayDuration * 0.5);
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.16, now + 0.25);
-    gain.gain.exponentialRampToValueAtTime(0.02, now + decayDuration);
-    oscs.push(o1, o2);
-  } else if(voiceType === "synthlead"){
-    const o1 = audioContext.createOscillator();
-    o1.type = "sawtooth"; o1.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.setValueAtTime(4500, now);
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.2, now + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.05, now + decayDuration);
-    oscs.push(o1);
-  } else if(voiceType === "synthpad"){
-    const o1 = audioContext.createOscillator();
-    const o2 = audioContext.createOscillator();
-    o1.type = "sine"; o1.frequency.value = freq;
-    o2.type = "triangle"; o2.frequency.value = freq * 1.5;
-    filter.type = "lowpass"; filter.frequency.value = 1800;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.18, now + 0.3);
-    gain.gain.exponentialRampToValueAtTime(0.03, now + decayDuration);
-    oscs.push(o1, o2);
-  } else if(voiceType === "choir"){
-    const o1 = audioContext.createOscillator();
-    const o2 = audioContext.createOscillator();
-    o1.type = "sine"; o1.frequency.value = freq;
-    o2.type = "triangle"; o2.frequency.value = freq * 1.003;
-    filter.type = "bandpass"; filter.frequency.value = 1200;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.2, now + 0.2);
-    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
-    oscs.push(o1, o2);
-  } else if(voiceType === "guitar"){
-    const o1 = audioContext.createOscillator();
-    o1.type = "triangle"; o1.frequency.value = freq;
-    filter.type = "bandpass"; filter.frequency.value = freq * 1.5;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.28, now + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + Math.min(decayDuration, 1.2));
-    oscs.push(o1);
-  } else if(voiceType === "pluck"){
-    const o1 = audioContext.createOscillator();
-    o1.type = "sine"; o1.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.value = 5000;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.3, now + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + Math.min(decayDuration, 0.8));
-    oscs.push(o1);
-  } else if(voiceType === "flute"){
-    const o1 = audioContext.createOscillator();
-    o1.type = "sine"; o1.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.value = 1200;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.22, now + 0.1);
-    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
-    oscs.push(o1);
-  } else if(voiceType === "panflute"){
-    const o1 = audioContext.createOscillator();
-    const o2 = audioContext.createOscillator();
-    o1.type = "sine"; o1.frequency.value = freq;
-    o2.type = "triangle"; o2.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.value = 1600;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.24, now + 0.08);
-    gain.gain.exponentialRampToValueAtTime(0.03, now + decayDuration);
-    oscs.push(o1, o2);
-  } else if(voiceType === "brass"){
-    const o1 = audioContext.createOscillator();
-    const o2 = audioContext.createOscillator();
-    o1.type = "sawtooth"; o1.frequency.value = freq;
-    o2.type = "square"; o2.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.setValueAtTime(800, now);
-    filter.frequency.linearRampToValueAtTime(3200, now + 0.15);
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.03, now + decayDuration);
-    oscs.push(o1, o2);
-  } else if(voiceType === "harmonica"){
-    const o1 = audioContext.createOscillator();
-    o1.type = "sawtooth"; o1.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.value = 2500;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.22, now + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
-    oscs.push(o1);
-  } else if(voiceType === "accordion"){
-    const o1 = audioContext.createOscillator();
-    const o2 = audioContext.createOscillator();
-    o1.type = "sawtooth"; o1.frequency.value = freq;
-    o2.type = "triangle"; o2.frequency.value = freq * 1.004;
-    filter.type = "lowpass"; filter.frequency.value = 2200;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.2, now + 0.04);
-    gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
-    oscs.push(o1, o2);
-  } else if(voiceType === "synthbass"){
-    const o1 = audioContext.createOscillator();
-    o1.type = "sawtooth"; o1.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.setValueAtTime(1000, now);
-    filter.frequency.exponentialRampToValueAtTime(200, now + 0.2);
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.3, now + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.02, now + Math.min(decayDuration, 1.0));
-    oscs.push(o1);
-  } else if(voiceType === "acousticbass"){
-    const o1 = audioContext.createOscillator();
-    o1.type = "triangle"; o1.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.value = 800;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.32, now + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.02, now + Math.min(decayDuration, 1.2));
-    oscs.push(o1);
-  } else if(voiceType === "marimba"){
-    const o1 = audioContext.createOscillator();
-    o1.type = "sine"; o1.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.value = 4000;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.3, now + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + Math.min(decayDuration, 0.6));
-    oscs.push(o1);
-  } else if(voiceType === "xylophone"){
-    const o1 = audioContext.createOscillator();
-    o1.type = "sine"; o1.frequency.value = freq;
-    filter.type = "lowpass"; filter.frequency.value = 6000;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.32, now + 0.003);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + Math.min(decayDuration, 0.4));
-    oscs.push(o1);
-  }
+  const o1 = audioContext.createOscillator();
+  o1.type = voiceType === "grand" ? "sine" : "sawtooth";
+  o1.frequency.value = freq;
+  filter.type = "lowpass"; filter.frequency.value = 3500;
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.25, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
+  oscs.push(o1);
 
-  oscs.forEach(o => {
-    o.connect(filter);
-    o.start(now);
-  });
+  oscs.forEach(o => { o.connect(filter); o.start(now); });
   filter.connect(gain);
   gain.connect(audioContext.destination);
-
   return { oscs, gain };
 }
 
 function playMultiSound(note, primaryVoice, dualVoice, soundStore, decay){
   initAudio();
   if(soundStore[note]) return;
-
   const freq = frequency(note);
   const now = audioContext.currentTime;
-  const activeChains = [];
-
   const primary = createVoiceChain(primaryVoice, freq, now, sustainMode ? decay : 3.0);
-  activeChains.push(primary);
-
-  if(dualVoice && dualVoice !== "none"){
-    const dual = createVoiceChain(dualVoice, freq, now, sustainMode ? decay : 3.0);
-    dual.gain.gain.value *= 0.7;
-    activeChains.push(dual);
-  }
-
-  soundStore[note] = { chains: activeChains };
+  soundStore[note] = { chains: [primary] };
 }
 
 function stopMultiSound(note, soundStore, releaseTime = 0.05){
   const sound = soundStore[note];
   if(!sound) return;
   const now = audioContext.currentTime;
-  
   const actualRelease = sustainMode ? (sustainDuration || 1.0) : 0.05;
 
   sound.chains.forEach(chain => {
@@ -1619,7 +1569,6 @@ function stopMultiSound(note, soundStore, releaseTime = 0.05){
       try { chain.oscs.forEach(o => o.stop()); } catch(e){}
     }, (actualRelease + 0.05) * 1000);
   });
-
   delete soundStore[note];
 }
 
@@ -1637,20 +1586,19 @@ function pressKey(note, key){
 
   const duration = sustainMode ? sustainDuration : 3.0;
   playMultiSound(note, currentVoice, currentDualVoice, sounds, duration);
-  sendData({ type:"keyDown", note:note });
+  broadcastData({ type:"keyDown", note:note });
   updateDisplay();
 }
 
 function releaseKey(note, key){
   if(holdMode) return;
-  
   activeKeys.delete(note);
   const keys = document.querySelectorAll(`[data-note="${note}"]`);
   keys.forEach(k => k.classList.remove("local-active"));
   
   const releaseTime = sustainMode ? (sustainDuration || 1.0) : 0.05;
   stopMultiSound(note, sounds, releaseTime);
-  sendData({ type:"keyUp", note:note });
+  broadcastData({ type:"keyUp", note:note });
   updateDisplay();
 }
 
@@ -1661,20 +1609,13 @@ let availableWidth = pianoScrollBox ? pianoScrollBox.clientWidth - 24 : window.i
 let currentKeyWidth = Math.max(12, Math.floor(availableWidth / totalWhiteKeys));
 
 function zoomIn(){
-  if(currentKeyWidth < 70){ 
-    currentKeyWidth += 5; 
-    updateKeyZoom(true); 
-  }
+  if(currentKeyWidth < 70){ currentKeyWidth += 5; updateKeyZoom(true); }
 }
 
 function zoomOut(){
-  let pianoScrollBox = document.getElementById("pianoScroll");
   let availableWidth = pianoScrollBox ? pianoScrollBox.clientWidth - 24 : window.innerWidth - 40;
   const minLimit = Math.max(10, Math.floor(availableWidth / totalWhiteKeys));
-  if(currentKeyWidth > minLimit){ 
-    currentKeyWidth -= 5; 
-    updateKeyZoom(true); 
-  }
+  if(currentKeyWidth > minLimit){ currentKeyWidth -= 5; updateKeyZoom(true); }
 }
 
 function updateKeyZoom(send = false){
@@ -1686,7 +1627,7 @@ function updateKeyZoom(send = false){
   createPiano();
   createFullscreenPiano();
   if(send){
-    sendData({ type:"zoomChange", width: currentKeyWidth });
+    broadcastData({ type:"zoomChange", width: currentKeyWidth });
   }
 }
 
@@ -1710,7 +1651,7 @@ function createOctaveButtons(){
       }
       createPiano();
       createFullscreenPiano();
-      sendData({ type:"octaveChange", octaves: Array.from(selectedOctaves) });
+      broadcastData({ type:"octaveChange", octaves: Array.from(selectedOctaves) });
     };
     box.appendChild(btn);
   }
@@ -1735,10 +1676,7 @@ function buildPianoDOM(containerTarget, isFullscreen = false){
       if(activeKeys.has(n)) key.classList.add("local-active");
       if(remoteKeys.has(n)) key.classList.add("remote-active");
       key.style.left = (whiteIndex * currentKeyWidth) + "px";
-      
-      if(isFullscreen) {
-        key.style.height = "195px";
-      }
+      if(isFullscreen) key.style.height = "195px";
 
       key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
       addKeyEvents(key, n);
@@ -1764,10 +1702,7 @@ function buildPianoDOM(containerTarget, isFullscreen = false){
         if(remoteKeys.has(n)) key.classList.add("remote-active");
         const blackWidth = currentKeyWidth * 0.6;
         key.style.left = (leftWhite * currentKeyWidth + (currentKeyWidth - blackWidth / 2) - (blackWidth / 2)) + "px";
-        
-        if(isFullscreen) {
-          key.style.height = "120px";
-        }
+        if(isFullscreen) key.style.height = "120px";
 
         key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
         addKeyEvents(key, n);
@@ -1786,13 +1721,9 @@ function togglePianoFullscreen(){
   container.classList.toggle("active");
   const isOpen = container.classList.contains("active");
   if(isOpen){
-    setTimeout(() => { 
-      createFullscreenPiano();
-      const fsBox = document.getElementById("fsPianoScroll");
-      if(fsBox) fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
-    }, 50);
+    setTimeout(() => { createFullscreenPiano(); }, 50);
   }
-  sendData({ type: "toggleFullscreenSync", open: isOpen });
+  broadcastData({ type: "toggleFullscreenSync", open: isOpen });
 }
 
 function addKeyEvents(key, note){
@@ -1802,24 +1733,14 @@ function addKeyEvents(key, note){
     pointerMap.set(e.pointerId, note);
     pressKey(note, key);
   });
-
   key.addEventListener("pointerup", e => {
     e.preventDefault();
     pointerMap.delete(e.pointerId);
     releaseKey(note, key);
   });
-
   key.addEventListener("pointercancel", e => {
     pointerMap.delete(e.pointerId);
     releaseKey(note, key);
-  });
-
-  key.addEventListener("pointerleave", e => {
-    if(!key.hasPointerCapture(e.pointerId)) return;
-    if(!holdMode){
-      pointerMap.delete(e.pointerId);
-      releaseKey(note, key);
-    }
   });
 }
 
@@ -1828,25 +1749,13 @@ function centerPiano(){
   if(box) box.scrollLeft = (box.scrollWidth - box.clientWidth)/2;
   const fsBox = document.getElementById("fsPianoScroll");
   if(fsBox) fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
-  sendData({ type: "centerPianoSync" });
+  broadcastData({ type: "centerPianoScrollSync" });
 }
 
 function toggleHold(){
   holdMode = !holdMode;
   updateHoldUI();
-  sendData({ type: "toggleHoldSync", hold: holdMode });
-
-  if(!holdMode){
-    [...activeKeys].forEach(note=>{
-      const keys = document.querySelectorAll(`[data-note="${note}"]`);
-      keys.forEach(k => k.classList.remove("local-active"));
-      stopMultiSound(note, sounds, 0.05);
-      sendData({ type:"keyUp", note:note });
-    });
-    activeKeys.clear();
-    pointerMap.clear();
-    updateDisplay();
-  }
+  broadcastData({ type: "toggleHoldSync", hold: holdMode });
 }
 
 function updateHoldUI(){
@@ -1860,7 +1769,7 @@ function updateHoldUI(){
 function toggleKeyNames(){
   showKeyNames = !showKeyNames;
   updateKeyNamesUI();
-  sendData({ type: "toggleKeyNamesSync", show: showKeyNames });
+  broadcastData({ type: "toggleKeyNamesSync", show: showKeyNames });
 }
 
 function updateKeyNamesUI(){
@@ -1880,16 +1789,12 @@ function updateDisplay(){
 
   const keyShow = document.getElementById("keyShow");
   const chordShow = document.getElementById("chordShow");
-  const fsChordDisplay = document.getElementById("fsChordDisplay");
-
   if(keyShow) keyShow.textContent = keyText;
   if(chordShow) chordShow.textContent = chordText;
-  if(fsChordDisplay) fsChordDisplay.textContent = all.length ? `${keyText} (${chordText})` : "Anikous Piano Full View";
 }
 
 const CHORDS = {
-  "0,4,7":"Major", "0,3,7":"Minor", "0,3,6":"Diminished", "0,4,8":"Augmented",
-  "0,5,7":"Sus4", "0,2,7":"Sus2", "0,4,7,10":"7", "0,4,7,11":"Maj7", "0,3,7,10":"m7"
+  "0,4,7":"Major", "0,3,7":"Minor", "0,3,6":"Diminished", "0,4,8":"Augmented"
 };
 
 function findChord(notes){
@@ -1903,7 +1808,6 @@ function findChord(notes){
 }
 
 let midiAccess = null;
-
 async function connectMIDI(){
   if(!navigator.requestMIDIAccess){ alert("Web MIDI not supported."); return; }
   try{
@@ -1920,7 +1824,6 @@ function handleMIDI(event){
   const command = data[0] & 0xf0;
   const note = data[1];
   const velocity = data[2] || 0;
-
   if(command===0x90 && velocity>0){
     document.querySelectorAll(`[data-note="${note}"]`).forEach(k => pressKey(note, k));
   } else if(command===0x80 || (command===0x90 && velocity===0)){
@@ -1929,13 +1832,6 @@ function handleMIDI(event){
 }
 
 updateKeyZoom(false);
-
-const pScroll = document.getElementById("pianoScroll");
-if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth)/2;
-
-document.addEventListener("pointerdown", () => {
-  if(audioContext && audioContext.state==="suspended") audioContext.resume();
-}, {once:true});
 </script>
 
 </body>
