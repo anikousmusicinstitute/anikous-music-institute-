@@ -994,7 +994,12 @@ function updateVideoMirror() {
 async function getCameraStream(){
   try{
     localStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: useFrontCamera ? "user" : "environment" },
+      video: { 
+        facingMode: useFrontCamera ? "user" : "environment",
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+        frameRate: { ideal: 30 }
+      },
       audio: true
     });
 
@@ -1285,7 +1290,12 @@ async function switchCamera(){
   localStream.getVideoTracks().forEach(track => track.stop());
 
   const constraints = {
-    video: { facingMode: useFrontCamera ? "user" : { exact: "environment" } },
+    video: { 
+      facingMode: useFrontCamera ? "user" : { exact: "environment" },
+      width: { ideal: 1920 },
+      height: { ideal: 1080 },
+      frameRate: { ideal: 30 }
+    },
     audio: true
   };
 
