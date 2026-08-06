@@ -2137,23 +2137,63 @@ function downloadMusicXML() {
   let a = document.createElement('a'); a.href = url; a.download = 'Anikous_Master_Score.musicxml'; a.click();
 }
 
+/* FIXED PDF DOWNLOAD FUNCTION TO CONVERT SVG TO IMAGE FIRST */
 function downloadSheetPDF() {
-  const element = document.getElementById("a4PaperPrintArea");
-  if (recordedMidiNotes.length === 0) { alert("நோட்ஸ் எதுவும் இல்லை!"); return; }
+  if (recordedMidiNotes.length === 0) { 
+    alert("நோட்ஸ் எதுவும் இல்லை! முதலில் பியானோ வாசிக்கவும்."); 
+    return; 
+  }
   
   const modal = document.getElementById("a4SheetModal");
   const wasActive = modal.classList.contains("active");
   if(!wasActive) openA4SheetModal();
 
   setTimeout(() => {
-    html2pdf().from(element).set({ 
-      margin: 10, 
-      filename: 'Anikous_Master_Grand_Score.pdf', 
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-    }).save().then(() => {
-      if(!wasActive) closeA4SheetModal();
-    });
-  }, 300);
+    const svgContainer = document.getElementById("a4ModalStaffContainer");
+    const svgElement = svgContainer.querySelector("svg");
+    
+    if (svgElement) {
+      const svgData = new XMLSerializer().serializeToString(svgElement);
+      const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+      const URL = window.URL || window.webkitURL || window;
+      const blobURL = URL.createObjectURL(svgBlob);
+      
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = svgElement.clientWidth || 720;
+        canvas.height = svgElement.clientHeight || 350;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        
+        const dataURL = canvas.toDataURL('image/png');
+        
+        const printArea = document.getElementById("a4PaperPrintArea").cloneNode(true);
+        const printStaffBox = printArea.querySelector("#a4ModalStaffContainer");
+        printStaffBox.innerHTML = `<img src="${dataURL}" style="width:100%; height:auto; display:block;" />`;
+        
+        html2pdf().from(printArea).set({ 
+          margin: 10, 
+          filename: 'Anikous_Master_Grand_Score.pdf', 
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+        }).save().then(() => {
+          if(!wasActive) closeA4SheetModal();
+        });
+      };
+      img.src = blobURL;
+    } else {
+      const element = document.getElementById("a4PaperPrintArea");
+      html2pdf().from(element).set({ 
+        margin: 10, 
+        filename: 'Anikous_Master_Grand_Score.pdf', 
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+      }).save().then(() => {
+        if(!wasActive) closeA4SheetModal();
+      });
+    }
+  }, 400);
 }
 
 function printOrExportPNG() { window.print(); }
