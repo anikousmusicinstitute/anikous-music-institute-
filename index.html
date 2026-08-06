@@ -3,11 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-
-<title>Anikous Music Institute</title>
+<title>Anikous Music Institute - Master Pro Studio Sheet Suite</title>
 
 <!-- PeerJS CDN -->
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<!-- VexFlow CDN for Real Sheet Music Staff Notation -->
+<script src="https://unpkg.com/vexflow@4.2.0/build/cjs/vexflow.js"></script>
+<!-- html2pdf.js CDN for A4 Sheet PDF Download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
 :root {
@@ -25,7 +28,7 @@
 }
 
 body{
-  background:#080b12;
+  background:#05070b;
   color:white;
   font-family:Arial,sans-serif;
   overflow-x:hidden;
@@ -35,10 +38,11 @@ button, select{
   border:0;
   border-radius:10px;
   padding:10px 14px;
-  background:#202938;
+  background:#1f2937;
   color:white;
   font-weight:bold;
   cursor:pointer;
+  transition: all 0.2s ease;
 }
 
 button:active{
@@ -46,7 +50,7 @@ button:active{
 }
 
 button.active{
-  background:#16a34a;
+  background:#16a34a !important;
 }
 
 /* LOGIN PAGE STYLING */
@@ -58,32 +62,29 @@ button.active{
     min-height: 100vh;
     height: 100%;
     background: 
-        linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.9)),
+        linear-gradient(rgba(0,0,0,.8), rgba(0,0,0,.95)),
         url("https://images.unsplash.com/photo-1520523839897-bd0b52f945a0");
     background-size: cover;
     background-position: center;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: Arial, sans-serif;
     z-index: 99999;
     overflow-y: auto;
     padding: 20px;
-    box-sizing: border-box;
 }
 
 .login-box {
     width: 90%;
     max-width: 380px;
     padding: 35px 25px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 215, 0, .6);
+    background: rgba(17, 24, 39, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 215, 0, .4);
     border-radius: 20px;
-    box-shadow: 0 0 25px rgba(255, 215, 0, .3);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
     text-align: center;
-    margin: auto;
 }
 
 .logo {
@@ -93,13 +94,13 @@ button.active{
 
 .login-box h1 {
     color: #ffd54f;
-    font-size: 24px;
+    font-size: 22px;
     letter-spacing: 1px;
 }
 
 .login-box p {
-    color: #ccc;
-    font-size: 14px;
+    color: #9ca3af;
+    font-size: 13px;
     margin-bottom: 25px;
 }
 
@@ -110,10 +111,10 @@ button.active{
 
 .input-group input {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
     border-radius: 12px;
-    border: 1px solid #555;
-    background: #111;
+    border: 1px solid #374151;
+    background: #0b0f19;
     color: white;
     font-size: 15px;
     outline: none;
@@ -133,15 +134,15 @@ button.active{
 
 .login-btn {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
     border: none;
     border-radius: 12px;
     background: #00c853;
     color: white;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 .login-btn:hover {
@@ -149,67 +150,76 @@ button.active{
 }
 
 .forgot {
-    margin-top: 18px;
+    margin-top: 15px;
     color: #ffd54f;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
 }
 
 .top{
-  padding:16px;
+  padding:14px;
   text-align:center;
-  background:#111827;
-  border-bottom:1px solid #293244;
+  background:#0b0f19;
+  border-bottom:1px solid #1f2937;
 }
 
 .top h1{
-  font-size:23px;
-  color:#ffffff;
+  font-size:19px;
+  color:#ffd54f;
+  letter-spacing: 0.5px;
 }
 
 .sub{
-  margin-top:5px;
+  margin-top:4px;
   color:#9ca3af;
-  font-size:12px;
+  font-size:11px;
 }
 
 .panel{
-  width:min(1100px,96%);
-  margin:12px auto;
-  background:#111827;
+  width:min(1150px, 96%);
+  margin:10px auto;
+  background:#0b0f19;
+  border: 1px solid #1f2937;
   border-radius:16px;
-  padding:14px;
+  padding:12px;
 }
 
 .roomRow{
   display:flex;
   gap:8px;
   flex-wrap:wrap;
+  justify-content: center;
 }
 
 .roomRow input,
 .roomRow select{
   flex:1;
   min-width:120px;
-  background:#05070b;
+  background:#030712;
   color:white;
   border:1px solid #374151;
   border-radius:10px;
-  padding:11px;
-}
-
-.status{
-  margin-top:10px;
   padding:10px;
-  border-radius:9px;
-  background:#05070b;
-  color:#a7f3d0;
-  text-align:center;
-  font-size:13px;
-  min-height:38px;
+  font-size: 14px;
 }
 
-/* 1080p OPTIMIZED VIDEO GRID */
+/* DYNAMIC STATUS BOX STYLES */
+.status{
+  margin-top:8px;
+  padding:10px;
+  border-radius:8px;
+  text-align:center;
+  font-size:12px;
+  font-weight: bold;
+  min-height:36px;
+  transition: all 0.3s ease;
+}
+.status.ready { background: #030712; color: #a7f3d0; border: 1px solid #1f2937; }
+.status.loading { background: #78350f; color: #fef08a; border: 1px solid #f59e0b; }
+.status.connected { background: #064e3b; color: #a7f3d0; border: 1px solid #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+.status.error { background: #7f1d1d; color: #fecaca; border: 1px solid #ef4444; }
+
+/* VIDEO GRID & DYNAMIC HIDDEN CARDS */
 .videoGrid{
   display:grid;
   grid-template-columns: repeat(2, 1fr);
@@ -218,11 +228,12 @@ button.active{
 
 .videoCard{
   position:relative;
-  background:#020617;
-  border-radius:14px;
+  background:#000;
+  border-radius:12px;
   overflow:hidden;
-  min-height:240px;
-  border:1px solid #263044;
+  min-height:200px;
+  border:1px solid #1f2937;
+  transition: all 0.3s ease;
 }
 
 .videoCard.hidden-card {
@@ -232,39 +243,282 @@ button.active{
 .videoCard video, .fsVideoCard video{
   width:100%;
   height:100%;
-  min-height:240px;
+  min-height:200px;
   object-fit:cover;
-  background:#000;
 }
 
-/* Local Video mirror only when using Front Camera */
 #localVideo.front-cam, #fsLocalVideo.front-cam {
   transform: scaleX(-1);
 }
+#localVideo:not(.front-cam), #fsLocalVideo:not(.front-cam) {
+  transform: scaleX(1);
+}
 
 .videoCard video:not(#localVideo), .fsVideoCard video:not(#fsLocalVideo) {
-  transform: scaleX(-1) !important;
+  transform: none !important;
 }
 
 .videoName{
   position:absolute;
   left:8px;
   bottom:8px;
-  background:rgba(0,0,0,.65);
-  padding:6px 9px;
-  border-radius:7px;
-  font-size:12px;
+  background:rgba(0,0,0,.7);
+  padding:5px 8px;
+  border-radius:6px;
+  font-size:11px;
   z-index: 5;
 }
 
 .controls{
   display:flex;
   flex-wrap:wrap;
-  gap:7px;
+  gap:6px;
   margin-top:10px;
+  justify-content: center;
 }
 
-/* VIDEO FULLSCREEN MODE */
+.controls button {
+  font-size: 12px;
+  padding: 8px 10px;
+}
+
+/* MASTER SHEET MUSIC SECTION */
+.notationSection {
+  background: #030712;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.notationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.notationHeader h4 {
+  color: #ffd54f;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notationToolsBar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  background: #0b0f19;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #1f2937;
+}
+
+.notationCanvasBox {
+  background: #ffffff;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  height: 220px;
+  overflow-x: auto;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+#staffSvgContainer {
+  min-width: 100%;
+}
+
+/* A4 FULL SHEET MODAL STYLING */
+#a4SheetModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 999999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+#a4SheetModal.active {
+  display: flex;
+}
+
+.a4SheetPaper {
+  background: #ffffff;
+  color: #000000;
+  width: 100%;
+  max-width: 800px;
+  min-height: 600px;
+  padding: 40px;
+  border-radius: 6px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.5);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.a4SheetHeader {
+  text-align: center;
+  border-bottom: 2px solid #111;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.a4SheetHeader h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #111;
+  letter-spacing: 1px;
+}
+
+.a4SheetHeader p {
+  font-size: 13px;
+  color: #555;
+  margin-top: 4px;
+}
+
+.a4MetaRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.a4StaffBox {
+  width: 100%;
+  min-height: 350px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+#a4ModalStaffContainer {
+  min-width: 100%;
+}
+
+.a4ModalFooterControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ULTRA PRO STUDIO TOOLS */
+.proToolsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.proCard {
+  background: #030712;
+  border: 1px solid #1f2937;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.proCard h4 {
+  font-size: 12px;
+  color: #ffd54f;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toolRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  justify-content: center;
+}
+
+.toolRow input[type="range"] {
+  accent-color: #16a34a;
+  width: 60px;
+  cursor: pointer;
+}
+
+/* CHAT & REACTIONS */
+.chatSection {
+  margin-top: 10px;
+  background: #030712;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.chatBox {
+  height: 100px;
+  overflow-y: auto;
+  background: #000;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chatInputRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chatInputRow input {
+  flex: 1;
+  min-width: 140px;
+  background: #0b0f19;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: white;
+  font-size: 13px;
+  outline: none;
+}
+
+.chatInputRow button {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+/* FULLSCREEN VIDEO */
 #videoFullscreenContainer {
   display: none;
   position: fixed;
@@ -272,11 +526,10 @@ button.active{
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #020617;
+  background: #030712;
   z-index: 99999;
   flex-direction: column;
-  padding: 12px;
-  box-sizing: border-box;
+  padding: 10px;
 }
 
 #videoFullscreenContainer.active {
@@ -287,16 +540,16 @@ button.active{
   flex: 1;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  height: calc(100vh - 75px);
+  gap: 10px;
+  height: calc(100vh - 65px);
 }
 
 .fsVideoCard {
   position: relative;
   background: #000;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #334155;
+  border: 1px solid #374151;
   height: 100%;
 }
 
@@ -308,10 +561,10 @@ button.active{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1e293b;
-  padding: 8px 14px;
-  border-radius: 10px;
-  margin-bottom: 10px;
+  background: #111827;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
 }
 
 /* INFO */
@@ -322,21 +575,23 @@ button.active{
 }
 
 .infoCard{
-  background:#05070b;
-  border:1px solid #263044;
-  padding:12px;
-  border-radius:12px;
+  background:#030712;
+  border:1px solid #1f2937;
+  padding:10px;
+  border-radius:10px;
   text-align:center;
 }
 
 .infoCard small{
   display:block;
   color:#9ca3af;
-  margin-bottom:5px;
+  margin-bottom:4px;
+  font-size:11px;
 }
 
 .infoCard strong{
-  font-size:20px;
+  font-size:16px;
+  color: #ffd54f;
 }
 
 /* PIANO */
@@ -345,20 +600,23 @@ button.active{
   align-items:center;
   justify-content:space-between;
   gap:8px;
-  margin-bottom:10px;
+  margin-bottom:8px;
   flex-wrap:wrap;
 }
 
 .octaves{
   display:flex;
-  gap:5px;
+  gap:4px;
   overflow-x:auto;
-  padding-bottom:5px;
+  padding-bottom:4px;
+  -webkit-overflow-scrolling:touch;
+  justify-content: center;
 }
 
 .octaves button{
-  min-width:43px;
-  padding:7px;
+  min-width:38px;
+  padding:6px;
+  font-size:11px;
 }
 
 .voiceControlsGroup{
@@ -366,16 +624,17 @@ button.active{
   gap:6px;
   flex-wrap:wrap;
   align-items:center;
+  justify-content: center;
 }
 
 .voiceSelectorContainer {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: #05070b;
+  gap: 4px;
+  background: #030712;
   border: 1px solid #374151;
-  border-radius: 10px;
-  padding: 4px 10px;
+  border-radius: 8px;
+  padding: 3px 8px;
 }
 
 .voiceSelectorContainer select {
@@ -385,22 +644,23 @@ button.active{
   font-weight: bold;
   outline: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 2px;
+  font-size: 11px;
 }
 
 .sustainControlBox {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: #05070b;
+  gap: 6px;
+  background: #030712;
   border: 1px solid #374151;
-  border-radius: 10px;
-  padding: 4px 10px;
-  font-size: 11px;
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 10px;
 }
 
 .sustainControlBox input[type="range"] {
-  width: 80px;
+  width: 50px;
   accent-color: #16a34a;
   cursor: pointer;
 }
@@ -409,15 +669,15 @@ button.active{
   width:100%;
   overflow-x:auto;
   overflow-y:hidden;
-  background:#020617;
-  border-radius:12px;
-  padding:12px;
+  background:#030712;
+  border-radius:10px;
+  padding:10px;
   -webkit-overflow-scrolling:touch;
 }
 
 #piano{
   position:relative;
-  height: calc(var(--key-height) + 15px);
+  height: calc(var(--key-height) + 12px);
   width: 100%;
 }
 
@@ -427,29 +687,29 @@ button.active{
   width: var(--key-width);
   height: var(--key-height);
   background:linear-gradient(to bottom,#fff,#d1d5db);
-  border:1px solid #777;
-  border-radius:0 0 7px 7px;
+  border:1px solid #666;
+  border-radius:0 0 6px 6px;
   z-index:1;
   color:#111;
   display:flex;
   align-items:flex-end;
   justify-content:center;
-  padding-bottom:8px;
-  font-size:9px;
+  padding-bottom:6px;
+  font-size:8px;
   user-select:none;
   touch-action:none;
 }
 
 .white.local-active{
   background:#facc15 !important;
-  box-shadow:0 0 12px rgba(250,204,21,.9);
-  transform:translateY(3px);
+  box-shadow:0 0 10px rgba(250,204,21,.9);
+  transform:translateY(2px);
 }
 
 .white.remote-active{
   background:#38bdf8 !important;
-  box-shadow:0 0 14px rgba(56,189,248,.95);
-  transform:translateY(3px);
+  box-shadow:0 0 10px rgba(56,189,248,.9);
+  transform:translateY(2px);
 }
 
 .black{
@@ -458,15 +718,15 @@ button.active{
   width: var(--black-width);
   height: var(--black-height);
   background:linear-gradient(#333,#000);
-  border:1px solid #111;
-  border-radius:0 0 6px 6px;
+  border:1px solid #000;
+  border-radius:0 0 5px 5px;
   z-index:2;
   color:white;
   display:flex;
   align-items:flex-end;
   justify-content:center;
-  padding-bottom:6px;
-  font-size:7px;
+  padding-bottom:5px;
+  font-size:6px;
   user-select:none;
   touch-action:none;
 }
@@ -474,25 +734,26 @@ button.active{
 .black.local-active{
   background:#facc15 !important;
   color:#111 !important;
-  box-shadow:0 0 12px rgba(250,204,21,.95);
-  transform:translateY(3px);
+  box-shadow:0 0 10px rgba(250,204,21,.9);
+  transform:translateY(2px);
 }
 
 .black.remote-active{
   background:#38bdf8 !important;
   color:#fff !important;
-  box-shadow:0 0 14px rgba(56,189,248,1);
-  transform:translateY(3px);
+  box-shadow:0 0 10px rgba(56,189,248,.9);
+  transform:translateY(2px);
 }
 
 .noteToggle{
   display:flex;
   flex-wrap:wrap;
-  gap:7px;
-  margin-top:10px;
+  gap:6px;
+  margin-top:8px;
+  justify-content: center;
 }
 
-/* PIANO FULLSCREEN MODE */
+/* FULLSCREEN LANDSCAPE / PORTRAIT MOBILE-FRIENDLY PIANO STYLING */
 #pianoFullscreenContainer {
   display: none;
   position: fixed;
@@ -500,11 +761,11 @@ button.active{
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #080b12;
+  background: #05070b;
   z-index: 99999;
   flex-direction: column;
-  box-sizing: border-box;
   overflow: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 #pianoFullscreenContainer.active {
@@ -515,49 +776,83 @@ button.active{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #111827;
-  padding: 8px 14px;
-  border-bottom: 1px solid #263044;
-  height: 52px;
+  background: #0b0f19;
+  padding: 6px 10px;
+  border-bottom: 1px solid #1f2937;
+  min-height: 48px;
   flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .fsToolbarLeft, .fsToolbarRight {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 .fsIconBtn {
-  background: #202938;
+  background: #1f2937;
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
   font-weight: bold;
   cursor: pointer;
 }
 
 .fsMiniScrollPreview {
+  text-align: center;
   flex: 1;
-  max-width: 400px;
-  height: 32px;
-  background: #05070b;
-  border-radius: 8px;
-  border: 1px solid #374151;
-  position: relative;
-  overflow: hidden;
+}
+
+.fsNotationBar {
+  background: #030712;
+  border-bottom: 1px solid #1f2937;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.fsNotationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fsNotationHeader span {
+  font-size: 12px;
+  color: #ffd54f;
+  font-weight: bold;
+}
+
+.fsNotationCanvasBox {
+  background: #ffffff;
+  border-radius: 6px;
+  height: 140px;
+  overflow-x: auto;
+  overflow-y: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 10px;
+  padding: 4px;
+  -webkit-overflow-scrolling: touch;
 }
 
-.fsMiniScrollPreview span {
-  font-size: 12px;
-  font-weight: bold;
-  color: #a7f3d0;
+#fsStaffSvgContainer {
+  min-width: 100%;
+}
+
+.fsAmiLogoBar {
+  background: #0b0f19;
+  border-bottom: 1px solid #1f2937;
+  padding: 6px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .fsPianoBody {
@@ -565,38 +860,55 @@ button.active{
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  background: #020617;
-  padding: 16px 10px;
-  -webkit-overflow-scrolling: touch;
+  background: #030712;
+  padding: 6px 4px;
   display: flex;
   align-items: flex-start;
+  -webkit-overflow-scrolling: touch;
 }
 
 #fsPiano {
   position: relative;
-  height: 230px;
+  height: 160px;
 }
 
 .fsFooterBar {
-  height: 36px;
-  background: #111827;
-  border-top: 1px solid #263044;
+  height: 28px;
+  background: #0b0f19;
+  border-top: 1px solid #1f2937;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 11px;
+  color: #ffd54f;
   font-weight: bold;
-  color: #9ca3af;
-  letter-spacing: 0.5px;
   flex-shrink: 0;
+  letter-spacing: 0.5px;
 }
 
 @media(max-width:650px){
   .videoGrid, .fsVideoGrid{ grid-template-columns:1fr; }
-  .videoCard, .videoCard video{ min-height:220px; }
+  .videoCard, .videoCard video{ min-height:180px; }
   .info{ grid-template-columns:1fr; }
-  .top h1{ font-size:19px; }
-  button, select{ padding:9px 10px; font-size:12px; }
+  .proToolsGrid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .a4SheetPaper {
+    width: 95% !important;
+    padding: 15px !important;
+    min-height: auto !important;
+  }
+  .a4StaffBox {
+    min-height: 220px !important;
+  }
+  .a4ModalFooterControls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .a4ModalFooterControls button {
+    width: 100%;
+  }
 }
 </style>
 </head>
@@ -609,7 +921,7 @@ button.active{
     <div class="logo">🎹</div>
     <h1>ANIKOUS</h1>
     <h1>MUSIC INSTITUTE</h1>
-    <p>Premium Online Music Learning</p>
+    <p>Master Pro Studio Edition</p>
 
     <div class="input-group">
       <input id="email" type="email" placeholder="Email Address">
@@ -629,8 +941,8 @@ button.active{
 <!-- MAIN PAGE -->
 <div id="mainPage" style="display:none;">
 <header class="top">
-  <h1>AMI ONLINE MUSIC CLASS (1080p HD)</h1>
-  <div class="sub">Teacher - Student - Extra Cameras - Live Piano</div>
+  <h1>🎹 ANIKOUS MUSIC INSTITUTE 🎹</h1>
+  <div class="sub">Master Pro Studio Suite • Multi-Camera 1080p HD • Live Grand Staff Notation</div>
 </header>
 
 <!-- ROOM -->
@@ -643,42 +955,99 @@ button.active{
       <option value="extra1">Extra Camera 1</option>
       <option value="extra2">Extra Camera 2</option>
     </select>
-    <button onclick="startClass()">Start 1080p Class</button>
+    <button onclick="startClass()">Start Studio Class</button>
   </div>
-  <div id="status" class="status">
-    Ready - Enter Room ID and Start Class
+  <div id="status" class="status ready">
+    Ready - Enter Room ID and Start Studio Class
   </div>
 </section>
 
-<!-- VIDEO -->
+<!-- VIDEO & PRO STUDIO CONTROLS -->
 <section class="panel">
   <div class="videoGrid" id="videoGridContainer">
     <div class="videoCard">
       <video id="localVideo" autoplay playsinline muted></video>
-      <div class="videoName" id="localName">My Camera (1080p)</div>
+      <div class="videoName" id="localName">My Camera (1080p HD)</div>
     </div>
-    <div class="videoCard">
+    <!-- Remote Participant 2 (Hidden by default until connected) -->
+    <div class="videoCard hidden-card" id="remoteCard1">
       <video id="remoteVideo1" autoplay playsinline></video>
-      <div class="videoName" id="remoteName1">Participant 2 (1080p)</div>
+      <div class="videoName" id="remoteName1">Participant 2 (1080p HD)</div>
     </div>
+    <!-- Extra Camera 1 (Hidden by default until stream active) -->
     <div class="videoCard hidden-card" id="extraCard1">
       <video id="remoteVideo2" autoplay playsinline></video>
       <div class="videoName" id="remoteName2">Extra Camera 1</div>
     </div>
+    <!-- Extra Camera 2 (Hidden by default until stream active) -->
     <div class="videoCard hidden-card" id="extraCard2">
       <video id="remoteVideo3" autoplay playsinline></video>
       <div class="videoName" id="remoteName3">Extra Camera 2</div>
     </div>
   </div>
+  
   <div class="controls">
     <button id="cameraBtn" onclick="toggleCamera()">Camera ON</button>
     <button onclick="switchCamera()">Front / Back</button>
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
-    <button id="extra1ToggleBtn" onclick="toggleExtra1()">📷 E1: OFF</button>
-    <button id="extra2ToggleBtn" onclick="toggleExtra2()">📷 E2: OFF</button>
-    <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 HD Full View</button>
-    <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Meet (Backup)</button>
+    <button id="raiseHandBtn" onclick="raiseHand()" style="background:#eab308; color:#000;">✋ Raise Hand</button>
+    <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 1080p HD Full View</button>
+    <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Backup</button>
     <button onclick="logoutUser()" style="background:#dc2626;">Logout</button>
+  </div>
+
+  <!-- CHAT & LIVE REACTIONS -->
+  <div class="chatSection">
+    <div class="chatBox" id="chatBox">
+      <div style="color:#9ca3af;">System: Welcome to Anikous Studio Chat. (Tip: Play piano to generate master professional sheet scores).</div>
+    </div>
+    <div class="chatInputRow">
+      <input type="text" id="chatInput" placeholder="Type message..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+      <button onclick="sendChatMessage()" style="background:#16a34a;">Send</button>
+      <button onclick="sendReaction('👏')" style="background:#1f2937;">👏</button>
+      <button onclick="sendReaction('❤️')" style="background:#1f2937;">❤️</button>
+      <button onclick="sendReaction('🎵')" style="background:#1f2937;">🎵</button>
+      <button onclick="sendReaction('🔥')" style="background:#1f2937;">🔥</button>
+    </div>
+  </div>
+
+  <!-- ULTRA PRO STUDIO TOOLS -->
+  <div class="proToolsGrid">
+    <div class="proCard">
+      <h4>
+        <span>⏱️ Metronome</span>
+        <span id="beatIndicator" style="color:#16a34a; font-size:14px;">●</span>
+      </h4>
+      <div class="toolRow">
+        <button id="metroToggle" onclick="toggleMetronome()" style="padding:6px 10px;">Start</button>
+        <span id="bpmLabel" style="font-weight:bold;">120 BPM</span>
+        <input id="bpmRange" type="range" min="40" max="240" value="120" oninput="changeBPM(this.value)">
+      </div>
+    </div>
+
+    <div class="proCard">
+      <h4>
+        <span>🎛️ Web Audio FX</span>
+      </h4>
+      <div class="toolRow">
+        <span style="color:#9ca3af; font-size:10px;">Reverb:</span>
+        <input id="reverbRange" type="range" min="0" max="1" step="0.1" value="0.3" oninput="changeReverb(this.value)">
+        <span style="color:#9ca3af; font-size:10px;">Master Vol:</span>
+        <input id="masterVolRange" type="range" min="0" max="1" step="0.1" value="0.8" oninput="changeMasterGain(this.value)">
+      </div>
+    </div>
+
+    <div class="proCard">
+      <h4>
+        <span>🔴 Looper & Rec</span>
+        <span id="recStatusText" style="font-size:10px; color:#9ca3af;">Ready</span>
+      </h4>
+      <div class="toolRow">
+        <button id="recBtn" onclick="toggleRecording()" style="background:#dc2626; padding:6px 10px;">Record</button>
+        <button id="playRecBtn" onclick="playRecording()" disabled style="background:#0284c7; padding:6px 10px;">Play Loop</button>
+        <button id="downloadAudioBtn" onclick="downloadAudioRecording()" disabled style="background:#7c3aed; padding:6px 10px;">💾 WAV</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -686,14 +1055,14 @@ button.active{
 <div id="videoFullscreenContainer">
   <div class="fsVideoToolbar">
     <span style="font-weight:bold; color:#a7f3d0;">Live 1080p HD Multi-View</span>
-    <button class="fsIconBtn" onclick="toggleVideoFullscreen()" style="background:#dc2626;">✕ Exit Full View</button>
+    <button class="fsIconBtn" onclick="toggleVideoFullscreen()" style="background:#dc2626;">✕ Exit</button>
   </div>
   <div class="fsVideoGrid" id="fsVideoGridContainer">
     <div class="fsVideoCard">
       <video id="fsLocalVideo" autoplay playsinline muted></video>
-      <div class="videoName" id="fsLocalName">My Camera (1080p)</div>
+      <div class="videoName" id="fsLocalName">My Camera (1080p HD)</div>
     </div>
-    <div class="fsVideoCard">
+    <div class="fsVideoCard hidden-card" id="fsRemoteCard1">
       <video id="fsRemoteVideo1" autoplay playsinline></video>
       <div class="videoName" id="fsRemoteName1">Participant 2</div>
     </div>
@@ -722,13 +1091,64 @@ button.active{
   </div>
 </section>
 
-<!-- PIANO -->
+<!-- MASTER PIANO & LIVE SHEET MUSIC SECTION -->
 <section class="panel">
+  <div class="notationSection">
+    <div class="notationHeader">
+      <h4>🎼 Master Live Grand Staff Notation (Treble & Bass Clef)</h4>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content: center;">
+        <button onclick="openA4SheetModal()" style="padding:5px 10px; font-size:11px; background:#16a34a;">📄 A4 Full Sheet View</button>
+        <button onclick="downloadSheetPDF()" style="padding:5px 10px; font-size:11px; background:#0284c7;">📥 Download A4 PDF</button>
+        <button onclick="printOrExportPNG()" style="padding:5px 10px; font-size:11px; background:#2563eb;">🖼️ Print / PNG</button>
+        <button onclick="clearNotation()" style="padding:5px 8px; font-size:10px; background:#dc2626;">Clear Score</button>
+      </div>
+    </div>
+    <div class="notationToolsBar">
+      <span style="font-size:11px; color:#9ca3af;">Key Sig:</span>
+      <select id="keySigSelect" onchange="changeKeySignature(this.value)" style="background:#030712; color:#a7f3d0; border:1px solid #374151; padding:3px 6px; border-radius:6px; font-size:11px;">
+        <option value="C">C Major (0#)</option>
+        <option value="G">G Major (1#)</option>
+        <option value="D">D Major (2#)</option>
+        <option value="F">F Major (1b)</option>
+        <option value="Bb">Bb Major (2b)</option>
+      </select>
+
+      <span style="font-size:11px; color:#9ca3af; margin-left:4px;">Transpose:</span>
+      <select id="transposeSelect" onchange="changeTranspose(this.value)" style="background:#030712; color:#a7f3d0; border:1px solid #374151; padding:3px 6px; border-radius:6px; font-size:11px;">
+        <option value="0">0 (Original)</option>
+        <option value="1">+1 Semitone</option>
+        <option value="2">+2 Semitones</option>
+        <option value="3">+3 Semitones</option>
+        <option value="-1">-1 Semitone</option>
+        <option value="-2">-2 Semitones</option>
+      </select>
+      
+      <span style="font-size:11px; color:#9ca3af; margin-left:4px;">Practice Song:</span>
+      <select id="presetSongSelect" onchange="loadPresetSong(this.value)" style="background:#030712; color:#ffd54f; border:1px solid #374151; padding:3px 6px; border-radius:6px; font-size:11px;">
+        <option value="">-- Load Lesson --</option>
+        <option value="furelise">Für Elise (Beethoven)</option>
+        <option value="twinkle">Twinkle Twinkle</option>
+        <option value="joy">Joy To The World</option>
+      </select>
+
+      <button onclick="playRecordedScore()" style="padding:4px 8px; font-size:10px; background:#16a34a;">▶️ Play Score</button>
+      <button onclick="downloadMIDIFile()" style="padding:4px 8px; font-size:10px; background:#0284c7;">🎹 MIDI File</button>
+      <button onclick="downloadMusicXML()" style="padding:4px 8px; font-size:10px; background:#7c3aed;">📜 MusicXML</button>
+
+      <span style="font-size:11px; color:#9ca3af; margin-left:4px;">Staff Zoom:</span>
+      <button onclick="zoomStaffIn()" style="padding:3px 6px; font-size:10px;">Zoom+</button>
+      <button onclick="zoomStaffOut()" style="padding:3px 6px; font-size:10px;">Zoom-</button>
+    </div>
+    <div class="notationCanvasBox" id="notationCanvasBox">
+      <div id="staffSvgContainer"></div>
+    </div>
+  </div>
+
   <div class="pianoHeader">
-    <h3 style="color:white">7 Octave Piano (20 Instruments)</h3>
+    <h3 style="color:#ffd54f; font-size:15px; text-align: center; width: 100%;">🎹 Anikous Studio Piano (7 Octave - 20 Instruments) 🎹</h3>
     <div class="voiceControlsGroup">
       <div class="voiceSelectorContainer">
-        <label style="font-size:11px; color:#9ca3af;">Voice 1:</label>
+        <label style="font-size:10px; color:#9ca3af;">Voice:</label>
         <select id="voiceSelect" onchange="changeVoice(this.value)">
           <optgroup label="Pianos">
             <option value="grand">1. Grand Piano</option>
@@ -766,7 +1186,7 @@ button.active{
       </div>
 
       <div class="voiceSelectorContainer">
-        <label style="font-size:11px; color:#9ca3af;">Dual:</label>
+        <label style="font-size:10px; color:#9ca3af;">Dual:</label>
         <select id="dualVoiceSelect" onchange="changeDualVoice(this.value)">
           <option value="none">OFF</option>
           <option value="strings" selected>Strings (Layer)</option>
@@ -782,18 +1202,18 @@ button.active{
       </div>
 
       <div class="sustainControlBox">
-        <button id="sustainBtn" onclick="toggleSustain()">SUSTAIN OFF</button>
-        <div style="display:flex; flex-direction:column; gap:2px;">
-          <span id="sustainTimeLabel" style="color:#a7f3d0; font-weight:bold;">Time: 2.0s</span>
+        <button id="sustainBtn" onclick="toggleSustain()" style="padding:4px 6px; font-size:9px;">SUSTAIN OFF</button>
+        <div style="display:flex; flex-direction:column; gap:1px;">
+          <span id="sustainTimeLabel" style="color:#a7f3d0; font-size:9px; font-weight:bold;">2.0s</span>
           <input type="range" id="sustainTimeRange" min="0.5" max="5.0" step="0.5" value="2.0" oninput="changeSustainTime(this.value)">
         </div>
       </div>
 
-      <button onclick="zoomIn()">Zoom +</button>
-      <button onclick="zoomOut()">Zoom -</button>
-      <button id="holdBtn" onclick="toggleHold()">HOLD OFF</button>
-      <button onclick="togglePianoFullscreen()" style="background:#16a34a;">Piano Full View</button>
-      <button onclick="connectMIDI()">MIDI CONNECT</button>
+      <button onclick="zoomIn()" style="padding:5px 8px; font-size:11px;">Zoom+</button>
+      <button onclick="zoomOut()" style="padding:5px 8px; font-size:11px;">Zoom-</button>
+      <button id="holdBtn" onclick="toggleHold()" style="padding:5px 8px; font-size:11px;">HOLD OFF</button>
+      <button onclick="togglePianoFullscreen()" style="background:#16a34a; padding:5px 8px; font-size:11px;">Full Piano</button>
+      <button onclick="connectMIDI()" style="padding:5px 8px; font-size:11px;">MIDI</button>
     </div>
   </div>
   <div class="octaves" id="octaveButtons"></div>
@@ -801,10 +1221,35 @@ button.active{
     <div id="piano"></div>
   </div>
   <div class="noteToggle">
-    <button id="keyToggle" class="active" onclick="toggleKeyNames()">Key Names ON</button>
-    <button onclick="centerPiano()">Center Piano</button>
+    <button id="keyToggle" class="active" onclick="toggleKeyNames()" style="padding:5px 8px; font-size:11px;">Key Names ON</button>
+    <button onclick="centerPiano()" style="padding:5px 8px; font-size:11px;">Center Piano</button>
   </div>
 </section>
+</div>
+
+<!-- A4 FULL SHEET MODAL POPUP -->
+<div id="a4SheetModal">
+  <div class="a4SheetPaper" id="a4PaperPrintArea">
+    <div>
+      <div class="a4SheetHeader">
+        <h2>ANIKOUS MUSIC INSTITUTE</h2>
+        <p>Master Grand Staff Sheet Music Score Suite</p>
+      </div>
+      <div class="a4MetaRow">
+        <span id="a4ModalDate">Date: --/--/----</span>
+        <span id="a4ModalTime">Time: --:--:--</span>
+      </div>
+      <div class="a4StaffBox">
+        <div id="a4ModalStaffContainer"></div>
+      </div>
+    </div>
+    
+    <div class="a4ModalFooterControls">
+      <button onclick="downloadSheetPDF()" style="background:#0284c7; padding:8px 16px;">📥 Download A4 PDF</button>
+      <button onclick="window.print()" style="background:#2563eb; padding:8px 16px;">🖨️ Print Sheet</button>
+      <button onclick="closeA4SheetModal()" style="background:#dc2626; padding:8px 16px;">✕ Close</button>
+    </div>
+  </div>
 </div>
 
 <!-- FULLSCREEN KEYBOARD POPUP -->
@@ -816,13 +1261,30 @@ button.active{
     </div>
     
     <div class="fsMiniScrollPreview">
-      <span id="fsChordDisplay">Anikous Piano Full View</span>
+      <span id="fsChordDisplay" style="font-size:12px; color:#ffd54f; font-weight:bold;">🎹 Anikous Music Institute (Full Piano Mode)</span>
     </div>
 
     <div class="fsToolbarRight">
       <button class="fsIconBtn" onclick="toggleKeyNames()">Notes</button>
-      <button class="fsIconBtn" onclick="togglePianoFullscreen()" style="background:#dc2626;">✕ Exit</button>
+      <button class="fsIconBtn" onclick="downloadSheetPDF()" style="background:#0284c7;">📥 PDF</button>
+      <button class="fsIconBtn" onclick="printOrExportPNG()" style="background:#2563eb;">🖨️ Print</button>
+      <button class="fsIconBtn" onclick="togglePianoFullscreen()" style="background:#dc2626;">✕</button>
     </div>
+  </div>
+
+  <div class="fsNotationBar">
+    <div class="fsNotationHeader">
+      <span>🎼 Live Staff Score (Full View Mode)</span>
+      <button onclick="clearNotation()" style="padding:1px 6px; font-size:9px; background:#dc2626;">Clear Score</button>
+    </div>
+    <div class="fsNotationCanvasBox">
+      <div id="fsStaffSvgContainer"></div>
+    </div>
+  </div>
+
+  <div class="fsAmiLogoBar">
+    <span style="color: #ffd54f; font-weight: bold; font-size: 14px; letter-spacing: 1.5px;">🎹 A M I 🎹</span>
+    <span style="color: #9ca3af; font-size: 10px; margin-left: 8px;">Anikous Music Institute Studio</span>
   </div>
 
   <div class="fsPianoBody" id="fsPianoScroll">
@@ -830,7 +1292,7 @@ button.active{
   </div>
 
   <div class="fsFooterBar">
-    Anikous Music Institute
+    ✨ Anikous Music Institute - Master Pro Studio Suite ✨
   </div>
 </div>
 
@@ -861,29 +1323,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 setPersistence(auth, indexedDBLocalPersistence)
-  .catch(() => {
-    return setPersistence(auth, browserLocalPersistence);
-  })
-  .catch((error) => {
-    console.error("Persistence error: ", error);
-  });
+  .catch(() => setPersistence(auth, browserLocalPersistence))
+  .catch((error) => console.error("Persistence error: ", error));
 
 window.showPass = function() {
   let p = document.getElementById("password");
-  if(p.type === "password"){
-    p.type = "text";
-  } else {
-    p.type = "password";
-  }
+  p.type = p.type === "password" ? "text" : "password";
 }
 
 window.loginUser = function() {
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-
-  if (!emailInput || !passwordInput) return;
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   if(!email || !password){
     alert("Email மற்றும் Password-ஐ உள்ளிடவும்!");
@@ -897,32 +1347,37 @@ window.loginUser = function() {
       setTimeout(() => {
         const pScroll = document.getElementById("pianoScroll");
         if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth)/2;
+        renderStaffNotation([]);
       }, 100);
     })
-    .catch((error) => {
-      alert("Login Failed: " + error.message);
-    });
+    .catch((error) => alert("Login Failed: " + error.message));
 };
 
 window.forgotPassword = function() {
-  const emailInput = document.getElementById("email");
-  const email = emailInput ? emailInput.value.trim() : "";
-  
+  const email = document.getElementById("email").value.trim();
   if(!email){
-    alert("தயவுசெய்து உங்களது Email Address-ஐ உள்ளிடவும், பின் Forgot Password கிளிக் செய்யவும்.");
+    alert("தயவுசெய்து உங்களது Email Address-ஐ உள்ளிடவும்!");
     return;
   }
-
   sendPasswordResetEmail(auth, email)
-    .then(() => {
-      alert("Password reset link உங்கள் Email-க்கு அனுப்பப்பட்டுள்ளது. சரிபார்க்கவும்.");
-    })
-    .catch((error) => {
-      alert("Error: " + error.message);
-    });
+    .then(() => alert("Password reset link உங்கள் Email-க்கு அனுப்பப்பட்டுள்ளது."))
+    .catch((error) => alert("Error: " + error.message));
 };
 
 window.logoutUser = function() {
+  if(localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
+  }
+  if(peer) {
+    try { peer.destroy(); } catch(e){}
+    peer = null;
+  }
+  connectedPeersMap.clear();
+  activeCalls = {};
+  dataConnections = {};
+  updateRemoteVideoUI();
+
   signOut(auth).then(() => {
     document.getElementById("loginPage").style.display = "flex";
     document.getElementById("mainPage").style.display = "none";
@@ -936,6 +1391,7 @@ onAuthStateChanged(auth, (user) => {
     setTimeout(() => {
       const pScroll = document.getElementById("pianoScroll");
       if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth)/2;
+      renderStaffNotation([]);
     }, 100);
   } else {
     document.getElementById("loginPage").style.display = "flex";
@@ -944,7 +1400,7 @@ onAuthStateChanged(auth, (user) => {
 });
 </script>
 
-<!-- CLASS & PIANO LOGIC SCRIPT -->
+<!-- STUDIO LOGIC SCRIPT -->
 <script>
 let peer = null;
 let localStream = null;
@@ -954,8 +1410,6 @@ let dataConnections = {};
 let useFrontCamera = true;
 let cameraOn = true;
 let micOn = true;
-let extra1Visible = false;
-let extra2Visible = false;
 let currentRole = "";
 let currentRoom = "";
 
@@ -963,21 +1417,29 @@ let currentVoice = "grand";
 let currentDualVoice = "strings";
 let sustainMode = false;
 let sustainDuration = 2.0;
+let reverbLevel = 0.3;
+let masterVolume = 0.8;
+let transposeSemitones = 0;
+let currentTimeSignature = "4/4";
+let currentNoteDuration = "q";
+let currentKeySignature = "C";
+let staffSpacingMultiplier = 45;
 
 const localVideo = document.getElementById("localVideo");
 const fsLocalVideo = document.getElementById("fsLocalVideo");
 const statusBox = document.getElementById("status");
 
 const remoteVideoSlots = [
-  { video: document.getElementById("remoteVideo1"), fsVideo: document.getElementById("fsRemoteVideo1"), nameEl: document.getElementById("remoteName1"), fsNameEl: document.getElementById("fsRemoteName1") },
-  { video: document.getElementById("remoteVideo2"), fsVideo: document.getElementById("fsRemoteVideo2"), nameEl: document.getElementById("remoteName2"), fsNameEl: document.getElementById("fsRemoteName2") },
-  { video: document.getElementById("remoteVideo3"), fsVideo: document.getElementById("fsRemoteVideo3"), nameEl: document.getElementById("remoteName3"), fsNameEl: document.getElementById("fsRemoteName3") }
+  { video: document.getElementById("remoteVideo1"), fsVideo: document.getElementById("fsRemoteVideo1"), nameEl: document.getElementById("remoteName1"), fsNameEl: document.getElementById("fsRemoteName1"), card: document.getElementById("remoteCard1"), fsCard: document.getElementById("fsRemoteCard1") },
+  { video: document.getElementById("remoteVideo2"), fsVideo: document.getElementById("fsRemoteVideo2"), nameEl: document.getElementById("remoteName2"), fsNameEl: document.getElementById("fsRemoteName2"), card: document.getElementById("extraCard1"), fsCard: document.querySelector(".fsExtraCard1") },
+  { video: document.getElementById("remoteVideo3"), fsVideo: document.getElementById("fsRemoteVideo3"), nameEl: document.getElementById("remoteName3"), fsNameEl: document.getElementById("fsRemoteName3"), card: document.getElementById("extraCard2"), fsCard: document.querySelector(".fsExtraCard2") }
 ];
 
 let connectedPeersMap = new Map();
 
-function status(text){
+function status(text, type = "ready"){
   statusBox.textContent = text;
+  statusBox.className = "status " + type;
 }
 
 function changeVoice(voice){
@@ -997,54 +1459,79 @@ function toggleSustain(){
   btn.classList.toggle("active", sustainMode);
 
   if(!sustainMode) {
-    Object.keys(sounds).forEach(note => {
-      stopMultiSound(parseInt(note), sounds, 0.05);
-    });
+    Object.keys(sounds).forEach(note => stopMultiSound(parseInt(note), sounds, 0.05));
   }
-
   broadcastData({ type:"toggleSustain", sustain:sustainMode, duration:sustainDuration });
 }
 
 function changeSustainTime(val){
   sustainDuration = parseFloat(val);
-  document.getElementById("sustainTimeLabel").textContent = `Time: ${sustainDuration.toFixed(1)}s`;
+  document.getElementById("sustainTimeLabel").textContent = `${sustainDuration.toFixed(1)}s`;
   broadcastData({ type:"changeSustainTime", duration:sustainDuration });
 }
 
-function toggleExtra1() {
-  extra1Visible = !extra1Visible;
-  const btn = document.getElementById("extra1ToggleBtn");
-  btn.textContent = extra1Visible ? "📷 E1: ON" : "📷 E1: OFF";
-  btn.classList.toggle("active", extra1Visible);
-
-  const extraCard1 = document.getElementById("extraCard1");
-  const fsExtra1 = document.querySelector(".fsExtraCard1");
-
-  if(extra1Visible) {
-    if(extraCard1) extraCard1.classList.remove("hidden-card");
-    if(fsExtra1) fsExtra1.classList.remove("hidden-card");
-  } else {
-    if(extraCard1) extraCard1.classList.add("hidden-card");
-    if(fsExtra1) fsExtra1.classList.add("hidden-card");
-  }
+function changeReverb(val){ 
+  reverbLevel = parseFloat(val); 
+  document.getElementById("reverbRange").value = reverbLevel;
+  broadcastData({ type:"changeReverb", reverb:reverbLevel }); 
 }
 
-function toggleExtra2() {
-  extra2Visible = !extra2Visible;
-  const btn = document.getElementById("extra2ToggleBtn");
-  btn.textContent = extra2Visible ? "📷 E2: ON" : "📷 E2: OFF";
-  btn.classList.toggle("active", extra2Visible);
+function changeMasterGain(val){ 
+  masterVolume = parseFloat(val); 
+  document.getElementById("masterVolRange").value = masterVolume;
+  if(masterGainNode) masterGainNode.gain.setValueAtTime(masterVolume, audioContext.currentTime); 
+}
 
-  const extraCard2 = document.getElementById("extraCard2");
-  const fsExtra2 = document.querySelector(".fsExtraCard2");
+function changeTranspose(val){ 
+  transposeSemitones = parseInt(val); 
+  document.getElementById("transposeSelect").value = val;
+  renderStaffNotation(recordedMidiNotes); 
+  broadcastData({ type:"changeTranspose", transpose:transposeSemitones }); 
+}
 
-  if(extra2Visible) {
-    if(extraCard2) extraCard2.classList.remove("hidden-card");
-    if(fsExtra2) fsExtra2.classList.remove("hidden-card");
-  } else {
-    if(extraCard2) extraCard2.classList.add("hidden-card");
-    if(fsExtra2) fsExtra2.classList.add("hidden-card");
-  }
+function changeKeySignature(val){ 
+  currentKeySignature = val; 
+  document.getElementById("keySigSelect").value = val;
+  renderStaffNotation(recordedMidiNotes); 
+  broadcastData({ type:"changeKeySignature", keySig: val });
+}
+
+function zoomStaffIn(){ 
+  staffSpacingMultiplier = Math.min(70, staffSpacingMultiplier + 8); 
+  renderStaffNotation(recordedMidiNotes); 
+}
+
+function zoomStaffOut(){ 
+  staffSpacingMultiplier = Math.max(30, staffSpacingMultiplier - 8); 
+  renderStaffNotation(recordedMidiNotes); 
+}
+
+function raiseHand() {
+  alert("✋ Raise Hand alert sent to teacher/class!");
+  broadcastData({ type: "raiseHand", role: currentRole });
+}
+
+function sendChatMessage() {
+  const input = document.getElementById("chatInput");
+  const msg = input.value.trim();
+  if(!msg) return;
+  appendChatMsg(currentRole.toUpperCase() + ": " + msg, "#38bdf8");
+  broadcastData({ type: "chatMessage", role: currentRole, text: msg });
+  input.value = "";
+}
+
+function sendReaction(emoji) {
+  appendChatMsg(currentRole.toUpperCase() + " reacted: " + emoji, "#ffd54f");
+  broadcastData({ type: "reaction", role: currentRole, emoji: emoji });
+}
+
+function appendChatMsg(text, color="#fff") {
+  const box = document.getElementById("chatBox");
+  const div = document.createElement("div");
+  div.style.color = color;
+  div.textContent = text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
 }
 
 function updateVideoMirror() {
@@ -1059,45 +1546,45 @@ function updateVideoMirror() {
 
 async function getCameraStream(){
   try{
+    status("Loading Camera & Audio, Please Wait...", "loading");
     localStream = await navigator.mediaDevices.getUserMedia({
       video: { 
         facingMode: useFrontCamera ? "user" : "environment",
-        width: { ideal: 1920, max: 1920 },
-        height: { ideal: 1080, max: 1080 },
+        width: { ideal: 1920, min: 1280, max: 1920 },
+        height: { ideal: 1080, min: 720, max: 1080 },
         frameRate: { ideal: 30, max: 60 }
       },
       audio: {
         echoCancellation: true,
         noiseSuppression: true,
-        autoGainControl: true
+        autoGainControl: true,
+        sampleRate: 48000
       }
     });
 
     localVideo.srcObject = localStream;
     fsLocalVideo.srcObject = localStream;
-    
     updateVideoMirror();
 
     cameraOn = true;
     micOn = true;
     updateMediaButtons();
-    status("1080p HD Camera and High Quality Audio Connected");
+    status("Camera & Audio Ready", "ready");
     return localStream;
   }catch(error){
-    console.error(error);
     try {
-      localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
+      localStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { width: { ideal: 1280 }, height: { ideal: 720 } }, 
+        audio: true 
       });
       localVideo.srcObject = localStream;
       fsLocalVideo.srcObject = localStream;
       updateVideoMirror();
-      status("Connected in standard resolution");
+      status("Connected in HD resolution", "ready");
       return localStream;
     } catch(err2) {
-      status("Camera or Microphone Permission Not Granted");
-      alert("Camera open ஆகவில்லை. Permission Allow செய்யவும்.");
+      status("Camera/Mic Permission Denied / Network Error", "error");
+      alert("Camera permission தேவை.");
       throw err2;
     }
   }
@@ -1107,77 +1594,64 @@ async function startClass(){
   const room = document.getElementById("roomId").value.trim();
   const role = document.getElementById("userRole").value;
 
-  if(!room){
-    alert("Room ID enter செய்யுங்கள்.");
-    return;
-  }
-
-  if(!window.isSecureContext){
-    status("HTTPS Required For Camera");
-    alert("Camera வேலை செய்ய HTTPS தேவை.");
-    return;
-  }
+  if(!room){ alert("Room ID enter செய்யவும்."); return; }
+  if(!window.isSecureContext){ alert("HTTPS தேவை."); return; }
 
   currentRole = role;
   currentRoom = room;
   updateRoleNames();
 
-  try{
-    await getCameraStream();
-  }catch(e){
-    return;
-  }
+  try{ await getCameraStream(); }catch(e){ return; }
 
-  const peerId = "anikous-" + room + "-" + role;
-  status("Connecting To 1080p Class...");
+  const peerId = "anikous-ultra-" + room + "-" + role;
+  status("Connecting To Studio Class...", "loading");
 
-  if(peer) {
-    try { peer.destroy(); } catch(e){}
-  }
+  if(peer) { try { peer.destroy(); } catch(e){} }
 
-  peer = new Peer(peerId);
+  peer = new Peer(peerId, {
+    config: {
+      'iceServers': [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:global.stun.twilio.com:3478' }
+      ]
+    }
+  });
 
   peer.on("open", id => {
-    status("Connected - 1080p HD - Role: " + role + " - Room: " + room);
-    
+    status(`Connected (Role: ${role.toUpperCase()} | Room: ${room})`, "connected");
     const allRoles = ["teacher", "student", "extra1", "extra2"];
     allRoles.forEach(r => {
       if(r !== role) {
-        const targetId = "anikous-" + room + "-" + r;
+        const targetId = "anikous-ultra-" + room + "-" + r;
         connectAndCall(targetId);
         connectData(targetId);
       }
     });
   });
 
+  peer.on("error", err => {
+    status("Network Error / Connection Failed", "error");
+  });
+
   peer.on("call", call => {
     activeCalls[call.peer] = call;
     call.answer(localStream);
-    
-    // Force high bitrate when ICE connection succeeds
     call.peerConnection.oniceconnectionstatechange = () => {
-      if(call.peerConnection.iceConnectionState === "connected" || call.peerConnection.iceConnectionState === "completed") {
+      if(call.peerConnection.iceConnectionState === "connected") {
         enforceHighBitrate(call);
+        status("Live Stream Connected!", "connected");
+      } else if(call.peerConnection.iceConnectionState === "disconnected" || call.peerConnection.iceConnectionState === "failed") {
+        status("Network Error / Disconnected", "error");
       }
     };
-
     call.on("stream", remoteStream => {
       assignRemoteStream(call.peer, remoteStream);
-      status("1080p HD Video Connected Successfully!");
+      status("Live Stream Connected!", "connected");
     });
-    call.on("close", () => {
-      removeRemoteStream(call.peer);
-      status("A User Disconnected");
-    });
+    call.on("close", () => { removeRemoteStream(call.peer); status("Participant Disconnected", "error"); });
   });
 
-  peer.on("connection", connection => {
-    setupDataConnection(connection);
-  });
-
-  peer.on("error", err => {
-    console.error(err);
-  });
+  peer.on("connection", connection => setupDataConnection(connection));
 }
 
 function connectAndCall(targetPeerId){
@@ -1186,46 +1660,37 @@ function connectAndCall(targetPeerId){
     const call = peer.call(targetPeerId, localStream);
     if(call){
       activeCalls[targetPeerId] = call;
-      
       call.peerConnection.oniceconnectionstatechange = () => {
-        if(call.peerConnection.iceConnectionState === "connected" || call.peerConnection.iceConnectionState === "completed") {
+        if(call.peerConnection.iceConnectionState === "connected") {
           enforceHighBitrate(call);
+          status("Live Stream Connected!", "connected");
+        } else if(call.peerConnection.iceConnectionState === "disconnected" || call.peerConnection.iceConnectionState === "failed") {
+          status("Network Error / Disconnected", "error");
         }
       };
-
-      call.on("stream", remoteStream => {
-        assignRemoteStream(targetPeerId, remoteStream);
-        status("1080p HD Video Connected Successfully!");
-      });
-      call.on("close", () => {
-        removeRemoteStream(targetPeerId);
-      });
+      call.on("stream", remoteStream => assignRemoteStream(targetPeerId, remoteStream));
+      call.on("close", () => removeRemoteStream(targetPeerId));
     }
-  }, 1500);
+  }, 200);
 }
 
-// 1080p உயர் தரம் மற்றும் தெளிவுக்காக Bitrate-ஐ அதிகரிக்கச் செய்யும் வசதி
 function enforceHighBitrate(call) {
   try {
     const pc = call.peerConnection;
     if (!pc) return;
-    const senders = pc.getSenders();
-    senders.forEach(sender => {
+    pc.getSenders().forEach(sender => {
       if (sender.track && sender.track.kind === 'video') {
         const parameters = sender.getParameters();
-        if (!parameters.encodings) {
-          parameters.encodings = [{}];
-        }
+        if (!parameters.encodings) parameters.encodings = [{}];
         parameters.encodings.forEach(encoding => {
-          encoding.maxBitrate = 4000000; // 4 Mbps for crystal clear 1080p
+          encoding.maxBitrate = 4000000;
           encoding.maxFramerate = 30;
+          encoding.scaleResolutionDownBy = 1.0;
         });
-        sender.setParameters(parameters).catch(e => console.log(e));
+        sender.setParameters(parameters).catch(e => {});
       }
     });
-  } catch (err) {
-    console.error("Bitrate enforcement error:", err);
-  }
+  } catch (err) {}
 }
 
 function connectData(id){
@@ -1233,29 +1698,24 @@ function connectData(id){
   try{
     const connection = peer.connect(id, { reliable:true });
     setupDataConnection(connection);
-  }catch(error){
-    console.error("Data connection error:", error);
-  }
+  }catch(error){}
 }
 
 function setupDataConnection(connection){
   connection.on("open", () => {
     dataConnections[connection.peer] = connection;
-    status("Keyboard & Music Sync Connected!");
+    status("Studio Sync Connected!", "connected");
   });
-  connection.on("data", data => {
-    handleRemoteData(data);
-  });
+  connection.on("data", data => handleRemoteData(data));
   connection.on("close", () => {
     delete dataConnections[connection.peer];
+    removeRemoteStream(connection.peer);
   });
 }
 
 function broadcastData(data){
   Object.values(dataConnections).forEach(conn => {
-    if(conn && conn.open){
-      try { conn.send(data); } catch(e){}
-    }
+    if(conn && conn.open) { try { conn.send(data); } catch(e){} }
   });
 }
 
@@ -1267,6 +1727,7 @@ function assignRemoteStream(peerId, stream){
 function removeRemoteStream(peerId){
   connectedPeersMap.delete(peerId);
   delete activeCalls[peerId];
+  delete dataConnections[peerId];
   updateRemoteVideoUI();
 }
 
@@ -1277,37 +1738,38 @@ function updateRemoteVideoUI(){
       let slot = remoteVideoSlots[index];
       slot.video.srcObject = stream;
       slot.fsVideo.srcObject = stream;
-      
-      slot.video.style.transform = "scaleX(-1)";
-      slot.fsVideo.style.transform = "scaleX(-1)";
-      
       let parts = peerId.split("-");
       let roleName = parts[parts.length - 1];
-      slot.nameEl.textContent = roleName.toUpperCase() + " (1080p)";
-      slot.fsNameEl.textContent = roleName.toUpperCase() + " (1080p)";
+      slot.nameEl.textContent = roleName.toUpperCase() + " (1080p HD)";
+      slot.fsNameEl.textContent = roleName.toUpperCase() + " (1080p HD)";
+      
+      if(slot.card) slot.card.classList.remove("hidden-card");
+      if(slot.fsCard) slot.fsCard.classList.remove("hidden-card");
       index++;
     }
   });
 
   for(let i = index; i < remoteVideoSlots.length; i++){
-    remoteVideoSlots[i].video.srcObject = null;
-    remoteVideoSlots[i].fsVideo.srcObject = null;
-    remoteVideoSlots[i].video.style.transform = "scaleX(-1)";
-    remoteVideoSlots[i].fsVideo.style.transform = "scaleX(-1)";
-    remoteVideoSlots[i].nameEl.textContent = "Waiting...";
-    remoteVideoSlots[i].fsNameEl.textContent = "Waiting...";
+    let slot = remoteVideoSlots[i];
+    slot.video.srcObject = null;
+    slot.fsVideo.srcObject = null;
+    slot.nameEl.textContent = "Waiting...";
+    slot.fsNameEl.textContent = "Waiting...";
+    
+    if(slot.card) slot.card.classList.add("hidden-card");
+    if(slot.fsCard) slot.fsCard.classList.add("hidden-card");
   }
 }
 
 function handleRemoteData(data){
   if(!data || !data.type) return;
-  if(data.type==="changeVoice"){
-    currentVoice = data.voice;
-    document.getElementById("voiceSelect").value = data.voice;
+  if(data.type==="changeVoice"){ 
+    currentVoice = data.voice; 
+    document.getElementById("voiceSelect").value = data.voice; 
   }
-  if(data.type==="changeDualVoice"){
-    currentDualVoice = data.dual;
-    document.getElementById("dualVoiceSelect").value = data.dual;
+  if(data.type==="changeDualVoice"){ 
+    currentDualVoice = data.dual; 
+    document.getElementById("dualVoiceSelect").value = data.dual; 
   }
   if(data.type==="toggleSustain"){
     sustainMode = data.sustain;
@@ -1315,61 +1777,54 @@ function handleRemoteData(data){
     const btn = document.getElementById("sustainBtn");
     btn.textContent = sustainMode ? "SUSTAIN ON" : "SUSTAIN OFF";
     btn.classList.toggle("active", sustainMode);
-
-    if(!sustainMode){
-      Object.keys(remoteSounds).forEach(note => {
-        stopMultiSound(parseInt(note), remoteSounds, 0.05);
-      });
-    }
   }
   if(data.type==="changeSustainTime"){
     sustainDuration = data.duration;
-    document.getElementById("sustainTimeRange").value = sustainDuration;
-    document.getElementById("sustainTimeLabel").textContent = `Time: ${sustainDuration.toFixed(1)}s`;
+    document.getElementById("sustainTimeLabel").textContent = `${sustainDuration.toFixed(1)}s`;
   }
-  if(data.type==="zoomChange"){
-    currentKeyWidth = data.width;
-    updateKeyZoom(false);
+  if(data.type==="changeReverb"){ 
+    reverbLevel = data.reverb; 
+    document.getElementById("reverbRange").value = reverbLevel;
   }
-  if(data.type==="toggleHoldSync"){
-    holdMode = data.hold;
-    updateHoldUI();
+  if(data.type==="changeTranspose"){ 
+    transposeSemitones = data.transpose; 
+    document.getElementById("transposeSelect").value = data.transpose;
+    renderStaffNotation(recordedMidiNotes); 
   }
-  if(data.type==="toggleKeyNamesSync"){
-    showKeyNames = data.show;
-    updateKeyNamesUI();
+  if(data.type==="changeKeySignature"){
+    currentKeySignature = data.keySig;
+    document.getElementById("keySigSelect").value = data.keySig;
+    renderStaffNotation(recordedMidiNotes);
   }
-  if(data.type==="octaveChange"){
-    selectedOctaves = new Set(data.octaves);
-    createPiano();
-    createFullscreenPiano();
+  if(data.type==="toggleMetronome"){
+    metroPlaying = data.playing;
+    bpm = data.bpm;
+    document.getElementById("bpmLabel").textContent = bpm + " BPM";
+    document.getElementById("bpmRange").value = bpm;
+    const btn = document.getElementById("metroToggle");
+    btn.textContent = metroPlaying ? "Stop" : "Start";
+    btn.classList.toggle("active", metroPlaying);
+    clearInterval(metroTimer);
+    if(metroPlaying) metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
   }
-  if(data.type==="centerPianoSync"){
-    const box = document.getElementById("pianoScroll");
-    if(box) box.scrollLeft = (box.scrollWidth - box.clientWidth)/2;
-    const fsBox = document.getElementById("fsPianoScroll");
-    if(fsBox) fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
+  if(data.type==="changeBPM"){
+    bpm = data.bpm;
+    document.getElementById("bpmLabel").textContent = bpm + " BPM";
+    document.getElementById("bpmRange").value = bpm;
+    if(metroPlaying){ clearInterval(metroTimer); metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000); }
   }
-  if(data.type==="toggleFullscreenSync"){
-    const container = document.getElementById("pianoFullscreenContainer");
-    if(data.open) {
-      container.classList.add("active");
-      setTimeout(() => { 
-        createFullscreenPiano();
-        const fsBox = document.getElementById("fsPianoScroll");
-        if(fsBox) fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
-      }, 50);
-    } else {
-      container.classList.remove("active");
-    }
+  if(data.type==="clearNotation"){
+    recordedMidiNotes = [];
+    renderStaffNotation([]);
   }
+  if(data.type==="raiseHand") alert(`✋ ${data.role.toUpperCase()} raised hand!`);
+  if(data.type==="chatMessage") appendChatMsg(data.role.toUpperCase() + ": " + data.text, "#38bdf8");
+  if(data.type==="reaction") appendChatMsg(data.role.toUpperCase() + " reacted: " + data.emoji, "#ffd54f");
   if(data.type==="keyDown"){
-    const keys = document.querySelectorAll(`[data-note="${data.note}"]`);
-    keys.forEach(key => pressRemoteKey(data.note, key));
+    document.querySelectorAll(`[data-note="${data.note}"]`).forEach(key => pressRemoteKey(data.note, key));
   }
   if(data.type==="keyUp"){
-    const keys = document.querySelectorAll(`[data-note="${data.note}"]`);
-    keys.forEach(key => releaseRemoteKey(data.note, key));
+    document.querySelectorAll(`[data-note="${data.note}"]`).forEach(key => releaseRemoteKey(data.note, key));
   }
 }
 
@@ -1380,21 +1835,23 @@ function pressRemoteKey(note, key){
   if(remoteKeys.has(note)) return;
   remoteKeys.add(note);
   key.classList.add("remote-active");
-  playMultiSound(note, currentVoice, currentDualVoice, remoteSounds, sustainMode ? sustainDuration : 3.0);
+  playMultiSound(note + transposeSemitones, currentVoice, currentDualVoice, remoteSounds, sustainMode ? sustainDuration : 3.0);
+  
+  recordedMidiNotes.push(note);
+  renderStaffNotation(recordedMidiNotes);
   updateDisplay();
 }
 
 function releaseRemoteKey(note, key){
   remoteKeys.delete(note);
   key.classList.remove("remote-active");
-  const releaseTime = sustainMode ? (sustainDuration || 1.0) : 0.05;
-  stopMultiSound(note, remoteSounds, releaseTime);
+  stopMultiSound(note + transposeSemitones, remoteSounds, sustainMode ? (sustainDuration || 1.0) : 0.05);
   updateDisplay();
 }
 
 function updateRoleNames(){
-  document.getElementById("localName").textContent = currentRole.toUpperCase() + " (Me - 1080p)";
-  document.getElementById("fsLocalName").textContent = currentRole.toUpperCase() + " (Me - 1080p)";
+  document.getElementById("localName").textContent = currentRole.toUpperCase() + " (Me - 1080p HD)";
+  document.getElementById("fsLocalName").textContent = currentRole.toUpperCase() + " (Me - 1080p HD)";
 }
 
 function toggleCamera(){
@@ -1418,174 +1875,440 @@ function toggleMic(){
 function updateMediaButtons(){
   const cameraBtn = document.getElementById("cameraBtn");
   const micBtn = document.getElementById("micBtn");
-
   cameraBtn.textContent = cameraOn ? "Camera ON" : "Camera OFF";
   micBtn.textContent = micOn ? "Mic ON" : "Mic OFF";
-
   cameraBtn.classList.toggle("active", cameraOn);
   micBtn.classList.toggle("active", micOn);
 }
 
 function toggleVideoFullscreen(){
-  const container = document.getElementById("videoFullscreenContainer");
-  container.classList.toggle("active");
+  document.getElementById("videoFullscreenContainer").classList.toggle("active");
 }
 
 async function switchCamera(){
   if(!localStream) return;
-
   useFrontCamera = !useFrontCamera;
-  
   localStream.getVideoTracks().forEach(track => track.stop());
-
-  const constraints = {
-    video: { 
-      facingMode: useFrontCamera ? "user" : "environment",
-      width: { ideal: 1920, max: 1920 },
-      height: { ideal: 1080, max: 1080 },
-      frameRate: { ideal: 30, max: 60 }
-    },
-    audio: true
-  };
-
   try{
-    let newStream;
-    try {
-      newStream = await navigator.mediaDevices.getUserMedia(constraints);
-    } catch (err) {
-      constraints.video.facingMode = "environment";
-      newStream = await navigator.mediaDevices.getUserMedia(constraints);
-    }
-
-    const videoTrack = newStream.getVideoTracks()[0];
-    const audioTrack = newStream.getAudioTracks()[0];
-
-    localStream = newStream;
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: { 
+        facingMode: useFrontCamera ? "user" : "environment", 
+        width: { ideal: 1920, min: 1280, max: 1920 }, 
+        height: { ideal: 1080, min: 720, max: 1080 },
+        frameRate: { ideal: 30, max: 60 }
+      },
+      audio: true
+    });
     localVideo.srcObject = localStream;
     fsLocalVideo.srcObject = localStream;
-    
     updateVideoMirror();
-    
-    cameraOn = true; 
-    micOn = true;
-    updateMediaButtons();
+    cameraOn = true; micOn = true; updateMediaButtons();
 
     Object.values(activeCalls).forEach(call => {
-      if(call && call.peerConnection){
-        const senders = call.peerConnection.getSenders();
-        senders.forEach(sender => {
-          if(sender.track && sender.track.kind === 'video' && videoTrack){
-            sender.replaceTrack(videoTrack).then(() => {
-              enforceHighBitrate(call);
-            }).catch(e => {});
-          }
-          if(sender.track && sender.track.kind === 'audio' && audioTrack){
-            sender.replaceTrack(audioTrack).catch(e => {});
-          }
-        });
+      const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+      if(sender && localStream.getVideoTracks()[0]) {
+        sender.replaceTrack(localStream.getVideoTracks()[0]);
       }
     });
 
-    status("1080p HD Camera Switched Successfully!");
-  }catch(err){
-    console.error("Error switching camera: ", err);
-    useFrontCamera = !useFrontCamera;
-    alert("Camera அல்லது Mic மாற்றுவதில் சிக்கல் உள்ளது.");
-  }
+    status("Studio 1080p Camera Switched!", "connected");
+  }catch(err){ useFrontCamera = !useFrontCamera; alert("Camera மாற்ற இயலவில்லை."); }
 }
 
 function openJitsiMeet() {
   const room = document.getElementById("roomId").value.trim();
   if(!room) { alert("Room ID enter செய்யவும்!"); return; }
-  window.open(`https://meet.jit.si/AnikousMusicInstitute_${room}`, '_blank');
+  window.open(`https://meet.jit.si/AnikousUltraStudio_${room}`, '_blank');
 }
 
-/* PIANO SYNTHESIZER LOGIC */
+const NOTE_NAMES_SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+function midiToVexNote(midiNote) {
+  const transposed = midiNote + transposeSemitones;
+  const octave = Math.floor(transposed / 12) - 1;
+  const nameIdx = transposed % 12;
+  let rawName = NOTE_NAMES_SHARP[nameIdx];
+  let vexName = rawName.replace("#", "#").toLowerCase();
+  return `${vexName || vexName}/${octave}`;
+}
+
+let recordedMidiNotes = [];
+
+function clearNotation() {
+  recordedMidiNotes = [];
+  renderStaffNotation([]);
+  broadcastData({ type: "clearNotation" });
+}
+
+function renderStaffNotation(noteArray) {
+  const container = document.getElementById("staffSvgContainer");
+  if(container) {
+    renderStaffToContainer(container, noteArray, 220, 720);
+  }
+
+  const fsContainer = document.getElementById("fsStaffSvgContainer");
+  if(fsContainer) {
+    renderStaffToContainer(fsContainer, noteArray, 140, 720);
+  }
+
+  const a4Container = document.getElementById("a4ModalStaffContainer");
+  if(a4Container && document.getElementById("a4SheetModal").classList.contains("active")) {
+    renderStaffToContainer(a4Container, noteArray, 350, 720);
+  }
+}
+
+function renderStaffToContainer(containerEl, noteArray, svgHeight, svgWidth) {
+  containerEl.innerHTML = "";
+  if(typeof Vex === 'undefined') return;
+  const { Renderer, Stave, StaveNote, Voice, Formatter } = Vex.Flow;
+
+  const displayNotes = noteArray.slice(-48);
+  const notesPerLine = 8;
+  const numLines = Math.max(1, Math.ceil(displayNotes.length / notesPerLine));
+  
+  const systemHeight = 140;
+  const totalSvgHeight = Math.max(svgHeight, numLines * systemHeight + 30);
+  const fixedSvgWidth = 720;
+
+  const renderer = new Renderer(containerEl, Renderer.Backends.SVG);
+  renderer.resize(fixedSvgWidth, totalSvgHeight);
+  const context = renderer.getContext();
+  context.setFont("Arial", 9);
+
+  if(displayNotes.length === 0) {
+    const emptyStave = new Stave(10, 15, fixedSvgWidth - 30);
+    emptyStave.addClef("treble").addKeySignature(currentKeySignature).addTimeSignature(currentTimeSignature);
+    emptyStave.setContext(context).draw();
+
+    const emptyBass = new Stave(10, 85, fixedSvgWidth - 30);
+    emptyBass.addClef("bass").addKeySignature(currentKeySignature).addTimeSignature(currentTimeSignature);
+    emptyBass.setContext(context).draw();
+    return;
+  }
+
+  for(let i = 0; i < numLines; i++) {
+    const lineNotes = displayNotes.slice(i * notesPerLine, (i + 1) * notesPerLine);
+    const startY = i * systemHeight + 15;
+
+    const trebleNotes = [];
+    const bassNotes = [];
+
+    lineNotes.forEach(mNote => {
+      const vStr = midiToVexNote(mNote);
+      const parts = vStr.split("/");
+      const keyName = parts[0];
+      const octNum = parseInt(parts[1]);
+
+      const staveNote = new StaveNote({
+        keys: [vStr],
+        duration: currentNoteDuration,
+        clef: octNum >= 4 ? "treble" : "bass"
+      });
+
+      if(keyName.includes("#")) {
+        staveNote.addModifier(new Vex.Flow.Accidental("#"), 0);
+      }
+
+      if(octNum >= 4) trebleNotes.push(staveNote);
+      else bassNotes.push(staveNote);
+    });
+
+    const staveWidth = fixedSvgWidth - 40;
+
+    const trebleStave = new Stave(20, startY, staveWidth);
+    if(i === 0) {
+      trebleStave.addClef("treble").addKeySignature(currentKeySignature).addTimeSignature(currentTimeSignature);
+    } else {
+      trebleStave.addClef("treble");
+    }
+    trebleStave.setContext(context).draw();
+
+    if(trebleNotes.length > 0) {
+      const voiceTreble = new Voice({ num_beats: trebleNotes.length, strict: false });
+      try {
+        voiceTreble.addTickables(trebleNotes);
+        new Formatter().joinVoices([voiceTreble]).format([voiceTreble], trebleStave.getWidth() - 70);
+        voiceTreble.draw(context, trebleStave);
+      } catch(e) {}
+    }
+
+    const bassStave = new Stave(20, startY + 70, staveWidth);
+    if(i === 0) {
+      bassStave.addClef("bass").addKeySignature(currentKeySignature).addTimeSignature(currentTimeSignature);
+    } else {
+      bassStave.addClef("bass");
+    }
+    bassStave.setContext(context).draw();
+
+    if(bassNotes.length > 0) {
+      const voiceBass = new Voice({ num_beats: bassNotes.length, strict: false });
+      try {
+        voiceBass.addTickables(bassNotes);
+        new Formatter().joinVoices([voiceBass]).format([voiceBass], bassStave.getWidth() - 70);
+        voiceBass.draw(context, bassStave);
+      } catch(e) {}
+    }
+  }
+}
+
+function openA4SheetModal() {
+  const modal = document.getElementById("a4SheetModal");
+  modal.classList.add("active");
+
+  const now = new Date();
+  document.getElementById("a4ModalDate").textContent = "Date: " + now.toLocaleDateString();
+  document.getElementById("a4ModalTime").textContent = "Time: " + now.toLocaleTimeString();
+
+  renderStaffNotation(recordedMidiNotes);
+}
+
+function closeA4SheetModal() {
+  document.getElementById("a4SheetModal").classList.remove("active");
+}
+
+const PRESET_SONGS = {
+  furelise: [64, 63, 64, 63, 64, 59, 62, 60, 57],
+  twinkle: [60, 60, 67, 67, 69, 69, 67, 65, 65, 64, 64, 62, 62, 60],
+  joy: [72, 71, 69, 68, 67, 65, 64, 65, 67, 69, 72]
+};
+
+function loadPresetSong(songKey) {
+  if(!songKey || !PRESET_SONGS[songKey]) return;
+  recordedMidiNotes = [...PRESET_SONGS[songKey]];
+  renderStaffNotation(recordedMidiNotes);
+  alert("Practice lesson loaded onto staff!");
+}
+
+function playRecordedScore() {
+  if (recordedMidiNotes.length === 0) {
+    alert("Play panna notes எதுவும் இல்லை!");
+    return;
+  }
+  initAudio();
+  let delay = 0;
+  recordedMidiNotes.forEach((note) => {
+    setTimeout(() => {
+      playMultiSound(note + transposeSemitones, currentVoice, currentDualVoice, sounds, 0.4);
+      document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.add("local-active"));
+      setTimeout(() => {
+        stopMultiSound(note + transposeSemitones, sounds, 0.1);
+        document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.remove("local-active"));
+      }, 300);
+    }, delay);
+    delay += 350;
+  });
+}
+
+function downloadMIDIFile() {
+  if (recordedMidiNotes.length === 0) { return; }
+  let midiHeader = [0x4d, 0x54, 0x68, 0x64, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x01, 0x00, 0x80];
+  let trackEvents = [];
+  recordedMidiNotes.forEach(note => {
+    trackEvents.push(0x00, 0x90, note, 0x64);
+    trackEvents.push(0x40, 0x80, note, 0x40);
+  });
+  let trackHeader = [0x4d, 0x54, 0x72, 0x6b];
+  let trackLength = [0x00, 0x00, 0x00, trackEvents.length];
+  let midiData = new Uint8Array([...midiHeader, ...trackHeader, ...trackLength, ...trackEvents]);
+  let blob = new Blob([midiData], { type: 'audio/midi' });
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement('a');
+  a.href = url;
+  a.download = 'Anikous_Studio_Score.mid';
+  a.click();
+}
+
+function downloadMusicXML() {
+  if (recordedMidiNotes.length === 0) { return; }
+  let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 3.1 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+<score-partwise version="3.1">
+  <part-list><score-part id="P1"><part-name>Piano</part-name></score-part></part-list>
+  <part id="P1"><measure number="1"><attributes><divisions>1</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time><clef><sign>G</sign><line>2</line></clef></attributes>`;
+  recordedMidiNotes.slice(-16).forEach((note) => {
+    let vStr = midiToVexNote(note);
+    let step = vStr[0].toUpperCase();
+    let octave = vStr.slice(-1);
+    xmlContent += `<note><pitch><step>${step}</step><octave>${octave}</octave></pitch><duration>1</duration><type>quarter</type></note>`;
+  });
+  xmlContent += `</measure></part></score-partwise>`;
+  let blob = new Blob([xmlContent], { type: 'application/vnd.recordare.musicxml+xml' });
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement('a'); a.href = url; a.download = 'Anikous_Master_Score.musicxml'; a.click();
+}
+
+function downloadSheetPDF() {
+  const element = document.getElementById("a4PaperPrintArea");
+  if (recordedMidiNotes.length === 0) { alert("நோட்ஸ் எதுவும் இல்லை!"); return; }
+  
+  const modal = document.getElementById("a4SheetModal");
+  const wasActive = modal.classList.contains("active");
+  if(!wasActive) openA4SheetModal();
+
+  setTimeout(() => {
+    html2pdf().from(element).set({ 
+      margin: 10, 
+      filename: 'Anikous_Master_Grand_Score.pdf', 
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+    }).save().then(() => {
+      if(!wasActive) closeA4SheetModal();
+    });
+  }, 300);
+}
+
+function printOrExportPNG() { window.print(); }
+
+let metroPlaying = false, bpm = 120, metroTimer = null;
+
+function toggleMetronome(){
+  initAudio();
+  metroPlaying = !metroPlaying;
+  const btn = document.getElementById("metroToggle");
+  btn.textContent = metroPlaying ? "Stop" : "Start";
+  btn.classList.toggle("active", metroPlaying);
+  if(metroPlaying) metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
+  else clearInterval(metroTimer);
+
+  broadcastData({ type: "toggleMetronome", playing: metroPlaying, bpm: bpm });
+}
+
+function changeBPM(val){
+  bpm = parseInt(val);
+  document.getElementById("bpmLabel").textContent = bpm + " BPM";
+  document.getElementById("bpmRange").value = bpm;
+  if(metroPlaying){ clearInterval(metroTimer); metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000); }
+  broadcastData({ type: "changeBPM", bpm: bpm });
+}
+
+function metronomeTick(){
+  const osc = audioContext.createOscillator(), gain = audioContext.createGain();
+  osc.frequency.value = 1000;
+  gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
+  osc.connect(gain); gain.connect(audioContext.destination);
+  osc.start(); osc.stop(audioContext.currentTime + 0.05);
+}
+
+let mediaRecorder = null, audioChunks = [], recordedAudioBlob = null;
+function toggleRecording(){
+  if(!localStream) { alert("Class start ஆன பின்னரே Record செய்ய முடியும்!"); return; }
+  const btn = document.getElementById("recBtn");
+  if(mediaRecorder && mediaRecorder.state === "recording"){
+    mediaRecorder.stop();
+    btn.textContent = "Record"; btn.classList.remove("active");
+    document.getElementById("recStatusText").textContent = "Saved!";
+  } else {
+    audioChunks = [];
+    try {
+      mediaRecorder = new MediaRecorder(localStream);
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        document.getElementById("playRecBtn").disabled = false;
+        document.getElementById("downloadAudioBtn").disabled = false;
+      };
+      mediaRecorder.start();
+      btn.textContent = "Stop"; btn.classList.add("active");
+      document.getElementById("recStatusText").textContent = "Recording...";
+    } catch(e) { alert("Error: " + e.message); }
+  }
+}
+function playRecording(){
+  if(!recordedAudioBlob) return;
+  const audio = new Audio(URL.createObjectURL(recordedAudioBlob));
+  audio.loop = true; audio.play();
+  alert("Studio Loop playback started!");
+}
+function downloadAudioRecording() {
+  if(!recordedAudioBlob) return;
+  const url = URL.createObjectURL(recordedAudioBlob);
+  const a = document.createElement('a'); a.href = url; a.download = 'Anikous_Studio_Recording.webm'; a.click();
+}
+
 const NOTE_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const BLACK_KEYS = [1,3,6,8,10];
-let activeKeys = new Set();
-let pointerMap = new Map();
-let holdMode = false;
-let showKeyNames = true;
-let audioContext = null;
-let sounds = {};
-const piano = document.getElementById("piano");
-const fsPiano = document.getElementById("fsPiano");
+let activeKeys = new Set(), holdMode = false, showKeyNames = true;
+let audioContext = null, masterGainNode = null, sounds = {};
+const piano = document.getElementById("piano"), fsPiano = document.getElementById("fsPiano");
 
 function initAudio(){
   if(!audioContext){
     const AC = window.AudioContext || window.webkitAudioContext;
     audioContext = new AC();
+    masterGainNode = audioContext.createGain();
+    masterGainNode.gain.value = masterVolume;
+    masterGainNode.connect(audioContext.destination);
   }
-  if(audioContext.state==="suspended"){
-    audioContext.resume();
-  }
+  if(audioContext.state==="suspended") audioContext.resume();
 }
 
-function frequency(note){
-  return 440 * Math.pow(2, (note-69)/12);
-}
+function frequency(note){ return 440 * Math.pow(2, ((note + transposeSemitones) - 69)/12); }
 
-function createVoiceChain(voiceType, freq, now, decayDuration){
+function createVoiceChain(voiceType, freq, now){
   const oscs = [];
   const gain = audioContext.createGain();
   const filter = audioContext.createBiquadFilter();
 
+  let waveType = "triangle", attack = 0.005, sustainLevel = 0.2;
+  if(voiceType === "bright") { waveType = "sawtooth"; sustainLevel = 0.25; }
+  else if(voiceType === "organ") { waveType = "square"; sustainLevel = 0.4; }
+  else if(voiceType === "strings" || voiceType === "synthpad") { waveType = "sawtooth"; attack = 0.3; sustainLevel = 0.35; }
+
   const o1 = audioContext.createOscillator();
-  o1.type = voiceType === "grand" ? "sine" : "sawtooth";
-  o1.frequency.value = freq;
-  filter.type = "lowpass"; filter.frequency.value = 3500;
+  o1.type = waveType; o1.frequency.value = freq; oscs.push(o1);
+
+  filter.type = "lowpass"; filter.frequency.setValueAtTime(4000, now);
   gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(0.25, now + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.04, now + decayDuration);
-  oscs.push(o1);
+  gain.gain.linearRampToValueAtTime(0.3, now + attack);
+  gain.gain.exponentialRampToValueAtTime(sustainLevel, now + attack + 0.1);
 
   oscs.forEach(o => { o.connect(filter); o.start(now); });
   filter.connect(gain);
-  gain.connect(audioContext.destination);
+  gain.connect(masterGainNode);
+
   return { oscs, gain };
 }
 
 function playMultiSound(note, primaryVoice, dualVoice, soundStore, decay){
   initAudio();
   if(soundStore[note]) return;
-  const freq = frequency(note);
-  const now = audioContext.currentTime;
-  const primary = createVoiceChain(primaryVoice, freq, now, sustainMode ? decay : 3.0);
-  soundStore[note] = { chains: [primary] };
+  const freq = frequency(note), now = audioContext.currentTime;
+  const primary = createVoiceChain(primaryVoice, freq, now);
+  let chains = [primary];
+  if(dualVoice && dualVoice !== "none") {
+    const dual = createVoiceChain(dualVoice, freq * 1.002, now);
+    chains.push(dual);
+  }
+  soundStore[note] = { chains: chains };
 }
 
-function stopMultiSound(note, soundStore, releaseTime = 0.05){
+function stopMultiSound(note, soundStore){
   const sound = soundStore[note];
   if(!sound) return;
   const now = audioContext.currentTime;
-  const actualRelease = sustainMode ? (sustainDuration || 1.0) : 0.05;
+  const actualRelease = sustainMode ? (sustainDuration || 1.0) : 0.08;
 
   sound.chains.forEach(chain => {
     chain.gain.gain.cancelScheduledValues(now);
     chain.gain.gain.setValueAtTime(chain.gain.gain.value, now);
     chain.gain.gain.exponentialRampToValueAtTime(0.0001, now + actualRelease);
-    setTimeout(() => {
-      try { chain.oscs.forEach(o => o.stop()); } catch(e){}
-    }, (actualRelease + 0.05) * 1000);
+    setTimeout(() => { try { chain.oscs.forEach(o => o.stop()); } catch(e){} }, (actualRelease + 0.05) * 1000);
   });
   delete soundStore[note];
 }
 
 function noteName(note){
-  const octave = Math.floor(note/12)-1;
-  return NOTE_NAMES[note%12] + octave;
+  const transposed = note + transposeSemitones;
+  return NOTE_NAMES[transposed%12] + (Math.floor(transposed/12)-1);
 }
 
 function pressKey(note, key){
   if(activeKeys.has(note)) return;
   activeKeys.add(note);
-  
-  const keys = document.querySelectorAll(`[data-note="${note}"]`);
-  keys.forEach(k => k.classList.add("local-active"));
-
-  const duration = sustainMode ? sustainDuration : 3.0;
-  playMultiSound(note, currentVoice, currentDualVoice, sounds, duration);
+  document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.add("local-active"));
+  playMultiSound(note, currentVoice, currentDualVoice, sounds, sustainMode ? sustainDuration : 3.0);
+  recordedMidiNotes.push(note);
+  renderStaffNotation(recordedMidiNotes);
   broadcastData({ type:"keyDown", note:note });
   updateDisplay();
 }
@@ -1593,30 +2316,17 @@ function pressKey(note, key){
 function releaseKey(note, key){
   if(holdMode) return;
   activeKeys.delete(note);
-  const keys = document.querySelectorAll(`[data-note="${note}"]`);
-  keys.forEach(k => k.classList.remove("local-active"));
-  
-  const releaseTime = sustainMode ? (sustainDuration || 1.0) : 0.05;
-  stopMultiSound(note, sounds, releaseTime);
+  document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.remove("local-active"));
+  stopMultiSound(note, sounds);
   broadcastData({ type:"keyUp", note:note });
   updateDisplay();
 }
 
 let selectedOctaves = new Set();
-const totalWhiteKeys = 50;
-let pianoScrollBox = document.getElementById("pianoScroll");
-let availableWidth = pianoScrollBox ? pianoScrollBox.clientWidth - 24 : window.innerWidth - 40;
-let currentKeyWidth = Math.max(12, Math.floor(availableWidth / totalWhiteKeys));
+let currentKeyWidth = 32;
 
-function zoomIn(){
-  if(currentKeyWidth < 70){ currentKeyWidth += 5; updateKeyZoom(true); }
-}
-
-function zoomOut(){
-  let availableWidth = pianoScrollBox ? pianoScrollBox.clientWidth - 24 : window.innerWidth - 40;
-  const minLimit = Math.max(10, Math.floor(availableWidth / totalWhiteKeys));
-  if(currentKeyWidth > minLimit){ currentKeyWidth -= 5; updateKeyZoom(true); }
-}
+function zoomIn(){ if(currentKeyWidth < 70){ currentKeyWidth += 5; updateKeyZoom(true); } }
+function zoomOut(){ if(currentKeyWidth > 15){ currentKeyWidth -= 5; updateKeyZoom(true); } }
 
 function updateKeyZoom(send = false){
   const root = document.documentElement;
@@ -1624,60 +2334,45 @@ function updateKeyZoom(send = false){
   root.style.setProperty('--key-height', (currentKeyWidth * 4.5) + 'px');
   root.style.setProperty('--black-width', (currentKeyWidth * 0.6) + 'px');
   root.style.setProperty('--black-height', (currentKeyWidth * 2.8) + 'px');
-  createPiano();
-  createFullscreenPiano();
-  if(send){
-    broadcastData({ type:"zoomChange", width: currentKeyWidth });
-  }
+  createPiano(); createFullscreenPiano();
+  if(send) broadcastData({ type:"zoomChange", width: currentKeyWidth });
 }
 
 function createOctaveButtons(){
   const box = document.getElementById("octaveButtons");
+  if(!box) return;
   box.innerHTML = "";
   for(let o=1; o<=7; o++){
     const btn = document.createElement("button");
-    btn.textContent = "Oct "+o;
-    btn.dataset.octave = o;
+    btn.textContent = "Oct "+o; btn.dataset.octave = o;
     if(selectedOctaves.has(o)) btn.classList.add("active");
-    
     btn.onclick = function(){
       const octaveNum = parseInt(this.dataset.octave);
-      if(selectedOctaves.has(octaveNum)){
-        selectedOctaves.delete(octaveNum);
-        btn.classList.remove("active");
-      } else {
-        selectedOctaves.add(octaveNum);
-        btn.classList.add("active");
-      }
-      createPiano();
-      createFullscreenPiano();
-      broadcastData({ type:"octaveChange", octaves: Array.from(selectedOctaves) });
+      if(selectedOctaves.has(octaveNum)){ selectedOctaves.delete(octaveNum); btn.classList.remove("active"); }
+      else { selectedOctaves.add(octaveNum); btn.classList.add("active"); }
+      createPiano(); createFullscreenPiano();
     };
     box.appendChild(btn);
   }
 }
 
 function buildPianoDOM(containerTarget, isFullscreen = false){
+  if(!containerTarget) return;
   containerTarget.innerHTML="";
-  const start = 24; const end = 108;
-  let whiteIndex = 0;
-  const whitePositions = {};
+  const start = 24, end = 108;
+  let whiteIndex = 0, whitePositions = {};
 
   for(let n=start; n<=end; n++){
-    const pc = n%12;
-    const octaveNum = Math.floor((n - 12) / 12);
+    const pc = n%12, octaveNum = Math.floor((n - 12) / 12);
     if(selectedOctaves.size > 0 && !selectedOctaves.has(octaveNum)) continue;
-
     if(!BLACK_KEYS.includes(pc)){
       whitePositions[n] = whiteIndex;
       const key = document.createElement("div");
-      key.className = "white";
-      key.dataset.note = n;
+      key.className = "white"; key.dataset.note = n;
       if(activeKeys.has(n)) key.classList.add("local-active");
       if(remoteKeys.has(n)) key.classList.add("remote-active");
       key.style.left = (whiteIndex * currentKeyWidth) + "px";
-      if(isFullscreen) key.style.height = "195px";
-
+      if(isFullscreen) key.style.height = "135px";
       key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
       addKeyEvents(key, n);
       containerTarget.appendChild(key);
@@ -1686,24 +2381,20 @@ function buildPianoDOM(containerTarget, isFullscreen = false){
   }
 
   for(let n=start; n<=end; n++){
-    const pc = n%12;
-    const octaveNum = Math.floor((n - 12) / 12);
+    const pc = n%12, octaveNum = Math.floor((n - 12) / 12);
     if(selectedOctaves.size > 0 && !selectedOctaves.has(octaveNum)) continue;
-
     if(BLACK_KEYS.includes(pc)){
       let previous = n-1;
       while(previous>=start && BLACK_KEYS.includes(previous%12)) previous--;
       const leftWhite = whitePositions[previous];
       if(leftWhite!==undefined){
         const key = document.createElement("div");
-        key.className = "black";
-        key.dataset.note = n;
+        key.className = "black"; key.dataset.note = n;
         if(activeKeys.has(n)) key.classList.add("local-active");
         if(remoteKeys.has(n)) key.classList.add("remote-active");
         const blackWidth = currentKeyWidth * 0.6;
         key.style.left = (leftWhite * currentKeyWidth + (currentKeyWidth - blackWidth / 2) - (blackWidth / 2)) + "px";
-        if(isFullscreen) key.style.height = "120px";
-
+        if(isFullscreen) key.style.height = "85px";
         key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
         addKeyEvents(key, n);
         containerTarget.appendChild(key);
@@ -1719,116 +2410,76 @@ function createFullscreenPiano(){ buildPianoDOM(fsPiano, true); }
 function togglePianoFullscreen(){
   const container = document.getElementById("pianoFullscreenContainer");
   container.classList.toggle("active");
-  const isOpen = container.classList.contains("active");
-  if(isOpen){
-    setTimeout(() => { createFullscreenPiano(); }, 50);
+  if(container.classList.contains("active")) {
+    setTimeout(() => { createFullscreenPiano(); renderStaffNotation(recordedMidiNotes); }, 50);
   }
-  broadcastData({ type: "toggleFullscreenSync", open: isOpen });
 }
 
 function addKeyEvents(key, note){
-  key.addEventListener("pointerdown", e => {
-    e.preventDefault();
-    key.setPointerCapture(e.pointerId);
-    pointerMap.set(e.pointerId, note);
-    pressKey(note, key);
-  });
-  key.addEventListener("pointerup", e => {
-    e.preventDefault();
-    pointerMap.delete(e.pointerId);
-    releaseKey(note, key);
-  });
-  key.addEventListener("pointercancel", e => {
-    pointerMap.delete(e.pointerId);
-    releaseKey(note, key);
-  });
+  key.addEventListener("pointerdown", e => { e.preventDefault(); key.setPointerCapture(e.pointerId); pressKey(note, key); });
+  key.addEventListener("pointerup", e => { e.preventDefault(); releaseKey(note, key); });
+  key.addEventListener("pointercancel", e => { releaseKey(note, key); });
 }
+
+const keyMap = { "a": 60, "w": 61, "s": 62, "e": 63, "d": 64, "f": 65, "t": 66, "g": 67, "y": 68, "h": 69, "u": 70, "j": 71, "k": 72 };
+window.addEventListener("keydown", e => {
+  if(e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  const note = keyMap[e.key.toLowerCase()];
+  if(note !== undefined && !activeKeys.has(note)) document.querySelectorAll(`[data-note="${note}"]`).forEach(k => pressKey(note, k));
+});
+window.addEventListener("keyup", e => {
+  if(e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  const note = keyMap[e.key.toLowerCase()];
+  if(note !== undefined) document.querySelectorAll(`[data-note="${note}"]`).forEach(k => releaseKey(note, k));
+});
 
 function centerPiano(){
   const box = document.getElementById("pianoScroll");
   if(box) box.scrollLeft = (box.scrollWidth - box.clientWidth)/2;
-  const fsBox = document.getElementById("fsPianoScroll");
-  if(fsBox) fsBox.scrollLeft = (fsBox.scrollWidth - fsBox.clientWidth)/2;
-  broadcastData({ type: "centerPianoScrollSync" });
 }
 
 function toggleHold(){
   holdMode = !holdMode;
-  updateHoldUI();
-  broadcastData({ type: "toggleHoldSync", hold: holdMode });
-}
-
-function updateHoldUI(){
-  const btn = document.getElementById("holdBtn");
-  const fsBtn = document.getElementById("fsHoldBtn");
-  const btnText = holdMode ? "HOLD ON" : "HOLD OFF";
-  if(btn) { btn.textContent = btnText; btn.classList.toggle("active", holdMode); }
-  if(fsBtn) { fsBtn.textContent = holdMode ? "HOLD ON" : "HOLD"; fsBtn.classList.toggle("active", holdMode); }
+  const txt = holdMode ? "HOLD ON" : "HOLD OFF";
+  document.querySelectorAll("#holdBtn, #fsHoldBtn").forEach(b => { b.textContent = txt; b.classList.toggle("active", holdMode); });
 }
 
 function toggleKeyNames(){
   showKeyNames = !showKeyNames;
-  updateKeyNamesUI();
-  broadcastData({ type: "toggleKeyNamesSync", show: showKeyNames });
-}
-
-function updateKeyNamesUI(){
-  const toggleBtn = document.getElementById("keyToggle");
-  if(toggleBtn) toggleBtn.textContent = showKeyNames ? "Key Names ON" : "Key Names OFF";
-  document.querySelectorAll(".white span,.black span").forEach(el=>{
-    el.style.display = showKeyNames ? "block" : "none";
-  });
+  document.querySelectorAll(".white span,.black span").forEach(el => el.style.display = showKeyNames ? "block" : "none");
 }
 
 function updateDisplay(){
-  const local = [...activeKeys];
-  const remote = [...remoteKeys];
-  const all = [...new Set([...local, ...remote])].sort((a,b)=>a-b);
-  const keyText = all.length ? all.map(noteName).join(" ") : "-";
+  const all = [...new Set([...activeKeys, ...remoteKeys])].sort((a,b)=>a-b);
+  document.getElementById("keyShow").textContent = all.length ? all.map(noteName).join(" ") : "-";
   const chordText = all.length>=3 ? findChord(all) : "-";
-
-  const keyShow = document.getElementById("keyShow");
-  const chordShow = document.getElementById("chordShow");
-  if(keyShow) keyShow.textContent = keyText;
-  if(chordShow) chordShow.textContent = chordText;
+  document.getElementById("chordShow").textContent = chordText;
 }
 
-const CHORDS = {
-  "0,4,7":"Major", "0,3,7":"Minor", "0,3,6":"Diminished", "0,4,8":"Augmented"
-};
-
+const CHORDS = { "0,4,7":"Major", "0,3,7":"Minor", "0,3,6":"Diminished", "0,4,8":"Augmented" };
 function findChord(notes){
-  const pcs = [...new Set(notes.map(n=>n%12))].sort((a,b)=>a-b);
+  const pcs = [...new Set(notes.map(n=>(n + transposeSemitones)%12))].sort((a,b)=>a-b);
   for(const root of pcs){
-    const intervals = pcs.map(n=>(n-root+12)%12).sort((a,b)=>a-b);
-    const key = intervals.join(",");
-    if(CHORDS[key]) return NOTE_NAMES[root] + " " + CHORDS[key];
+    const intervals = pcs.map(n=>(n-root+12)%12).sort((a,b)=>a-b).join(",");
+    if(CHORDS[intervals]) return NOTE_NAMES[root] + " " + CHORDS[intervals];
   }
   return "-";
 }
 
-let midiAccess = null;
 async function connectMIDI(){
   if(!navigator.requestMIDIAccess){ alert("Web MIDI not supported."); return; }
   try{
-    midiAccess = await navigator.requestMIDIAccess();
+    const midiAccess = await navigator.requestMIDIAccess();
     midiAccess.inputs.forEach(input => { input.onmidimessage = handleMIDI; });
     alert("MIDI Connected Successfully");
-  }catch(e){ alert("MIDI permission error."); }
+  }catch(e){ alert("MIDI error."); }
 }
 
 function handleMIDI(event){
   if(!event || !event.data) return;
-  const data = event.data;
-  if(data.length<2) return;
-  const command = data[0] & 0xf0;
-  const note = data[1];
-  const velocity = data[2] || 0;
-  if(command===0x90 && velocity>0){
-    document.querySelectorAll(`[data-note="${note}"]`).forEach(k => pressKey(note, k));
-  } else if(command===0x80 || (command===0x90 && velocity===0)){
-    document.querySelectorAll(`[data-note="${note}"]`).forEach(k => releaseKey(note, k));
-  }
+  const [command, note, velocity] = event.data;
+  if(command===0x90 && velocity>0) document.querySelectorAll(`[data-note="${note}"]`).forEach(k => pressKey(note, k));
+  else if(command===0x80 || (command===0x90 && velocity===0)) document.querySelectorAll(`[data-note="${note}"]`).forEach(k => releaseKey(note, k));
 }
 
 updateKeyZoom(false);
