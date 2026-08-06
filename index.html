@@ -203,23 +203,18 @@ button.active{
   font-size: 14px;
 }
 
-/* DYNAMIC STATUS BOX STYLES */
 .status{
   margin-top:8px;
-  padding:10px;
+  padding:8px;
   border-radius:8px;
+  background:#030712;
+  color:#a7f3d0;
   text-align:center;
   font-size:12px;
-  font-weight: bold;
-  min-height:36px;
-  transition: all 0.3s ease;
+  min-height:34px;
 }
-.status.ready { background: #030712; color: #a7f3d0; border: 1px solid #1f2937; }
-.status.loading { background: #78350f; color: #fef08a; border: 1px solid #f59e0b; }
-.status.connected { background: #064e3b; color: #a7f3d0; border: 1px solid #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
-.status.error { background: #7f1d1d; color: #fecaca; border: 1px solid #ef4444; }
 
-/* VIDEO GRID & DYNAMIC HIDDEN CARDS */
+/* VIDEO GRID */
 .videoGrid{
   display:grid;
   grid-template-columns: repeat(2, 1fr);
@@ -233,7 +228,6 @@ button.active{
   overflow:hidden;
   min-height:200px;
   border:1px solid #1f2937;
-  transition: all 0.3s ease;
 }
 
 .videoCard.hidden-card {
@@ -250,12 +244,9 @@ button.active{
 #localVideo.front-cam, #fsLocalVideo.front-cam {
   transform: scaleX(-1);
 }
-#localVideo:not(.front-cam), #fsLocalVideo:not(.front-cam) {
-  transform: scaleX(1);
-}
 
 .videoCard video:not(#localVideo), .fsVideoCard video:not(#fsLocalVideo) {
-  transform: none !important;
+  transform: scaleX(-1) !important;
 }
 
 .videoName{
@@ -267,31 +258,6 @@ button.active{
   border-radius:6px;
   font-size:11px;
   z-index: 5;
-}
-
-/* STYLISH RAISE HAND OVERLAY BANNER */
-.hand-raised-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #000;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  z-index: 10;
-  animation: pulseBadge 1.5s infinite;
-}
-
-@keyframes pulseBadge {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
 }
 
 .controls{
@@ -918,6 +884,7 @@ button.active{
   .proToolsGrid { grid-template-columns: 1fr; }
 }
 
+/* Mobile Optimization for A4 Modal & Fullscreen */
 @media (max-width: 768px) {
   .a4SheetPaper {
     width: 95% !important;
@@ -982,7 +949,7 @@ button.active{
     </select>
     <button onclick="startClass()">Start Studio Class</button>
   </div>
-  <div id="status" class="status ready">
+  <div id="status" class="status">
     Ready - Enter Room ID and Start Studio Class
   </div>
 </section>
@@ -990,29 +957,21 @@ button.active{
 <!-- VIDEO & PRO STUDIO CONTROLS -->
 <section class="panel">
   <div class="videoGrid" id="videoGridContainer">
-    <div class="videoCard" id="localCard">
+    <div class="videoCard">
       <video id="localVideo" autoplay playsinline muted></video>
       <div class="videoName" id="localName">My Camera (1080p HD)</div>
-      <!-- Local Hand Raised Badge -->
-      <div id="localHandBadge" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
-    <!-- Remote Participant 2 (Hidden by default until connected) -->
-    <div class="videoCard hidden-card" id="remoteCard1">
+    <div class="videoCard">
       <video id="remoteVideo1" autoplay playsinline></video>
       <div class="videoName" id="remoteName1">Participant 2 (1080p HD)</div>
-      <div id="remoteHandBadge1" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
-    <!-- Extra Camera 1 (Hidden by default until stream active) -->
     <div class="videoCard hidden-card" id="extraCard1">
       <video id="remoteVideo2" autoplay playsinline></video>
       <div class="videoName" id="remoteName2">Extra Camera 1</div>
-      <div id="remoteHandBadge2" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
-    <!-- Extra Camera 2 (Hidden by default until stream active) -->
     <div class="videoCard hidden-card" id="extraCard2">
       <video id="remoteVideo3" autoplay playsinline></video>
       <div class="videoName" id="remoteName3">Extra Camera 2</div>
-      <div id="remoteHandBadge3" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
   </div>
   
@@ -1020,6 +979,8 @@ button.active{
     <button id="cameraBtn" onclick="toggleCamera()">Camera ON</button>
     <button onclick="switchCamera()">Front / Back</button>
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
+    <button id="extra1ToggleBtn" onclick="toggleExtra1()">📷 E1: OFF</button>
+    <button id="extra2ToggleBtn" onclick="toggleExtra2()">📷 E2: OFF</button>
     <button id="raiseHandBtn" onclick="raiseHand()" style="background:#eab308; color:#000;">✋ Raise Hand</button>
     <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 1080p HD Full View</button>
     <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Backup</button>
@@ -1051,7 +1012,7 @@ button.active{
       <div class="toolRow">
         <button id="metroToggle" onclick="toggleMetronome()" style="padding:6px 10px;">Start</button>
         <span id="bpmLabel" style="font-weight:bold;">120 BPM</span>
-        <input id="bpmRange" type="range" min="40" max="240" value="120" oninput="changeBPM(this.value)">
+        <input type="range" min="40" max="240" value="120" oninput="changeBPM(this.value)">
       </div>
     </div>
 
@@ -1061,9 +1022,9 @@ button.active{
       </h4>
       <div class="toolRow">
         <span style="color:#9ca3af; font-size:10px;">Reverb:</span>
-        <input id="reverbRange" type="range" min="0" max="1" step="0.1" value="0.3" oninput="changeReverb(this.value)">
+        <input type="range" min="0" max="1" step="0.1" value="0.3" oninput="changeReverb(this.value)">
         <span style="color:#9ca3af; font-size:10px;">Master Vol:</span>
-        <input id="masterVolRange" type="range" min="0" max="1" step="0.1" value="0.8" oninput="changeMasterGain(this.value)">
+        <input type="range" min="0" max="1" step="0.1" value="0.8" oninput="changeMasterGain(this.value)">
       </div>
     </div>
 
@@ -1078,21 +1039,6 @@ button.active{
         <button id="downloadAudioBtn" onclick="downloadAudioRecording()" disabled style="background:#7c3aed; padding:6px 10px;">💾 WAV</button>
       </div>
     </div>
-
-    <!-- YOUTUBE STUDIO PLAYER & SYNC (Bottom Section) -->
-    <div class="proCard" style="grid-column: span 3;">
-      <h4>
-        <span>📺 YouTube Studio Player & Sync</span>
-        <span id="ytStatusText" style="font-size:10px; color:#9ca3af;">Ready</span>
-      </h4>
-      <div class="toolRow" style="gap:8px; width:100%; margin-bottom: 6px;">
-        <input id="ytUrlInput" type="text" placeholder="Paste YouTube URL or Video ID (e.g., dQw4w9WgXcQ)" style="flex:1; background:#0b0f19; border:1px solid #374151; border-radius:6px; padding:6px 10px; color:white; font-size:12px; outline:none;" onkeydown="if(event.key==='Enter') loadYouTubeVideo()">
-        <button onclick="loadYouTubeVideo()" style="background:#dc2626; padding:6px 12px; font-size:11px;">Load & Sync</button>
-      </div>
-      <div id="ytPlayerContainer" style="width:100%; aspect-ratio: 16/9; background:#000; border-radius:6px; overflow:hidden; display:none; position:relative;">
-        <iframe id="ytIframe" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1103,25 +1049,21 @@ button.active{
     <button class="fsIconBtn" onclick="toggleVideoFullscreen()" style="background:#dc2626;">✕ Exit</button>
   </div>
   <div class="fsVideoGrid" id="fsVideoGridContainer">
-    <div class="fsVideoCard" id="fsLocalCard">
+    <div class="fsVideoCard">
       <video id="fsLocalVideo" autoplay playsinline muted></video>
       <div class="videoName" id="fsLocalName">My Camera (1080p HD)</div>
-      <div id="fsLocalHandBadge" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
-    <div class="fsVideoCard hidden-card" id="fsRemoteCard1">
+    <div class="fsVideoCard">
       <video id="fsRemoteVideo1" autoplay playsinline></video>
-      <div class="videoName" id="remoteName1">Participant 2</div>
-      <div id="fsRemoteHandBadge1" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+      <div class="videoName" id="fsRemoteName1">Participant 2</div>
     </div>
-    <div class="fsVideoCard fsExtraCard1 hidden-card" id="fsExtraCard1">
+    <div class="fsVideoCard fsExtraCard1 hidden-card">
       <video id="fsRemoteVideo2" autoplay playsinline></video>
-      <div class="videoName" id="remoteName2">Extra Camera 1</div>
-      <div id="fsRemoteHandBadge2" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+      <div class="videoName" id="fsRemoteName2">Extra Camera 1</div>
     </div>
-    <div class="fsVideoCard fsExtraCard2 hidden-card" id="fsExtraCard2">
+    <div class="fsVideoCard fsExtraCard2 hidden-card">
       <video id="fsRemoteVideo3" autoplay playsinline></video>
-      <div class="videoName" id="remoteName3">Extra Camera 2</div>
-      <div id="fsRemoteHandBadge3" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+      <div class="videoName" id="fsRemoteName3">Extra Camera 2</div>
     </div>
   </div>
 </div>
@@ -1321,6 +1263,7 @@ button.active{
     </div>
   </div>
 
+  <!-- Sheet Notation Section (Enlarged and Clear) -->
   <div class="fsNotationBar">
     <div class="fsNotationHeader">
       <span>🎼 Live Staff Score (Full View Mode)</span>
@@ -1331,11 +1274,13 @@ button.active{
     </div>
   </div>
 
+  <!-- AMI Logo Center Branding -->
   <div class="fsAmiLogoBar">
     <span style="color: #ffd54f; font-weight: bold; font-size: 14px; letter-spacing: 1.5px;">🎹 A M I 🎹</span>
     <span style="color: #9ca3af; font-size: 10px; margin-left: 8px;">Anikous Music Institute Studio</span>
   </div>
 
+  <!-- Piano Keyboard Body -->
   <div class="fsPianoBody" id="fsPianoScroll">
     <div id="fsPiano"></div>
   </div>
@@ -1414,19 +1359,6 @@ window.forgotPassword = function() {
 };
 
 window.logoutUser = function() {
-  if(localStream) {
-    localStream.getTracks().forEach(track => track.stop());
-    localStream = null;
-  }
-  if(peer) {
-    try { peer.destroy(); } catch(e){}
-    peer = null;
-  }
-  connectedPeersMap.clear();
-  activeCalls = {};
-  dataConnections = {};
-  updateRemoteVideoUI();
-
   signOut(auth).then(() => {
     document.getElementById("loginPage").style.display = "flex";
     document.getElementById("mainPage").style.display = "none";
@@ -1459,9 +1391,10 @@ let dataConnections = {};
 let useFrontCamera = true;
 let cameraOn = true;
 let micOn = true;
+let extra1Visible = false;
+let extra2Visible = false;
 let currentRole = "";
 let currentRoom = "";
-let isHandRaised = false;
 
 let currentVoice = "grand";
 let currentDualVoice = "strings";
@@ -1480,17 +1413,15 @@ const fsLocalVideo = document.getElementById("fsLocalVideo");
 const statusBox = document.getElementById("status");
 
 const remoteVideoSlots = [
-  { video: document.getElementById("remoteVideo1"), fsVideo: document.getElementById("fsRemoteVideo1"), nameEl: document.getElementById("remoteName1"), fsNameEl: document.getElementById("fsRemoteName1"), card: document.getElementById("remoteCard1"), fsCard: document.getElementById("fsRemoteCard1"), badge: document.getElementById("remoteHandBadge1") },
-  { video: document.getElementById("remoteVideo2"), fsVideo: document.getElementById("fsRemoteVideo2"), nameEl: document.getElementById("remoteName2"), fsNameEl: document.getElementById("fsRemoteName2"), card: document.getElementById("extraCard1"), fsCard: document.querySelector(".fsExtraCard1"), badge: document.getElementById("remoteHandBadge2") },
-  { video: document.getElementById("remoteVideo3"), fsVideo: document.getElementById("fsRemoteVideo3"), nameEl: document.getElementById("remoteName3"), fsNameEl: document.getElementById("fsRemoteName3"), card: document.getElementById("extraCard2"), fsCard: document.querySelector(".fsExtraCard2"), badge: document.getElementById("remoteHandBadge3") }
+  { video: document.getElementById("remoteVideo1"), fsVideo: document.getElementById("fsRemoteVideo1"), nameEl: document.getElementById("remoteName1"), fsNameEl: document.getElementById("fsRemoteName1") },
+  { video: document.getElementById("remoteVideo2"), fsVideo: document.getElementById("fsRemoteVideo2"), nameEl: document.getElementById("remoteName2"), fsNameEl: document.getElementById("fsRemoteName2") },
+  { video: document.getElementById("remoteVideo3"), fsVideo: document.getElementById("fsRemoteVideo3"), nameEl: document.getElementById("remoteName3"), fsNameEl: document.getElementById("fsRemoteName3") }
 ];
 
 let connectedPeersMap = new Map();
-let peerHandStates = new Map();
 
-function status(text, type = "ready"){
+function status(text){
   statusBox.textContent = text;
-  statusBox.className = "status " + type;
 }
 
 function changeVoice(voice){
@@ -1521,31 +1452,10 @@ function changeSustainTime(val){
   broadcastData({ type:"changeSustainTime", duration:sustainDuration });
 }
 
-function changeReverb(val){ 
-  reverbLevel = parseFloat(val); 
-  document.getElementById("reverbRange").value = reverbLevel;
-  broadcastData({ type:"changeReverb", reverb:reverbLevel }); 
-}
-
-function changeMasterGain(val){ 
-  masterVolume = parseFloat(val); 
-  document.getElementById("masterVolRange").value = masterVolume;
-  if(masterGainNode) masterGainNode.gain.setValueAtTime(masterVolume, audioContext.currentTime); 
-}
-
-function changeTranspose(val){ 
-  transposeSemitones = parseInt(val); 
-  document.getElementById("transposeSelect").value = val;
-  renderStaffNotation(recordedMidiNotes); 
-  broadcastData({ type:"changeTranspose", transpose:transposeSemitones }); 
-}
-
-function changeKeySignature(val){ 
-  currentKeySignature = val; 
-  document.getElementById("keySigSelect").value = val;
-  renderStaffNotation(recordedMidiNotes); 
-  broadcastData({ type:"changeKeySignature", keySig: val });
-}
+function changeReverb(val){ reverbLevel = parseFloat(val); broadcastData({ type:"changeReverb", reverb:reverbLevel }); }
+function changeMasterGain(val){ masterVolume = parseFloat(val); if(masterGainNode) masterGainNode.gain.setValueAtTime(masterVolume, audioContext.currentTime); }
+function changeTranspose(val){ transposeSemitones = parseInt(val); renderStaffNotation(recordedMidiNotes); broadcastData({ type:"changeTranspose", transpose:transposeSemitones }); }
+function changeKeySignature(val){ currentKeySignature = val; renderStaffNotation(recordedMidiNotes); }
 
 function zoomStaffIn(){ 
   staffSpacingMultiplier = Math.min(70, staffSpacingMultiplier + 8); 
@@ -1557,22 +1467,47 @@ function zoomStaffOut(){
   renderStaffNotation(recordedMidiNotes); 
 }
 
-function raiseHand() {
-  isHandRaised = !isHandRaised;
-  const btn = document.getElementById("raiseHandBtn");
-  btn.classList.toggle("active", isHandRaised);
-  
-  const localBadge = document.getElementById("localHandBadge");
-  const fsLocalBadge = document.getElementById("fsLocalHandBadge");
-  if(isHandRaised) {
-    localBadge.style.display = "flex";
-    fsLocalBadge.style.display = "flex";
-  } else {
-    localBadge.style.display = "none";
-    fsLocalBadge.style.display = "none";
-  }
+function toggleExtra1() {
+  extra1Visible = !extra1Visible;
+  const btn = document.getElementById("extra1ToggleBtn");
+  btn.textContent = extra1Visible ? "📷 E1: ON" : "📷 E1: OFF";
+  btn.classList.toggle("active", extra1Visible);
 
-  broadcastData({ type: "raiseHand", role: currentRole, raised: isHandRaised });
+  const extraCard1 = document.getElementById("extraCard1");
+  const fsExtra1 = document.querySelector(".fsExtraCard1");
+
+  if(extra1Visible) {
+    if(extraCard1) extraCard1.classList.remove("hidden-card");
+    if(fsExtra1) fsExtra1.classList.remove("hidden-card");
+  } else {
+    if(extraCard1) extraCard1.classList.add("hidden-card");
+    if(fsExtra1) fsExtra1.classList.add("hidden-card");
+  }
+  broadcastData({ type:"toggleExtra1", visible: extra1Visible });
+}
+
+function toggleExtra2() {
+  extra2Visible = !extra2Visible;
+  const btn = document.getElementById("extra2ToggleBtn");
+  btn.textContent = extra2Visible ? "📷 E2: ON" : "📷 E2: OFF";
+  btn.classList.toggle("active", extra2Visible);
+
+  const extraCard2 = document.getElementById("extraCard2");
+  const fsExtra2 = document.querySelector(".fsExtraCard2");
+
+  if(extra2Visible) {
+    if(extraCard2) extraCard2.classList.remove("hidden-card");
+    if(fsExtra2) fsExtra2.classList.remove("hidden-card");
+  } else {
+    if(extraCard2) extraCard2.classList.add("hidden-card");
+    if(fsExtra2) fsExtra2.classList.add("hidden-card");
+  }
+  broadcastData({ type:"toggleExtra2", visible: extra2Visible });
+}
+
+function raiseHand() {
+  alert("✋ Raise Hand alert sent to teacher/class!");
+  broadcastData({ type: "raiseHand", role: currentRole });
 }
 
 function sendChatMessage() {
@@ -1610,7 +1545,6 @@ function updateVideoMirror() {
 
 async function getCameraStream(){
   try{
-    status("Loading Camera & Audio, Please Wait...", "loading");
     localStream = await navigator.mediaDevices.getUserMedia({
       video: { 
         facingMode: useFrontCamera ? "user" : "environment",
@@ -1633,7 +1567,7 @@ async function getCameraStream(){
     cameraOn = true;
     micOn = true;
     updateMediaButtons();
-    status("Camera & Audio Ready", "ready");
+    status("Studio 1080p HD Camera & Audio Connected");
     return localStream;
   }catch(error){
     try {
@@ -1644,10 +1578,10 @@ async function getCameraStream(){
       localVideo.srcObject = localStream;
       fsLocalVideo.srcObject = localStream;
       updateVideoMirror();
-      status("Connected in HD resolution", "ready");
+      status("Connected in HD resolution");
       return localStream;
     } catch(err2) {
-      status("Camera/Mic Permission Denied / Network Error", "error");
+      status("Camera/Mic Permission Denied");
       alert("Camera permission தேவை.");
       throw err2;
     }
@@ -1668,7 +1602,7 @@ async function startClass(){
   try{ await getCameraStream(); }catch(e){ return; }
 
   const peerId = "anikous-ultra-" + room + "-" + role;
-  status("Connecting To Studio Class...", "loading");
+  status("Connecting To Studio Class...");
 
   if(peer) { try { peer.destroy(); } catch(e){} }
 
@@ -1682,7 +1616,7 @@ async function startClass(){
   });
 
   peer.on("open", id => {
-    status(`Connected (Role: ${role.toUpperCase()} | Room: ${room})`, "connected");
+    status("Connected - Role: " + role + " - Room: " + room);
     const allRoles = ["teacher", "student", "extra1", "extra2"];
     allRoles.forEach(r => {
       if(r !== role) {
@@ -1693,26 +1627,17 @@ async function startClass(){
     });
   });
 
-  peer.on("error", err => {
-    status("Network Error / Connection Failed", "error");
-  });
-
   peer.on("call", call => {
     activeCalls[call.peer] = call;
     call.answer(localStream);
     call.peerConnection.oniceconnectionstatechange = () => {
-      if(call.peerConnection.iceConnectionState === "connected") {
-        enforceHighBitrate(call);
-        status("Live Stream Connected!", "connected");
-      } else if(call.peerConnection.iceConnectionState === "disconnected" || call.peerConnection.iceConnectionState === "failed") {
-        status("Network Error / Disconnected", "error");
-      }
+      if(call.peerConnection.iceConnectionState === "connected") enforceHighBitrate(call);
     };
     call.on("stream", remoteStream => {
       assignRemoteStream(call.peer, remoteStream);
-      status("Live Stream Connected!", "connected");
+      status("Studio 1080p HD Stream Connected!");
     });
-    call.on("close", () => { removeRemoteStream(call.peer); status("Participant Disconnected", "error"); });
+    call.on("close", () => { removeRemoteStream(call.peer); status("User Disconnected"); });
   });
 
   peer.on("connection", connection => setupDataConnection(connection));
@@ -1725,12 +1650,7 @@ function connectAndCall(targetPeerId){
     if(call){
       activeCalls[targetPeerId] = call;
       call.peerConnection.oniceconnectionstatechange = () => {
-        if(call.peerConnection.iceConnectionState === "connected") {
-          enforceHighBitrate(call);
-          status("Live Stream Connected!", "connected");
-        } else if(call.peerConnection.iceConnectionState === "disconnected" || call.peerConnection.iceConnectionState === "failed") {
-          status("Network Error / Disconnected", "error");
-        }
+        if(call.peerConnection.iceConnectionState === "connected") enforceHighBitrate(call);
       };
       call.on("stream", remoteStream => assignRemoteStream(targetPeerId, remoteStream));
       call.on("close", () => removeRemoteStream(targetPeerId));
@@ -1768,17 +1688,10 @@ function connectData(id){
 function setupDataConnection(connection){
   connection.on("open", () => {
     dataConnections[connection.peer] = connection;
-    status("Studio Sync Connected!", "connected");
-    // Send current hand status to newly connected peer
-    if(isHandRaised) {
-      connection.send({ type: "raiseHand", role: currentRole, raised: true });
-    }
+    status("Studio Sync Connected!");
   });
   connection.on("data", data => handleRemoteData(data));
-  connection.on("close", () => {
-    delete dataConnections[connection.peer];
-    removeRemoteStream(connection.peer);
-  });
+  connection.on("close", () => delete dataConnections[connection.peer]);
 }
 
 function broadcastData(data){
@@ -1795,8 +1708,6 @@ function assignRemoteStream(peerId, stream){
 function removeRemoteStream(peerId){
   connectedPeersMap.delete(peerId);
   delete activeCalls[peerId];
-  delete dataConnections[peerId];
-  peerHandStates.delete(peerId);
   updateRemoteVideoUI();
 }
 
@@ -1811,31 +1722,15 @@ function updateRemoteVideoUI(){
       let roleName = parts[parts.length - 1];
       slot.nameEl.textContent = roleName.toUpperCase() + " (1080p HD)";
       slot.fsNameEl.textContent = roleName.toUpperCase() + " (1080p HD)";
-      
-      if(slot.card) slot.card.classList.remove("hidden-card");
-      if(slot.fsCard) slot.fsCard.classList.remove("hidden-card");
-
-      // Check hand raise state for this peer
-      if(peerHandStates.get(peerId)) {
-        if(slot.badge) slot.badge.style.display = "flex";
-      } else {
-        if(slot.badge) slot.badge.style.display = "none";
-      }
-
       index++;
     }
   });
 
   for(let i = index; i < remoteVideoSlots.length; i++){
-    let slot = remoteVideoSlots[i];
-    slot.video.srcObject = null;
-    slot.fsVideo.srcObject = null;
-    slot.nameEl.textContent = "Waiting...";
-    slot.fsNameEl.textContent = "Waiting...";
-    
-    if(slot.card) slot.card.classList.add("hidden-card");
-    if(slot.fsCard) slot.fsCard.classList.add("hidden-card");
-    if(slot.badge) slot.badge.style.display = "none";
+    remoteVideoSlots[i].video.srcObject = null;
+    remoteVideoSlots[i].fsVideo.srcObject = null;
+    remoteVideoSlots[i].nameEl.textContent = "Waiting...";
+    remoteVideoSlots[i].fsNameEl.textContent = "Waiting...";
   }
 }
 
@@ -1860,56 +1755,39 @@ function handleRemoteData(data){
     sustainDuration = data.duration;
     document.getElementById("sustainTimeLabel").textContent = `${sustainDuration.toFixed(1)}s`;
   }
-  if(data.type==="changeReverb"){ 
-    reverbLevel = data.reverb; 
-    document.getElementById("reverbRange").value = reverbLevel;
-  }
+  if(data.type==="changeReverb"){ reverbLevel = data.reverb; }
   if(data.type==="changeTranspose"){ 
     transposeSemitones = data.transpose; 
     document.getElementById("transposeSelect").value = data.transpose;
     renderStaffNotation(recordedMidiNotes); 
   }
-  if(data.type==="changeKeySignature"){
-    currentKeySignature = data.keySig;
-    document.getElementById("keySigSelect").value = data.keySig;
-    renderStaffNotation(recordedMidiNotes);
+  if(data.type==="toggleExtra1"){
+    extra1Visible = data.visible;
+    const btn = document.getElementById("extra1ToggleBtn");
+    btn.textContent = extra1Visible ? "📷 E1: ON" : "📷 E1: OFF";
+    btn.classList.toggle("active", extra1Visible);
+    const extraCard1 = document.getElementById("extraCard1");
+    const fsExtra1 = document.querySelector(".fsExtraCard1");
+    if(extraCard1) extraCard1.classList.toggle("hidden-card", !extra1Visible);
+    if(fsExtra1) fsExtra1.classList.toggle("hidden-card", !extra1Visible);
   }
-  if(data.type==="toggleMetronome"){
-    metroPlaying = data.playing;
-    bpm = data.bpm;
-    document.getElementById("bpmLabel").textContent = bpm + " BPM";
-    document.getElementById("bpmRange").value = bpm;
-    const btn = document.getElementById("metroToggle");
-    btn.textContent = metroPlaying ? "Stop" : "Start";
-    btn.classList.toggle("active", metroPlaying);
-    clearInterval(metroTimer);
-    if(metroPlaying) metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
-  }
-  if(data.type==="changeBPM"){
-    bpm = data.bpm;
-    document.getElementById("bpmLabel").textContent = bpm + " BPM";
-    document.getElementById("bpmRange").value = bpm;
-    if(metroPlaying){ clearInterval(metroTimer); metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000); }
+  if(data.type==="toggleExtra2"){
+    extra2Visible = data.visible;
+    const btn = document.getElementById("extra2ToggleBtn");
+    btn.textContent = extra2Visible ? "📷 E2: ON" : "📷 E2: OFF";
+    btn.classList.toggle("active", extra2Visible);
+    const extraCard2 = document.getElementById("extraCard2");
+    const fsExtra2 = document.querySelector(".fsExtraCard2");
+    if(extraCard2) extraCard2.classList.toggle("hidden-card", !extra2Visible);
+    if(fsExtra2) fsExtra2.classList.toggle("hidden-card", !extra2Visible);
   }
   if(data.type==="clearNotation"){
     recordedMidiNotes = [];
     renderStaffNotation([]);
   }
-  if(data.type==="raiseHand") {
-    // Find peer id matching this role
-    connectedPeersMap.forEach((stream, peerId) => {
-      if(peerId.endsWith("-" + data.role)) {
-        peerHandStates.set(peerId, data.raised);
-      }
-    });
-    updateRemoteVideoUI();
-  }
+  if(data.type==="raiseHand") alert(`✋ ${data.role.toUpperCase()} raised hand!`);
   if(data.type==="chatMessage") appendChatMsg(data.role.toUpperCase() + ": " + data.text, "#38bdf8");
   if(data.type==="reaction") appendChatMsg(data.role.toUpperCase() + " reacted: " + data.emoji, "#ffd54f");
-  if(data.type==="loadYouTube") {
-    document.getElementById("ytUrlInput").value = data.videoId;
-    playAndSyncYouTube(data.videoId, false);
-  }
   if(data.type==="keyDown"){
     document.querySelectorAll(`[data-note="${data.note}"]`).forEach(key => pressRemoteKey(data.note, key));
   }
@@ -1993,15 +1871,7 @@ async function switchCamera(){
     fsLocalVideo.srcObject = localStream;
     updateVideoMirror();
     cameraOn = true; micOn = true; updateMediaButtons();
-
-    Object.values(activeCalls).forEach(call => {
-      const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-      if(sender && localStream.getVideoTracks()[0]) {
-        sender.replaceTrack(localStream.getVideoTracks()[0]);
-      }
-    });
-
-    status("Studio 1080p Camera Switched!", "connected");
+    status("Studio 1080p Camera Switched!");
   }catch(err){ useFrontCamera = !useFrontCamera; alert("Camera மாற்ற இயலவில்லை."); }
 }
 
@@ -2011,36 +1881,7 @@ function openJitsiMeet() {
   window.open(`https://meet.jit.si/AnikousUltraStudio_${room}`, '_blank');
 }
 
-/* YOUTUBE PLAYER & SYNC LOGIC */
-function loadYouTubeVideo() {
-  const input = document.getElementById("ytUrlInput").value.trim();
-  if(!input) { alert("YouTube URL அல்லது Video ID-ஐ உள்ளிடவும்!"); return; }
-  let videoId = input;
-  if(input.includes("youtube.com") || input.includes("youtu.be")) {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = input.match(regExp);
-    if(match && match[2].length === 11) {
-      videoId = match[2];
-    }
-  }
-  if(videoId.length !== 11 && !input.match(/^[a-zA-Z0-9_-]{11}$/)) {
-    alert("Valid YouTube URL அல்லது Video ID-ஐ உள்ளிடவும்!");
-    return;
-  }
-  playAndSyncYouTube(videoId, true);
-}
-
-function playAndSyncYouTube(videoId, shouldBroadcast = true) {
-  const container = document.getElementById("ytPlayerContainer");
-  const iframe = document.getElementById("ytIframe");
-  container.style.display = "block";
-  iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1`;
-  document.getElementById("ytStatusText").textContent = "Playing: " + videoId;
-  if(shouldBroadcast) {
-    broadcastData({ type: "loadYouTube", videoId: videoId });
-  }
-}
-
+/* ADVANCED VEXFLOW SHEET MUSIC & PLAYBACK/EXPORT */
 const NOTE_NAMES_SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
 function midiToVexNote(midiNote) {
@@ -2049,7 +1890,7 @@ function midiToVexNote(midiNote) {
   const nameIdx = transposed % 12;
   let rawName = NOTE_NAMES_SHARP[nameIdx];
   let vexName = rawName.replace("#", "#").toLowerCase();
-  return `${vexName || vexName}/${octave}`;
+  return `${vexName}/${octave}`;
 }
 
 let recordedMidiNotes = [];
@@ -2082,13 +1923,13 @@ function renderStaffToContainer(containerEl, noteArray, svgHeight, svgWidth) {
   if(typeof Vex === 'undefined') return;
   const { Renderer, Stave, StaveNote, Voice, Formatter } = Vex.Flow;
 
-  const displayNotes = noteArray.slice(-48);
-  const notesPerLine = 8;
+  const displayNotes = noteArray.slice(-48); // Last 48 notes-a display pannum
+  const notesPerLine = 8; // Oru line-ku 8 notes mattum irukum, apram adutha line-ku wrap aagum!
   const numLines = Math.max(1, Math.ceil(displayNotes.length / notesPerLine));
   
-  const systemHeight = 140;
+  const systemHeight = 140; // Each line height (Treble + Bass)
   const totalSvgHeight = Math.max(svgHeight, numLines * systemHeight + 30);
-  const fixedSvgWidth = 720;
+  const fixedSvgWidth = 720; // Standard A4 width fitting
 
   const renderer = new Renderer(containerEl, Renderer.Backends.SVG);
   renderer.resize(fixedSvgWidth, totalSvgHeight);
@@ -2106,6 +1947,7 @@ function renderStaffToContainer(containerEl, noteArray, svgHeight, svgWidth) {
     return;
   }
 
+  // Loop through lines (Wrapping into multiple rows)
   for(let i = 0; i < numLines; i++) {
     const lineNotes = displayNotes.slice(i * notesPerLine, (i + 1) * notesPerLine);
     const startY = i * systemHeight + 15;
@@ -2135,6 +1977,7 @@ function renderStaffToContainer(containerEl, noteArray, svgHeight, svgWidth) {
 
     const staveWidth = fixedSvgWidth - 40;
 
+    // Treble Stave for this line
     const trebleStave = new Stave(20, startY, staveWidth);
     if(i === 0) {
       trebleStave.addClef("treble").addKeySignature(currentKeySignature).addTimeSignature(currentTimeSignature);
@@ -2152,6 +1995,7 @@ function renderStaffToContainer(containerEl, noteArray, svgHeight, svgWidth) {
       } catch(e) {}
     }
 
+    // Bass Stave for this line
     const bassStave = new Stave(20, startY + 70, staveWidth);
     if(i === 0) {
       bassStave.addClef("bass").addKeySignature(currentKeySignature).addTimeSignature(currentTimeSignature);
@@ -2171,6 +2015,7 @@ function renderStaffToContainer(containerEl, noteArray, svgHeight, svgWidth) {
   }
 }
 
+// A4 Sheet Modal Control
 function openA4SheetModal() {
   const modal = document.getElementById("a4SheetModal");
   modal.classList.add("active");
@@ -2186,6 +2031,7 @@ function closeA4SheetModal() {
   document.getElementById("a4SheetModal").classList.remove("active");
 }
 
+// Preset Practice Songs
 const PRESET_SONGS = {
   furelise: [64, 63, 64, 63, 64, 59, 62, 60, 57],
   twinkle: [60, 60, 67, 67, 69, 69, 67, 65, 65, 64, 64, 62, 62, 60],
@@ -2257,69 +2103,29 @@ function downloadMusicXML() {
   let a = document.createElement('a'); a.href = url; a.download = 'Anikous_Master_Score.musicxml'; a.click();
 }
 
-/* FIXED PDF DOWNLOAD FUNCTION TO CONVERT SVG TO IMAGE FIRST */
 function downloadSheetPDF() {
-  if (recordedMidiNotes.length === 0) { 
-    alert("நோட்ஸ் எதுவும் இல்லை! முதலில் பியானோ வாசிக்கவும்."); 
-    return; 
-  }
+  const element = document.getElementById("a4PaperPrintArea");
+  if (recordedMidiNotes.length === 0) { alert("நோட்ஸ் எதுவும் இல்லை!"); return; }
   
   const modal = document.getElementById("a4SheetModal");
   const wasActive = modal.classList.contains("active");
   if(!wasActive) openA4SheetModal();
 
   setTimeout(() => {
-    const svgContainer = document.getElementById("a4ModalStaffContainer");
-    const svgElement = svgContainer.querySelector("svg");
-    
-    if (svgElement) {
-      const svgData = new XMLSerializer().serializeToString(svgElement);
-      const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-      const URL = window.URL || window.webkitURL || window;
-      const blobURL = URL.createObjectURL(svgBlob);
-      
-      const img = new Image();
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        canvas.width = svgElement.clientWidth || 720;
-        canvas.height = svgElement.clientHeight || 350;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-        
-        const dataURL = canvas.toDataURL('image/png');
-        
-        const printArea = document.getElementById("a4PaperPrintArea").cloneNode(true);
-        const printStaffBox = printArea.querySelector("#a4ModalStaffContainer");
-        printStaffBox.innerHTML = `<img src="${dataURL}" style="width:100%; height:auto; display:block;" />`;
-        
-        html2pdf().from(printArea).set({ 
-          margin: 10, 
-          filename: 'Anikous_Master_Grand_Score.pdf', 
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-        }).save().then(() => {
-          if(!wasActive) closeA4SheetModal();
-        });
-      };
-      img.src = blobURL;
-    } else {
-      const element = document.getElementById("a4PaperPrintArea");
-      html2pdf().from(element).set({ 
-        margin: 10, 
-        filename: 'Anikous_Master_Grand_Score.pdf', 
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-      }).save().then(() => {
-        if(!wasActive) closeA4SheetModal();
-      });
-    }
-  }, 400);
+    html2pdf().from(element).set({ 
+      margin: 10, 
+      filename: 'Anikous_Master_Grand_Score.pdf', 
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+    }).save().then(() => {
+      if(!wasActive) closeA4SheetModal();
+    });
+  }, 300);
 }
 
 function printOrExportPNG() { window.print(); }
 
+/* METRONOME */
 let metroPlaying = false, bpm = 120, metroTimer = null;
-
 function toggleMetronome(){
   initAudio();
   metroPlaying = !metroPlaying;
@@ -2328,18 +2134,12 @@ function toggleMetronome(){
   btn.classList.toggle("active", metroPlaying);
   if(metroPlaying) metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
   else clearInterval(metroTimer);
-
-  broadcastData({ type: "toggleMetronome", playing: metroPlaying, bpm: bpm });
 }
-
 function changeBPM(val){
   bpm = parseInt(val);
   document.getElementById("bpmLabel").textContent = bpm + " BPM";
-  document.getElementById("bpmRange").value = bpm;
   if(metroPlaying){ clearInterval(metroTimer); metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000); }
-  broadcastData({ type: "changeBPM", bpm: bpm });
 }
-
 function metronomeTick(){
   const osc = audioContext.createOscillator(), gain = audioContext.createGain();
   osc.frequency.value = 1000;
@@ -2349,6 +2149,7 @@ function metronomeTick(){
   osc.start(); osc.stop(audioContext.currentTime + 0.05);
 }
 
+/* RECORDER & AUDIO EXPORT */
 let mediaRecorder = null, audioChunks = [], recordedAudioBlob = null;
 function toggleRecording(){
   if(!localStream) { alert("Class start ஆன பின்னரே Record செய்ய முடியும்!"); return; }
@@ -2385,6 +2186,7 @@ function downloadAudioRecording() {
   const a = document.createElement('a'); a.href = url; a.download = 'Anikous_Studio_Recording.webm'; a.click();
 }
 
+/* SYNTHESIZER ENGINE */
 const NOTE_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const BLACK_KEYS = [1,3,6,8,10];
 let activeKeys = new Set(), holdMode = false, showKeyNames = true;
@@ -2483,6 +2285,7 @@ function releaseKey(note, key){
 }
 
 let selectedOctaves = new Set();
+const totalWhiteKeys = 50;
 let currentKeyWidth = 32;
 
 function zoomIn(){ if(currentKeyWidth < 70){ currentKeyWidth += 5; updateKeyZoom(true); } }
