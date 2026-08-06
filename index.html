@@ -269,6 +269,31 @@ button.active{
   z-index: 5;
 }
 
+/* STYLISH RAISE HAND OVERLAY BANNER */
+.hand-raised-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 10;
+  animation: pulseBadge 1.5s infinite;
+}
+
+@keyframes pulseBadge {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
 .controls{
   display:flex;
   flex-wrap:wrap;
@@ -965,24 +990,29 @@ button.active{
 <!-- VIDEO & PRO STUDIO CONTROLS -->
 <section class="panel">
   <div class="videoGrid" id="videoGridContainer">
-    <div class="videoCard">
+    <div class="videoCard" id="localCard">
       <video id="localVideo" autoplay playsinline muted></video>
       <div class="videoName" id="localName">My Camera (1080p HD)</div>
+      <!-- Local Hand Raised Badge -->
+      <div id="localHandBadge" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
     <!-- Remote Participant 2 (Hidden by default until connected) -->
     <div class="videoCard hidden-card" id="remoteCard1">
       <video id="remoteVideo1" autoplay playsinline></video>
       <div class="videoName" id="remoteName1">Participant 2 (1080p HD)</div>
+      <div id="remoteHandBadge1" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
     <!-- Extra Camera 1 (Hidden by default until stream active) -->
     <div class="videoCard hidden-card" id="extraCard1">
       <video id="remoteVideo2" autoplay playsinline></video>
       <div class="videoName" id="remoteName2">Extra Camera 1</div>
+      <div id="remoteHandBadge2" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
     <!-- Extra Camera 2 (Hidden by default until stream active) -->
     <div class="videoCard hidden-card" id="extraCard2">
       <video id="remoteVideo3" autoplay playsinline></video>
       <div class="videoName" id="remoteName3">Extra Camera 2</div>
+      <div id="remoteHandBadge3" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
   </div>
   
@@ -1048,6 +1078,21 @@ button.active{
         <button id="downloadAudioBtn" onclick="downloadAudioRecording()" disabled style="background:#7c3aed; padding:6px 10px;">💾 WAV</button>
       </div>
     </div>
+
+    <!-- YOUTUBE STUDIO PLAYER & SYNC (Bottom Section) -->
+    <div class="proCard" style="grid-column: span 3;">
+      <h4>
+        <span>📺 YouTube Studio Player & Sync</span>
+        <span id="ytStatusText" style="font-size:10px; color:#9ca3af;">Ready</span>
+      </h4>
+      <div class="toolRow" style="gap:8px; width:100%; margin-bottom: 6px;">
+        <input id="ytUrlInput" type="text" placeholder="Paste YouTube URL or Video ID (e.g., dQw4w9WgXcQ)" style="flex:1; background:#0b0f19; border:1px solid #374151; border-radius:6px; padding:6px 10px; color:white; font-size:12px; outline:none;" onkeydown="if(event.key==='Enter') loadYouTubeVideo()">
+        <button onclick="loadYouTubeVideo()" style="background:#dc2626; padding:6px 12px; font-size:11px;">Load & Sync</button>
+      </div>
+      <div id="ytPlayerContainer" style="width:100%; aspect-ratio: 16/9; background:#000; border-radius:6px; overflow:hidden; display:none; position:relative;">
+        <iframe id="ytIframe" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1058,21 +1103,25 @@ button.active{
     <button class="fsIconBtn" onclick="toggleVideoFullscreen()" style="background:#dc2626;">✕ Exit</button>
   </div>
   <div class="fsVideoGrid" id="fsVideoGridContainer">
-    <div class="fsVideoCard">
+    <div class="fsVideoCard" id="fsLocalCard">
       <video id="fsLocalVideo" autoplay playsinline muted></video>
       <div class="videoName" id="fsLocalName">My Camera (1080p HD)</div>
+      <div id="fsLocalHandBadge" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
     <div class="fsVideoCard hidden-card" id="fsRemoteCard1">
       <video id="fsRemoteVideo1" autoplay playsinline></video>
-      <div class="videoName" id="fsRemoteName1">Participant 2</div>
+      <div class="videoName" id="remoteName1">Participant 2</div>
+      <div id="fsRemoteHandBadge1" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
-    <div class="fsVideoCard fsExtraCard1 hidden-card">
+    <div class="fsVideoCard fsExtraCard1 hidden-card" id="fsExtraCard1">
       <video id="fsRemoteVideo2" autoplay playsinline></video>
-      <div class="videoName" id="fsRemoteName2">Extra Camera 1</div>
+      <div class="videoName" id="remoteName2">Extra Camera 1</div>
+      <div id="fsRemoteHandBadge2" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
-    <div class="fsVideoCard fsExtraCard2 hidden-card">
+    <div class="fsVideoCard fsExtraCard2 hidden-card" id="fsExtraCard2">
       <video id="fsRemoteVideo3" autoplay playsinline></video>
-      <div class="videoName" id="fsRemoteName3">Extra Camera 2</div>
+      <div class="videoName" id="remoteName3">Extra Camera 2</div>
+      <div id="fsRemoteHandBadge3" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
   </div>
 </div>
@@ -1412,6 +1461,7 @@ let cameraOn = true;
 let micOn = true;
 let currentRole = "";
 let currentRoom = "";
+let isHandRaised = false;
 
 let currentVoice = "grand";
 let currentDualVoice = "strings";
@@ -1430,12 +1480,13 @@ const fsLocalVideo = document.getElementById("fsLocalVideo");
 const statusBox = document.getElementById("status");
 
 const remoteVideoSlots = [
-  { video: document.getElementById("remoteVideo1"), fsVideo: document.getElementById("fsRemoteVideo1"), nameEl: document.getElementById("remoteName1"), fsNameEl: document.getElementById("fsRemoteName1"), card: document.getElementById("remoteCard1"), fsCard: document.getElementById("fsRemoteCard1") },
-  { video: document.getElementById("remoteVideo2"), fsVideo: document.getElementById("fsRemoteVideo2"), nameEl: document.getElementById("remoteName2"), fsNameEl: document.getElementById("fsRemoteName2"), card: document.getElementById("extraCard1"), fsCard: document.querySelector(".fsExtraCard1") },
-  { video: document.getElementById("remoteVideo3"), fsVideo: document.getElementById("fsRemoteVideo3"), nameEl: document.getElementById("remoteName3"), fsNameEl: document.getElementById("fsRemoteName3"), card: document.getElementById("extraCard2"), fsCard: document.querySelector(".fsExtraCard2") }
+  { video: document.getElementById("remoteVideo1"), fsVideo: document.getElementById("fsRemoteVideo1"), nameEl: document.getElementById("remoteName1"), fsNameEl: document.getElementById("fsRemoteName1"), card: document.getElementById("remoteCard1"), fsCard: document.getElementById("fsRemoteCard1"), badge: document.getElementById("remoteHandBadge1") },
+  { video: document.getElementById("remoteVideo2"), fsVideo: document.getElementById("fsRemoteVideo2"), nameEl: document.getElementById("remoteName2"), fsNameEl: document.getElementById("fsRemoteName2"), card: document.getElementById("extraCard1"), fsCard: document.querySelector(".fsExtraCard1"), badge: document.getElementById("remoteHandBadge2") },
+  { video: document.getElementById("remoteVideo3"), fsVideo: document.getElementById("fsRemoteVideo3"), nameEl: document.getElementById("remoteName3"), fsNameEl: document.getElementById("fsRemoteName3"), card: document.getElementById("extraCard2"), fsCard: document.querySelector(".fsExtraCard2"), badge: document.getElementById("remoteHandBadge3") }
 ];
 
 let connectedPeersMap = new Map();
+let peerHandStates = new Map();
 
 function status(text, type = "ready"){
   statusBox.textContent = text;
@@ -1507,8 +1558,21 @@ function zoomStaffOut(){
 }
 
 function raiseHand() {
-  alert("✋ Raise Hand alert sent to teacher/class!");
-  broadcastData({ type: "raiseHand", role: currentRole });
+  isHandRaised = !isHandRaised;
+  const btn = document.getElementById("raiseHandBtn");
+  btn.classList.toggle("active", isHandRaised);
+  
+  const localBadge = document.getElementById("localHandBadge");
+  const fsLocalBadge = document.getElementById("fsLocalHandBadge");
+  if(isHandRaised) {
+    localBadge.style.display = "flex";
+    fsLocalBadge.style.display = "flex";
+  } else {
+    localBadge.style.display = "none";
+    fsLocalBadge.style.display = "none";
+  }
+
+  broadcastData({ type: "raiseHand", role: currentRole, raised: isHandRaised });
 }
 
 function sendChatMessage() {
@@ -1705,6 +1769,10 @@ function setupDataConnection(connection){
   connection.on("open", () => {
     dataConnections[connection.peer] = connection;
     status("Studio Sync Connected!", "connected");
+    // Send current hand status to newly connected peer
+    if(isHandRaised) {
+      connection.send({ type: "raiseHand", role: currentRole, raised: true });
+    }
   });
   connection.on("data", data => handleRemoteData(data));
   connection.on("close", () => {
@@ -1728,6 +1796,7 @@ function removeRemoteStream(peerId){
   connectedPeersMap.delete(peerId);
   delete activeCalls[peerId];
   delete dataConnections[peerId];
+  peerHandStates.delete(peerId);
   updateRemoteVideoUI();
 }
 
@@ -1745,6 +1814,14 @@ function updateRemoteVideoUI(){
       
       if(slot.card) slot.card.classList.remove("hidden-card");
       if(slot.fsCard) slot.fsCard.classList.remove("hidden-card");
+
+      // Check hand raise state for this peer
+      if(peerHandStates.get(peerId)) {
+        if(slot.badge) slot.badge.style.display = "flex";
+      } else {
+        if(slot.badge) slot.badge.style.display = "none";
+      }
+
       index++;
     }
   });
@@ -1758,6 +1835,7 @@ function updateRemoteVideoUI(){
     
     if(slot.card) slot.card.classList.add("hidden-card");
     if(slot.fsCard) slot.fsCard.classList.add("hidden-card");
+    if(slot.badge) slot.badge.style.display = "none";
   }
 }
 
@@ -1817,9 +1895,21 @@ function handleRemoteData(data){
     recordedMidiNotes = [];
     renderStaffNotation([]);
   }
-  if(data.type==="raiseHand") alert(`✋ ${data.role.toUpperCase()} raised hand!`);
+  if(data.type==="raiseHand") {
+    // Find peer id matching this role
+    connectedPeersMap.forEach((stream, peerId) => {
+      if(peerId.endsWith("-" + data.role)) {
+        peerHandStates.set(peerId, data.raised);
+      }
+    });
+    updateRemoteVideoUI();
+  }
   if(data.type==="chatMessage") appendChatMsg(data.role.toUpperCase() + ": " + data.text, "#38bdf8");
   if(data.type==="reaction") appendChatMsg(data.role.toUpperCase() + " reacted: " + data.emoji, "#ffd54f");
+  if(data.type==="loadYouTube") {
+    document.getElementById("ytUrlInput").value = data.videoId;
+    playAndSyncYouTube(data.videoId, false);
+  }
   if(data.type==="keyDown"){
     document.querySelectorAll(`[data-note="${data.note}"]`).forEach(key => pressRemoteKey(data.note, key));
   }
@@ -1919,6 +2009,36 @@ function openJitsiMeet() {
   const room = document.getElementById("roomId").value.trim();
   if(!room) { alert("Room ID enter செய்யவும்!"); return; }
   window.open(`https://meet.jit.si/AnikousUltraStudio_${room}`, '_blank');
+}
+
+/* YOUTUBE PLAYER & SYNC LOGIC */
+function loadYouTubeVideo() {
+  const input = document.getElementById("ytUrlInput").value.trim();
+  if(!input) { alert("YouTube URL அல்லது Video ID-ஐ உள்ளிடவும்!"); return; }
+  let videoId = input;
+  if(input.includes("youtube.com") || input.includes("youtu.be")) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = input.match(regExp);
+    if(match && match[2].length === 11) {
+      videoId = match[2];
+    }
+  }
+  if(videoId.length !== 11 && !input.match(/^[a-zA-Z0-9_-]{11}$/)) {
+    alert("Valid YouTube URL அல்லது Video ID-ஐ உள்ளிடவும்!");
+    return;
+  }
+  playAndSyncYouTube(videoId, true);
+}
+
+function playAndSyncYouTube(videoId, shouldBroadcast = true) {
+  const container = document.getElementById("ytPlayerContainer");
+  const iframe = document.getElementById("ytIframe");
+  container.style.display = "block";
+  iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1`;
+  document.getElementById("ytStatusText").textContent = "Playing: " + videoId;
+  if(shouldBroadcast) {
+    broadcastData({ type: "loadYouTube", videoId: videoId });
+  }
 }
 
 const NOTE_NAMES_SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
