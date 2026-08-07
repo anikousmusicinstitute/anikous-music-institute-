@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Piano Studio Container (Add inside Studio Section or below video) -->
+    <div id="piano-section" style="background: #181818; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
+        <div style="margin-bottom: 10px;">
+            <label>Select Instrument: </label>
+            <select id="instrument-select">
+                <option value="acoustic_grand_piano">Acoustic Piano</option>
+                <option value="electric_piano_1">Electric Piano</option>
+                <option value="synth_bass">Synth Bass</option>
+                <option value="violin">Violin</option>
+                <option value="flute">Flute</option>
+            </select>
+        </div>
+        <div id="piano-keyboard" style="display: flex; justify-content: center; overflow-x: auto; height: 120px; background: #000; padding: 10px; border-radius: 5px;">
+            <!-- Piano Keys will be generated via JS -->
+        </div>
+    </div>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Music Teaching Platform</title>
