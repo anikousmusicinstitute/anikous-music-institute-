@@ -72,3 +72,90 @@ video {
     margin-top: 20px;
     text-align: center;
 }
+// Initialize Tone.js Sampler or Synth
+let currentSynth = new Tone.Synth().toDestination();
+
+// Instrument change listener (Mockup for multiple instruments)
+document.getElementById('instrument-select').addEventListener('change', (e) => {
+    const selected = e.target.value;
+    // Here we can switch synths or use Tone.Sampler with soundfonts
+    console.log("Selected Instrument:", selected);
+});
+
+// Generate Piano Keys (Simplified 2-Octave view for UI, expandable to 7)
+const pianoContainer = document.getElementById('piano-keyboard');
+
+const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const startOctave = 4;
+const numOctaves = 2; // Can be expanded up to 7
+
+for (let octave = startOctave; octave < startOctave + numOctaves; octave++) {
+    notes.forEach(note => {
+        const fullNote = note + octave;
+        const key = document.createElement('div');
+        
+        const isSharp = note.includes('#');
+        key.className = isSharp ? 'piano-key black-key' : 'piano-key white-key';
+        key.dataset.note = fullNote;
+
+        key.addEventListener('mousedown', async () => {
+            await Tone.start();
+            currentSynth.triggerAttackRelease(fullNote, '8n');
+            key.style.background = '#6200ee';
+        });
+
+        key.addEventListener('mouseup', () => {
+            key.style.background = isSharp ? '#000' : '#fff';
+        });
+
+        pianoContainer.appendChild(key);
+    });
+}
+
+// Computer Keyboard Mapping (A-Z to Piano Notes)
+window.addEventListener('keydown', async (e) => {
+    if (e.repeat) return;
+    await Tone.start();
+    
+    let noteToPlay = null;
+    if (e.key === 'a') noteToPlay = 'C4';
+    if (e.key === 's') noteToPlay = 'D4';
+    if (e.key === 'd') noteToPlay = 'E4';
+    if (e.key === 'f') noteToPlay = 'F4';
+    if (e.key === 'g') noteToPlay = 'G4';
+    if (e.key === 'h') noteToPlay = 'A4';
+    if (e.key === 'j') noteToPlay = 'B4';
+
+    if (noteToPlay) {
+        currentSynth.triggerAttackRelease(noteToPlay, '8n');
+    }
+});
+
+// MIDI Keyboard Support (Web MIDI API)
+if (navigator.requestMIDIAccess) {
+    navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+} else {
+    console.warn("Web MIDI API not supported in this browser.");
+}
+
+function onMIDISuccess(midiAccess) {
+    for (var input of midiAccess.inputs.values()) {
+        input.onmidimessage = getMIDIMessage;
+    }
+}
+
+function onMIDIFailure() {
+    console.error("Could not access MIDI devices.");
+}
+
+function getMIDIMessage(message) {
+    var command = message.data[0];
+    var noteNumber = message.data[1];
+    var velocity = message.data[2];
+
+    // Note On message (approximate conversion)
+    if (command === 144 && velocity > 0) {
+        const freq = Tone.Frequency(noteNumber, "midi").toNote();
+        currentSynth.triggerAttackRelease(freq, '8n');
+    }
+}
