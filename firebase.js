@@ -1,12 +1,15 @@
+// Firebase configuration with your project details
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCxZ_pqLanqJgcQrVmFsFouQ17fmaYPy30",
+  authDomain: "anikous-music-institute.firebaseapp.com",
+  projectId: "anikous-music-institute",
+  storageBucket: "anikous-music-institute.firebasestorage.app",
+  messagingSenderId: "529726639589",
+  appId: "1:529726639589:web:573382dd91e4a3be8a330c",
+  measurementId: "G-C1DHT2QCCZ"
 };
 
+// Initialize Firebase (Compat version matching index.html)
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
