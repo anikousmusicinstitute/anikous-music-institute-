@@ -3,23 +3,18 @@ const chatInput = document.getElementById('chat-input');
 const studentListElement = document.getElementById('student-list');
 const studentCountElement = document.getElementById('student-count');
 
-let userName = "User"; // Will be updated from login
-
-// Send Chat Message
 function sendMessage() {
     const message = chatInput.value.trim();
     if (message === "") return;
 
     socket.emit('send-message', {
         roomId: document.getElementById('room-input').value.trim(),
-        name: userName,
+        name: loggedInUserName,
         message: message
     });
-
     chatInput.value = "";
 }
 
-// Receive Chat Message
 socket.on('receive-message', (data) => {
     const msgDiv = document.createElement('div');
     msgDiv.style.marginBottom = "8px";
@@ -28,22 +23,18 @@ socket.on('receive-message', (data) => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
-// Raise Hand Feature
-let handRaised = document.getElementById('raise-hand-btn');
-handRaised.addEventListener('click', () => {
+document.getElementById('raise-hand-btn').addEventListener('click', () => {
     const roomId = document.getElementById('room-input').value.trim();
-    socket.emit('raise-hand', { roomId, name: userName });
+    socket.emit('raise-hand', { roomId, name: loggedInUserName });
 });
 
 socket.on('user-raised-hand', (data) => {
     alert(`✋ ${data.name} has raised their hand!`);
 });
 
-// Update Student Attendance / List
 socket.on('update-student-list', (students) => {
     studentListElement.innerHTML = "";
     studentCountElement.innerText = students.length;
-    
     students.forEach(student => {
         const li = document.createElement('li');
         li.style.padding = "5px 0";
@@ -54,6 +45,4 @@ socket.on('update-student-list', (students) => {
 });
 
 document.getElementById('send-chat-btn').addEventListener('click', sendMessage);
-chatInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMessage();
-});
+chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
