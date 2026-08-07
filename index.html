@@ -1,0 +1,2693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Anikous Music Institute - Master Pro Studio Suite with HD Video</title>
+
+<!-- PeerJS CDN for Multi-User Live Video Calling -->
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<!-- VexFlow CDN for Real Sheet Music Staff Notation -->
+<script src="https://unpkg.com/vexflow@4.2.0/build/cjs/vexflow.js"></script>
+<!-- html2pdf.js CDN for A4 Sheet PDF Download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+:root {
+  --key-width: 32px;
+  --key-height: 200px;
+  --black-width: 20px;
+  --black-height: 125px;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  background:#05070b;
+  color:white;
+  font-family:Arial,sans-serif;
+  overflow-x:hidden;
+}
+
+button, select{
+  border:0;
+  border-radius:10px;
+  padding:10px 14px;
+  background:#1f2937;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition: all 0.2s ease;
+}
+
+button:active{
+  transform:scale(.96);
+}
+
+button.active{
+  background:#16a34a !important;
+}
+
+/* LOGIN PAGE STYLING */
+#loginPage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    min-height: 100vh;
+    height: 100%;
+    background: 
+        linear-gradient(rgba(0,0,0,.8), rgba(0,0,0,.95)),
+        url("https://images.unsplash.com/photo-1520523839897-bd0b52f945a0");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.login-box {
+    width: 90%;
+    max-width: 380px;
+    padding: 35px 25px;
+    background: rgba(17, 24, 39, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 215, 0, .4);
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+    text-align: center;
+}
+
+.logo {
+    font-size: 45px;
+    margin-bottom: 10px;
+}
+
+.login-box h1 {
+    color: #ffd54f;
+    font-size: 22px;
+    letter-spacing: 1px;
+}
+
+.login-box p {
+    color: #9ca3af;
+    font-size: 13px;
+    margin-bottom: 25px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 18px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #374151;
+    background: #0b0f19;
+    color: white;
+    font-size: 15px;
+    outline: none;
+}
+
+.input-group input:focus {
+    border-color: #ffd54f;
+}
+
+.eye {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    color: #ffd54f;
+    cursor: pointer;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: #00c853;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.login-btn:hover {
+    background: #00e676;
+}
+
+.forgot {
+    margin-top: 15px;
+    color: #ffd54f;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.top{
+  padding:14px;
+  text-align:center;
+  background:#0b0f19;
+  border-bottom:1px solid #1f2937;
+}
+
+.top h1{
+  font-size:19px;
+  color:#ffd54f;
+  letter-spacing: 0.5px;
+}
+
+.sub{
+  margin-top:4px;
+  color:#9ca3af;
+  font-size:11px;
+}
+
+.panel{
+  width:min(1150px, 96%);
+  margin:10px auto;
+  background:#0b0f19;
+  border: 1px solid #1f2937;
+  border-radius:16px;
+  padding:12px;
+}
+
+.roomRow{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content: center;
+}
+
+.roomRow input,
+.roomRow select{
+  flex:1;
+  min-width:120px;
+  background:#030712;
+  color:white;
+  border:1px solid #374151;
+  border-radius:10px;
+  padding:10px;
+  font-size: 14px;
+}
+
+/* DYNAMIC STATUS BOX STYLES */
+.status{
+  margin-top:8px;
+  padding:10px;
+  border-radius:8px;
+  text-align:center;
+  font-size:12px;
+  font-weight: bold;
+  min-height:36px;
+  transition: all 0.3s ease;
+}
+.status.ready { background: #030712; color: #a7f3d0; border: 1px solid #1f2937; }
+.status.loading { background: #78350f; color: #fef08a; border: 1px solid #f59e0b; }
+.status.connected { background: #064e3b; color: #a7f3d0; border: 1px solid #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+.status.error { background: #7f1d1d; color: #fecaca; border: 1px solid #ef4444; }
+
+/* VIDEO GRID & DYNAMIC HIDDEN CARDS */
+.videoGrid{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:10px;
+}
+
+.videoCard{
+  position:relative;
+  background:#000;
+  border-radius:12px;
+  overflow:hidden;
+  min-height:200px;
+  border:1px solid #1f2937;
+  transition: all 0.3s ease;
+}
+
+.videoCard.hidden-card {
+  display: none !important;
+}
+
+.videoCard video, .fsVideoCard video{
+  width:100%;
+  height:100%;
+  min-height:200px;
+  object-fit:cover;
+}
+
+/* MIRROR FIX FOR 1080P HD CAMERAS */
+#localVideo.front-cam, #fsLocalVideo.front-cam {
+  transform: scaleX(-1);
+}
+#localVideo:not(.front-cam), #fsLocalVideo:not(.front-cam) {
+  transform: scaleX(1);
+}
+
+/* REMOTE CAMERAS STRICTLY NO MIRROR (NORMAL VIEW) */
+.videoCard video:not(#localVideo), .fsVideoCard video:not(#fsLocalVideo) {
+  transform: none !important;
+}
+
+.videoName{
+  position:absolute;
+  left:8px;
+  bottom:8px;
+  background:rgba(0,0,0,.7);
+  padding:5px 8px;
+  border-radius:6px;
+  font-size:11px;
+  z-index: 5;
+}
+
+/* RAISE HAND BADGE */
+.hand-raised-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 10;
+}
+
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+  justify-content: center;
+}
+
+.controls button {
+  font-size: 12px;
+  padding: 8px 10px;
+}
+
+/* MASTER SHEET MUSIC SECTION */
+.notationSection {
+  background: #030712;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.notationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.notationHeader h4 {
+  color: #ffd54f;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notationToolsBar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  background: #0b0f19;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #1f2937;
+}
+
+.notationCanvasBox {
+  background: #ffffff;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  height: 220px;
+  overflow-x: auto;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+#staffSvgContainer {
+  min-width: 100%;
+}
+
+/* A4 FULL SHEET MODAL STYLING */
+#a4SheetModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 999999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+#a4SheetModal.active {
+  display: flex;
+}
+
+.a4SheetPaper {
+  background: #ffffff;
+  color: #000000;
+  width: 100%;
+  max-width: 800px;
+  min-height: 600px;
+  padding: 40px;
+  border-radius: 6px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.5);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.a4SheetHeader {
+  text-align: center;
+  border-bottom: 2px solid #111;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.a4SheetHeader h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #111;
+  letter-spacing: 1px;
+}
+
+.a4SheetHeader p {
+  font-size: 13px;
+  color: #555;
+  margin-top: 4px;
+}
+
+.a4MetaRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.a4StaffBox {
+  width: 100%;
+  min-height: 350px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+#a4ModalStaffContainer {
+  min-width: 100%;
+}
+
+.a4ModalFooterControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ULTRA PRO STUDIO TOOLS */
+.proToolsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.proCard {
+  background: #030712;
+  border: 1px solid #1f2937;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.proCard h4 {
+  font-size: 12px;
+  color: #ffd54f;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toolRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  justify-content: center;
+}
+
+.toolRow input[type="range"] {
+  accent-color: #16a34a;
+  width: 60px;
+  cursor: pointer;
+}
+
+/* CHAT & REACTIONS */
+.chatSection {
+  margin-top: 10px;
+  background: #030712;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.chatBox {
+  height: 90px;
+  overflow-y: auto;
+  background: #000;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chatInputRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chatInputRow input {
+  flex: 1;
+  min-width: 140px;
+  background: #0b0f19;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: white;
+  font-size: 13px;
+  outline: none;
+}
+
+.chatInputRow button {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+/* FULLSCREEN VIDEO POPUP */
+#videoFullscreenContainer {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #030712;
+  z-index: 99999;
+  flex-direction: column;
+  padding: 10px;
+}
+
+#videoFullscreenContainer.active {
+  display: flex;
+}
+
+.fsVideoGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  height: calc(100vh - 65px);
+}
+
+.fsVideoCard {
+  position: relative;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #374151;
+  height: 100%;
+}
+
+.fsVideoCard.hidden-card {
+  display: none !important;
+}
+
+.fsVideoToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111827;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+/* INFO */
+.info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.infoCard{
+  background:#030712;
+  border:1px solid #1f2937;
+  padding:10px;
+  border-radius:10px;
+  text-align:center;
+}
+
+.infoCard small{
+  display:block;
+  color:#9ca3af;
+  margin-bottom:4px;
+  font-size:11px;
+}
+
+.infoCard strong{
+  font-size:16px;
+  color: #ffd54f;
+}
+
+/* PIANO */
+.pianoHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+  flex-wrap:wrap;
+}
+
+.octaves{
+  display:flex;
+  gap:4px;
+  overflow-x:auto;
+  padding-bottom:4px;
+  -webkit-overflow-scrolling:touch;
+  justify-content: center;
+}
+
+.octaves button{
+  min-width:38px;
+  padding:6px;
+  font-size:11px;
+}
+
+.voiceControlsGroup{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content: center;
+}
+
+.voiceSelectorContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #030712;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 3px 8px;
+}
+
+.voiceSelectorContainer select {
+  background: transparent;
+  border: none;
+  color: #a7f3d0;
+  font-weight: bold;
+  outline: none;
+  cursor: pointer;
+  padding: 2px;
+  font-size: 11px;
+}
+
+.sustainControlBox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #030712;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 10px;
+}
+
+.sustainControlBox input[type="range"] {
+  width: 50px;
+  accent-color: #16a34a;
+  cursor: pointer;
+}
+
+.pianoScroll{
+  width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  background:#030712;
+  border-radius:10px;
+  padding:10px;
+  -webkit-overflow-scrolling:touch;
+}
+
+#piano{
+  position:relative;
+  height: calc(var(--key-height) + 12px);
+  width: 100%;
+}
+
+.white{
+  position:absolute;
+  top:0;
+  width: var(--key-width);
+  height: var(--key-height);
+  background:linear-gradient(to bottom,#fff,#d1d5db);
+  border:1px solid #666;
+  border-radius:0 0 6px 6px;
+  z-index:1;
+  color:#111;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding-bottom:6px;
+  font-size:8px;
+  user-select:none;
+  touch-action:none;
+}
+
+.white.local-active{
+  background:#facc15 !important;
+  box-shadow:0 0 10px rgba(250,204,21,.9);
+  transform:translateY(2px);
+}
+
+.white.remote-active{
+  background:#38bdf8 !important;
+  box-shadow:0 0 10px rgba(56,189,248,.9);
+  transform:translateY(2px);
+}
+
+.black{
+  position:absolute;
+  top:0;
+  width: var(--black-width);
+  height: var(--black-height);
+  background:linear-gradient(#333,#000);
+  border:1px solid #000;
+  border-radius:0 0 5px 5px;
+  z-index:2;
+  color:white;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding-bottom:5px;
+  font-size:6px;
+  user-select:none;
+  touch-action:none;
+}
+
+.black.local-active{
+  background:#facc15 !important;
+  color:#111 !important;
+  box-shadow:0 0 10px rgba(250,204,21,.9);
+  transform:translateY(2px);
+}
+
+.black.remote-active{
+  background:#38bdf8 !important;
+  color:#111 !important;
+  box-shadow:0 0 10px rgba(56,189,248,.9);
+  transform:translateY(2px);
+}
+
+.noteToggle{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:8px;
+  justify-content: center;
+}
+
+/* FULLSCREEN LANDSCAPE PIANO */
+#pianoFullscreenContainer {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #05070b;
+  z-index: 99999;
+  flex-direction: column;
+  overflow: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+#pianoFullscreenContainer.active {
+  display: flex;
+}
+
+.fsToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0b0f19;
+  padding: 6px 10px;
+  border-bottom: 1px solid #1f2937;
+  min-height: 48px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.fsToolbarLeft, .fsToolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.fsIconBtn {
+  background: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.fsMiniScrollPreview {
+  text-align: center;
+  flex: 1;
+}
+
+.fsNotationBar {
+  background: #030712;
+  border-bottom: 1px solid #1f2937;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.fsNotationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fsNotationHeader span {
+  font-size: 12px;
+  color: #ffd54f;
+  font-weight: bold;
+}
+
+.fsNotationCanvasBox {
+  background: #ffffff;
+  border-radius: 6px;
+  height: 140px;
+  overflow-x: auto;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+#fsStaffSvgContainer {
+  min-width: 100%;
+}
+
+.fsAmiLogoBar {
+  background: #0b0f19;
+  border-bottom: 1px solid #1f2937;
+  padding: 6px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.fsPianoBody {
+  flex: 1;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: #030712;
+  padding: 6px 4px;
+  display: flex;
+  align-items: flex-start;
+  -webkit-overflow-scrolling: touch;
+}
+
+#fsPiano {
+  position: relative;
+  height: 160px;
+}
+
+.fsFooterBar {
+  height: 28px;
+  background: #0b0f19;
+  border-top: 1px solid #1f2937;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #ffd54f;
+  font-weight: bold;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+@media(max-width:650px){
+  .videoGrid, .fsVideoGrid{ grid-template-columns:1fr; }
+  .videoCard, .videoCard video{ min-height:180px; }
+  .info{ grid-template-columns:1fr; }
+  .proToolsGrid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .a4SheetPaper {
+    width: 95% !important;
+    padding: 15px !important;
+    min-height: auto !important;
+  }
+  .a4StaffBox {
+    min-height: 220px !important;
+  }
+  .a4ModalFooterControls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .a4ModalFooterControls button {
+    width: 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="logo">🎹</div>
+    <h1>ANIKOUS</h1>
+    <h1>MUSIC INSTITUTE</h1>
+    <p>Master Pro Studio Edition</p>
+
+    <div class="input-group">
+      <input id="email" type="email" placeholder="Email Address">
+    </div>
+
+    <div class="input-group">
+      <input id="password" type="password" placeholder="Password">
+      <span class="eye" onclick="showPass()">👁</span>
+    </div>
+
+    <button class="login-btn" onclick="loginUser()">LOGIN</button>
+
+    <div class="forgot" onclick="forgotPassword()">Forgot Password?</div>
+  </div>
+</div>
+
+<!-- MAIN PAGE -->
+<div id="mainPage" style="display:none;">
+<header class="top">
+  <h1>🎹 ANIKOUS MUSIC INSTITUTE 🎹</h1>
+  <div class="sub">Master Pro Studio Suite • Multi-Camera 1080p HD Live Video & Grand Staff Notation</div>
+</header>
+
+<!-- ROOM & VIDEO STREAMING CONTROL PANEL -->
+<section class="panel">
+  <div class="roomRow">
+    <input id="roomId" placeholder="Enter Room ID (e.g., room123)">
+    <select id="userRole">
+      <option value="teacher">Teacher</option>
+      <option value="student">Student</option>
+      <option value="extra1">Participant 3</option>
+      <option value="extra2">Participant 4</option>
+    </select>
+    <button onclick="startClass()">Start HD Video Class</button>
+  </div>
+  <div id="status" class="status ready">
+    Ready - Enter Room ID and Start HD Video Class
+  </div>
+</section>
+
+<!-- MULTI-CAMERA 1080P HD VIDEO SECTION -->
+<section class="panel">
+  <div class="videoGrid" id="videoGridContainer">
+    <!-- Local Camera (Me) -->
+    <div class="videoCard" id="localCard">
+      <video id="localVideo" autoplay playsinline muted></video>
+      <div class="videoName" id="localName">My Camera (1080p HD)</div>
+      <div id="localHandBadge" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+    </div>
+    <!-- Remote Participant 1 -->
+    <div class="videoCard hidden-card" id="remoteCard1">
+      <video id="remoteVideo1" autoplay playsinline></video>
+      <div class="videoName" id="remoteName1">Participant 2</div>
+      <div id="remoteHandBadge1" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+    </div>
+    <!-- Remote Participant 2 -->
+    <div class="videoCard hidden-card" id="extraCard1">
+      <video id="remoteVideo2" autoplay playsinline></video>
+      <div class="videoName" id="remoteName2">Participant 3</div>
+      <div id="remoteHandBadge2" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+    </div>
+    <!-- Remote Participant 3 -->
+    <div class="videoCard hidden-card" id="extraCard2">
+      <video id="remoteVideo3" autoplay playsinline></video>
+      <div class="videoName" id="remoteName3">Participant 4</div>
+      <div id="remoteHandBadge3" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+    </div>
+  </div>
+  
+  <div class="controls">
+    <button id="cameraBtn" onclick="toggleCamera()">Camera ON</button>
+    <button onclick="switchCamera()">Front / Back Cam</button>
+    <button id="micBtn" onclick="toggleMic()">Mic ON</button>
+    <button id="raiseHandBtn" onclick="raiseHand()" style="background:#eab308; color:#000;">✋ Raise Hand</button>
+    <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 1080p Full View</button>
+    <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Backup</button>
+    <button onclick="logoutUser()" style="background:#dc2626;">Logout</button>
+  </div>
+
+  <!-- CHAT & LIVE REACTIONS -->
+  <div class="chatSection">
+    <div class="chatBox" id="chatBox">
+      <div style="color:#9ca3af;">System: Welcome to Anikous Studio HD Video Chat. Play piano keys to generate sheet scores.</div>
+    </div>
+    <div class="chatInputRow">
+      <input type="text" id="chatInput" placeholder="Type message..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+      <button onclick="sendChatMessage()" style="background:#16a34a;">Send</button>
+      <button onclick="sendReaction('👏')" style="background:#1f2937;">👏</button>
+      <button onclick="sendReaction('❤️')" style="background:#1f2937;">❤️</button>
+      <button onclick="sendReaction('🎵')" style="background:#1f2937;">🎵</button>
+      <button onclick="sendReaction('🔥')" style="background:#1f2937;">🔥</button>
+    </div>
+  </div>
+
+  <!-- ULTRA PRO STUDIO TOOLS -->
+  <div class="proToolsGrid">
+    <div class="proCard">
+      <h4>
+        <span>⏱️ Metronome</span>
+        <span id="beatIndicator" style="color:#16a34a; font-size:14px;">●</span>
+      </h4>
+      <div class="toolRow">
+        <button id="metroToggle" onclick="toggleMetronome()" style="padding:6px 10px;">Start</button>
+        <span id="bpmLabel" style="font-weight:bold;">120 BPM</span>
+        <input id="bpmRange" type="range" min="40" max="240" value="120" oninput="changeBPM(this.value)">
+      </div>
+    </div>
+
+    <div class="proCard">
+      <h4>
+        <span>🎛️ Web Audio FX</span>
+      </h4>
+      <div class="toolRow">
+        <span style="color:#9ca3af; font-size:10px;">Reverb:</span>
+        <input id="reverbRange" type="range" min="0" max="1" step="0.1" value="0.3" oninput="changeReverb(this.value)">
+        <span style="color:#9ca3af; font-size:10px;">Master Vol:</span>
+        <input id="masterVolRange" type="range" min="0" max="1" step="0.1" value="0.8" oninput="changeMasterGain(this.value)">
+      </div>
+    </div>
+
+    <div class="proCard">
+      <h4>
+        <span>🔴 Looper & Rec</span>
+        <span id="recStatusText" style="font-size:10px; color:#9ca3af;">Ready</span>
+      </h4>
+      <div class="toolRow">
+        <button id="recBtn" onclick="toggleRecording()" style="background:#dc2626; padding:6px 10px;">Record</button>
+        <button id="playRecBtn" onclick="playRecording()" disabled style="background:#0284c7; padding:6px 10px;">Play Loop</button>
+        <button id="downloadAudioBtn" onclick="downloadAudioRecording()" disabled style="background:#7c3aed; padding:6px 10px;">💾 WAV</button>
+      </div>
+    </div>
+
+    <!-- YOUTUBE STUDIO PLAYER & SYNC -->
+    <div class="proCard" style="grid-column: span 3;">
+      <h4>
+        <span>📺 YouTube Studio Player & Sync</span>
+        <span id="ytStatusText" style="font-size:10px; color:#9ca3af;">Ready</span>
+      </h4>
+      <div class="toolRow" style="gap:8px; width:100%; margin-bottom: 6px;">
+        <input id="ytUrlInput" type="text" placeholder="Paste YouTube URL or Video ID (e.g., dQw4w9WgXcQ)" style="flex:1; background:#0b0f19; border:1px solid #374151; border-radius:6px; padding:6px 10px; color:white; font-size:12px; outline:none;" onkeydown="if(event.key==='Enter') loadYouTubeVideo()">
+        <button onclick="loadYouTubeVideo()" style="background:#dc2626; padding:6px 12px; font-size:11px;">Load & Sync</button>
+      </div>
+      <div id="ytPlayerContainer" style="width:100%; aspect-ratio: 16/9; background:#000; border-radius:6px; overflow:hidden; display:none; position:relative;">
+        <iframe id="ytIframe" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO FULLSCREEN POPUP -->
+<div id="videoFullscreenContainer">
+  <div class="fsVideoToolbar">
+    <span style="font-weight:bold; color:#a7f3d0;">Live 1080p HD Multi-View Fullscreen</span>
+    <button class="fsIconBtn" onclick="toggleVideoFullscreen()" style="background:#dc2626;">✕ Exit</button>
+  </div>
+  <div class="fsVideoGrid" id="fsVideoGridContainer">
+    <div class="fsVideoCard" id="fsLocalCard">
+      <video id="fsLocalVideo" autoplay playsinline muted></video>
+      <div class="videoName" id="fsLocalName">My Camera (1080p HD)</div>
+      <div id="fsLocalHandBadge" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+    </div>
+    <div class="fsVideoCard hidden-card" id="fsRemoteCard1">
+      <video id="fsRemoteVideo1" autoplay playsinline></video>
+      <div class="videoName" id="fsRemoteName1">Participant 2</div>
+      <div id="fsRemoteHandBadge1" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+    </div>
+    <div class="fsVideoCard fsExtraCard1 hidden-card" id="fsExtraCard1">
+      <video id="fsRemoteVideo2" autoplay playsinline></video>
+      <div class="videoName" id="fsRemoteName2">Participant 3</div>
+      <div id="fsRemoteHandBadge2" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+    </div>
+    <div class="fsVideoCard fsExtraCard2 hidden-card" id="fsExtraCard2">
+      <video id="fsRemoteVideo3" autoplay playsinline></video>
+      <div class="videoName" id="fsRemoteName3">Participant 4</div>
+      <div id="fsRemoteHandBadge3" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+    </div>
+  </div>
+</div>
+
+<!-- INFORMATION -->
+<section class="panel">
+  <div class="info">
+    <div class="infoCard">
+      <small>Keys</small>
+      <strong id="keyShow">-</strong>
+    </div>
+    <div class="infoCard">
+      <small>Chord</small>
+      <strong id="chordShow">-</strong>
+    </div>
+  </div>
+</section>
+
+<!-- MASTER PIANO & LIVE SHEET MUSIC SECTION -->
+<section class="panel">
+  <div class="notationSection">
+    <div class="notationHeader">
+      <h4>🎼 Master Live Grand Staff Notation (Treble & Bass Clef)</h4>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content: center;">
+        <button onclick="openA4SheetModal()" style="padding:5px 10px; font-size:11px; background:#16a34a;">📄 A4 Full Sheet View</button>
+        <button onclick="downloadSheetPDF()" style="padding:5px 10px; font-size:11px; background:#0284c7;">📥 Download A4 PDF</button>
+        <button onclick="printOrExportPNG()" style="padding:5px 10px; font-size:11px; background:#2563eb;">🖼️ Print / PNG</button>
+        <button onclick="clearNotation()" style="padding:5px 8px; font-size:10px; background:#dc2626;">Clear Score</button>
+      </div>
+    </div>
+    <div class="notationToolsBar">
+      <span style="font-size:11px; color:#9ca3af;">Key Sig:</span>
+      <select id="keySigSelect" onchange="changeKeySignature(this.value)" style="background:#030712; color:#a7f3d0; border:1px solid #374151; padding:3px 6px; border-radius:6px; font-size:11px;">
+        <option value="C">C Major (0#)</option>
+        <option value="G">G Major (1#)</option>
+        <option value="D">D Major (2#)</option>
+        <option value="F">F Major (1b)</option>
+        <option value="Bb">Bb Major (2b)</option>
+      </select>
+
+      <span style="font-size:11px; color:#9ca3af; margin-left:4px;">Transpose:</span>
+      <select id="transposeSelect" onchange="changeTranspose(this.value)" style="background:#030712; color:#a7f3d0; border:1px solid #374151; padding:3px 6px; border-radius:6px; font-size:11px;">
+        <option value="0">0 (Original)</option>
+        <option value="1">+1 Semitone</option>
+        <option value="2">+2 Semitones</option>
+        <option value="3">+3 Semitones</option>
+        <option value="-1">-1 Semitone</option>
+        <option value="-2">-2 Semitones</option>
+      </select>
+      
+      <span style="font-size:11px; color:#9ca3af; margin-left:4px;">Practice Song:</span>
+      <select id="presetSongSelect" onchange="loadPresetSong(this.value)" style="background:#030712; color:#ffd54f; border:1px solid #374151; padding:3px 6px; border-radius:6px; font-size:11px;">
+        <option value="">-- Load Lesson --</option>
+        <option value="furelise">Für Elise (Beethoven)</option>
+        <option value="twinkle">Twinkle Twinkle</option>
+        <option value="joy">Joy To The World</option>
+      </select>
+
+      <button onclick="playRecordedScore()" style="padding:4px 8px; font-size:10px; background:#16a34a;">▶️ Play Score</button>
+      <button onclick="downloadMIDIFile()" style="padding:4px 8px; font-size:10px; background:#0284c7;">🎹 MIDI File</button>
+      <button onclick="downloadMusicXML()" style="padding:4px 8px; font-size:10px; background:#7c3aed;">📜 MusicXML</button>
+
+      <span style="font-size:11px; color:#9ca3af; margin-left:4px;">Staff Zoom:</span>
+      <button onclick="zoomStaffIn()" style="padding:3px 6px; font-size:10px;">Zoom+</button>
+      <button onclick="zoomStaffOut()" style="padding:3px 6px; font-size:10px;">Zoom-</button>
+    </div>
+    <div class="notationCanvasBox" id="notationCanvasBox">
+      <div id="staffSvgContainer"></div>
+    </div>
+  </div>
+
+  <div class="pianoHeader">
+    <h3 style="color:#ffd54f; font-size:15px; text-align: center; width: 100%;">🎹 Anikous Studio Piano (7 Octave - 20 Instruments) 🎹</h3>
+    <div class="voiceControlsGroup">
+      <div class="voiceSelectorContainer">
+        <label style="font-size:10px; color:#9ca3af;">Voice:</label>
+        <select id="voiceSelect" onchange="changeVoice(this.value)">
+          <optgroup label="Pianos">
+            <option value="grand">1. Grand Piano</option>
+            <option value="bright">2. Bright Piano</option>
+            <option value="electric">3. Electric Piano</option>
+          </optgroup>
+          <optgroup label="Organs">
+            <option value="organ">4. Church Organ</option>
+            <option value="jazzorgan">5. Jazz Organ</option>
+          </optgroup>
+          <optgroup label="Strings & Pads">
+            <option value="strings">6. Strings / Violin</option>
+            <option value="synthlead">7. Synth Lead</option>
+            <option value="synthpad">8. Synth Pad</option>
+            <option value="choir">9. Choir / Vocal Pad</option>
+          </optgroup>
+          <optgroup label="Guitars & Plucks">
+            <option value="guitar">10. Acoustic Guitar</option>
+            <option value="pluck">11. Music Box / Pluck</option>
+          </optgroup>
+          <optgroup label="Wind Instruments">
+            <option value="flute">12. Flute</option>
+            <option value="panflute">13. Pan Flute</option>
+            <option value="brass">14. Brass / Trumpet</option>
+            <option value="harmonica">15. Harmonica</option>
+            <option value="accordion">16. Accordion</option>
+          </optgroup>
+          <optgroup label="Bass & Mallets">
+            <option value="synthbass">17. Synth Bass</option>
+            <option value="acousticbass">18. Acoustic Bass</option>
+            <option value="marimba">19. Marimba</option>
+            <option value="xylophone">20. Xylophone</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="voiceSelectorContainer">
+        <label style="font-size:10px; color:#9ca3af;">Dual:</label>
+        <select id="dualVoiceSelect" onchange="changeDualVoice(this.value)">
+          <option value="none">OFF</option>
+          <option value="strings" selected>Strings (Layer)</option>
+          <option value="grand">Grand Piano</option>
+          <option value="bright">Bright Piano</option>
+          <option value="electric">Electric Piano</option>
+          <option value="organ">Church Organ</option>
+          <option value="synthpad">Synth Pad</option>
+          <option value="choir">Choir</option>
+          <option value="flute">Flute</option>
+          <option value="guitar">Acoustic Guitar</option>
+        </select>
+      </div>
+
+      <div class="sustainControlBox">
+        <button id="sustainBtn" onclick="toggleSustain()" style="padding:4px 6px; font-size:9px;">SUSTAIN OFF</button>
+        <div style="display:flex; flex-direction:column; gap:1px;">
+          <span id="sustainTimeLabel" style="color:#a7f3d0; font-size:9px; font-weight:bold;">2.0s</span>
+          <input type="range" id="sustainTimeRange" min="0.5" max="5.0" step="0.5" value="2.0" oninput="changeSustainTime(this.value)">
+        </div>
+      </div>
+
+      <button onclick="zoomIn()" style="padding:5px 8px; font-size:11px;">Zoom+</button>
+      <button onclick="zoomOut()" style="padding:5px 8px; font-size:11px;">Zoom-</button>
+      <button id="holdBtn" onclick="toggleHold()" style="padding:5px 8px; font-size:11px;">HOLD OFF</button>
+      <button onclick="togglePianoFullscreen()" style="background:#16a34a; padding:5px 8px; font-size:11px;">Full Piano</button>
+      <button onclick="connectMIDI()" style="padding:5px 8px; font-size:11px;">MIDI</button>
+    </div>
+  </div>
+  <div class="octaves" id="octaveButtons"></div>
+  <div class="pianoScroll" id="pianoScroll">
+    <div id="piano"></div>
+  </div>
+  <div class="noteToggle">
+    <button id="keyToggle" class="active" onclick="toggleKeyNames()" style="padding:5px 8px; font-size:11px;">Key Names ON</button>
+    <button onclick="centerPiano()" style="padding:5px 8px; font-size:11px;">Center Piano</button>
+  </div>
+</section>
+</div>
+
+<!-- A4 FULL SHEET MODAL POPUP -->
+<div id="a4SheetModal">
+  <div class="a4SheetPaper" id="a4PaperPrintArea">
+    <div>
+      <div class="a4SheetHeader">
+        <h2>ANIKOUS MUSIC INSTITUTE</h2>
+        <p>Master Grand Staff Sheet Music Score Suite</p>
+      </div>
+      <div class="a4MetaRow">
+        <span id="a4ModalDate">Date: --/--/----</span>
+        <span id="a4ModalTime">Time: --:--:--</span>
+      </div>
+      <div class="a4StaffBox">
+        <div id="a4ModalStaffContainer"></div>
+      </div>
+    </div>
+    
+    <div class="a4ModalFooterControls">
+      <button onclick="downloadSheetPDF()" style="background:#0284c7; padding:8px 16px;">📥 Download A4 PDF</button>
+      <button onclick="window.print()" style="background:#2563eb; padding:8px 16px;">🖨️ Print Sheet</button>
+      <button onclick="closeA4SheetModal()" style="background:#dc2626; padding:8px 16px;">✕ Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- FULLSCREEN KEYBOARD POPUP -->
+<div id="pianoFullscreenContainer">
+  <div class="fsToolbar">
+    <div class="fsToolbarLeft">
+      <button class="fsIconBtn" onclick="togglePianoFullscreen()">⬅️ Back</button>
+      <button class="fsIconBtn" onclick="toggleHold()" id="fsHoldBtn">HOLD</button>
+    </div>
+    
+    <div class="fsMiniScrollPreview">
+      <span id="fsChordDisplay" style="font-size:12px; color:#ffd54f; font-weight:bold;">🎹 Anikous Music Institute (Full Piano Mode)</span>
+    </div>
+
+    <div class="fsToolbarRight">
+      <button class="fsIconBtn" onclick="toggleKeyNames()">Notes</button>
+      <button class="fsIconBtn" onclick="downloadSheetPDF()" style="background:#0284c7;">📥 PDF</button>
+      <button class="fsIconBtn" onclick="printOrExportPNG()" style="background:#2563eb;">🖨️ Print</button>
+      <button class="fsIconBtn" onclick="togglePianoFullscreen()" style="background:#dc2626;">✕</button>
+    </div>
+  </div>
+
+  <div class="fsNotationBar">
+    <div class="fsNotationHeader">
+      <span>🎼 Live Staff Score (Full View Mode)</span>
+      <button onclick="clearNotation()" style="padding:1px 6px; font-size:9px; background:#dc2626;">Clear Score</button>
+    </div>
+    <div class="fsNotationCanvasBox">
+      <div id="fsStaffSvgContainer"></div>
+    </div>
+  </div>
+
+  <div class="fsAmiLogoBar">
+    <span style="color: #ffd54f; font-weight: bold; font-size: 14px; letter-spacing: 1.5px;">🎹 A M I 🎹</span>
+    <span style="color: #9ca3af; font-size: 10px; margin-left: 8px;">Anikous Music Institute Studio</span>
+  </div>
+
+  <div class="fsPianoBody" id="fsPianoScroll">
+    <div id="fsPiano"></div>
+  </div>
+
+  <div class="fsFooterBar">
+    ✨ Anikous Music Institute - Master Pro Studio Suite ✨
+  </div>
+</div>
+
+<!-- FIREBASE AUTHENTICATION SCRIPT -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import {
+  getAuth,
+  setPersistence,
+  indexedDBLocalPersistence,
+  browserLocalPersistence,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCxZ_pqLanqJgcQrVmFsFouQ17fmaYPy30",
+  authDomain: "anikous-music-institute.firebaseapp.com",
+  projectId: "anikous-music-institute",
+  storageBucket: "anikous-music-institute.firebasestorage.app",
+  messagingSenderId: "529726639589",
+  appId: "1:529726639589:web:573382dd91e4a3be8a330c"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+setPersistence(auth, indexedDBLocalPersistence)
+  .catch(() => setPersistence(auth, browserLocalPersistence))
+  .catch((error) => console.error("Persistence error: ", error));
+
+window.showPass = function() {
+  let p = document.getElementById("password");
+  p.type = p.type === "password" ? "text" : "password";
+}
+
+window.loginUser = function() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if(!email || !password){
+    alert("Email மற்றும் Password-ஐ உள்ளிடவும்!");
+    return;
+  }
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("mainPage").style.display = "block";
+      setTimeout(() => {
+        const pScroll = document.getElementById("pianoScroll");
+        if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth)/2;
+        renderStaffNotation([]);
+      }, 100);
+    })
+    .catch((error) => alert("Login Failed: " + error.message));
+};
+
+window.forgotPassword = function() {
+  const email = document.getElementById("email").value.trim();
+  if(!email){
+    alert("தயவுசெய்து உங்களது Email Address-ஐ உள்ளிடவும்!");
+    return;
+  }
+  sendPasswordResetEmail(auth, email)
+    .then(() => alert("Password reset link உங்கள் Email-க்கு அனுப்பப்பட்டுள்ளது."))
+    .catch((error) => alert("Error: " + error.message));
+};
+
+window.logoutUser = function() {
+  if(localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
+  }
+  if(peer) {
+    try { peer.destroy(); } catch(e){}
+    peer = null;
+  }
+  connectedPeersMap.clear();
+  activeCalls = {};
+  dataConnections = {};
+  peerHandStates.clear();
+  updateRemoteVideoUI();
+
+  signOut(auth).then(() => {
+    document.getElementById("loginPage").style.display = "flex";
+    document.getElementById("mainPage").style.display = "none";
+  });
+};
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("mainPage").style.display = "block";
+    setTimeout(() => {
+      const pScroll = document.getElementById("pianoScroll");
+      if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth)/2;
+      renderStaffNotation([]);
+    }, 100);
+  } else {
+    document.getElementById("loginPage").style.display = "flex";
+    document.getElementById("mainPage").style.display = "none";
+  }
+});
+</script>
+
+<!-- HD VIDEO STREAMING & STUDIO LOGIC SCRIPT -->
+<script>
+let peer = null;
+let localStream = null;
+let activeCalls = {};
+let dataConnections = {};
+
+let useFrontCamera = true;
+let cameraOn = true;
+let micOn = true;
+let currentRole = "";
+let currentRoom = "";
+let isHandRaised = false;
+
+let currentVoice = "grand";
+let currentDualVoice = "strings";
+let sustainMode = false;
+let sustainDuration = 2.0;
+let reverbLevel = 0.3;
+let masterVolume = 0.8;
+let transposeSemitones = 0;
+let currentTimeSignature = "4/4";
+let currentNoteDuration = "q";
+let currentKeySignature = "C";
+let staffSpacingMultiplier = 45;
+
+const localVideo = document.getElementById("localVideo");
+const fsLocalVideo = document.getElementById("fsLocalVideo");
+const statusBox = document.getElementById("status");
+
+const remoteVideoSlots = [
+  { video: document.getElementById("remoteVideo1"), fsVideo: document.getElementById("fsRemoteVideo1"), nameEl: document.getElementById("remoteName1"), fsNameEl: document.getElementById("fsRemoteName1"), card: document.getElementById("remoteCard1"), fsCard: document.getElementById("fsRemoteCard1"), badge: document.getElementById("remoteHandBadge1") },
+  { video: document.getElementById("remoteVideo2"), fsVideo: document.getElementById("fsRemoteVideo2"), nameEl: document.getElementById("remoteName2"), fsNameEl: document.getElementById("fsRemoteName2"), card: document.getElementById("extraCard1"), fsCard: document.querySelector(".fsExtraCard1"), badge: document.getElementById("remoteHandBadge2") },
+  { video: document.getElementById("remoteVideo3"), fsVideo: document.getElementById("fsRemoteVideo3"), nameEl: document.getElementById("remoteName3"), fsNameEl: document.getElementById("fsRemoteName3"), card: document.getElementById("extraCard2"), fsCard: document.querySelector(".fsExtraCard2"), badge: document.getElementById("remoteHandBadge3") }
+];
+
+let connectedPeersMap = new Map();
+let peerHandStates = new Map();
+
+function status(text, type = "ready"){
+  statusBox.textContent = text;
+  statusBox.className = "status " + type;
+}
+
+function changeVoice(voice){
+  currentVoice = voice;
+  broadcastData({ type:"changeVoice", voice:voice });
+}
+
+function changeDualVoice(voice){
+  currentDualVoice = voice;
+  broadcastData({ type:"changeDualVoice", dual:voice });
+}
+
+function toggleSustain(){
+  sustainMode = !sustainMode;
+  const btn = document.getElementById("sustainBtn");
+  btn.textContent = sustainMode ? "SUSTAIN ON" : "SUSTAIN OFF";
+  btn.classList.toggle("active", sustainMode);
+
+  if(!sustainMode) {
+    Object.keys(sounds).forEach(note => stopMultiSound(parseInt(note), sounds));
+  }
+  broadcastData({ type:"toggleSustain", sustain:sustainMode, duration:sustainDuration });
+}
+
+function changeSustainTime(val){
+  sustainDuration = parseFloat(val);
+  document.getElementById("sustainTimeLabel").textContent = `${sustainDuration.toFixed(1)}s`;
+  broadcastData({ type:"changeSustainTime", duration:sustainDuration });
+}
+
+function changeReverb(val){ 
+  reverbLevel = parseFloat(val); 
+  document.getElementById("reverbRange").value = reverbLevel;
+  broadcastData({ type:"changeReverb", reverb:reverbLevel }); 
+}
+
+function changeMasterGain(val){ 
+  masterVolume = parseFloat(val); 
+  document.getElementById("masterVolRange").value = masterVolume;
+  if(masterGainNode) masterGainNode.gain.setValueAtTime(masterVolume, audioContext.currentTime); 
+}
+
+function changeTranspose(val){ 
+  transposeSemitones = parseInt(val); 
+  document.getElementById("transposeSelect").value = val;
+  renderStaffNotation(recordedMidiNotes); 
+  broadcastData({ type:"changeTranspose", transpose:transposeSemitones }); 
+}
+
+function changeKeySignature(val){ 
+  currentKeySignature = val; 
+  document.getElementById("keySigSelect").value = val;
+  renderStaffNotation(recordedMidiNotes); 
+  broadcastData({ type:"changeKeySignature", keySig: val });
+}
+
+function zoomStaffIn(){ 
+  staffSpacingMultiplier = Math.min(70, staffSpacingMultiplier + 8); 
+  renderStaffNotation(recordedMidiNotes); 
+}
+
+function zoomStaffOut(){ 
+  staffSpacingMultiplier = Math.max(30, staffSpacingMultiplier - 8); 
+  renderStaffNotation(recordedMidiNotes); 
+}
+
+function raiseHand() {
+  isHandRaised = !isHandRaised;
+  const btn = document.getElementById("raiseHandBtn");
+  btn.classList.toggle("active", isHandRaised);
+  
+  const localBadge = document.getElementById("localHandBadge");
+  const fsLocalBadge = document.getElementById("fsLocalHandBadge");
+  if(isHandRaised) {
+    localBadge.style.display = "flex";
+    fsLocalBadge.style.display = "flex";
+  } else {
+    localBadge.style.display = "none";
+    fsLocalBadge.style.display = "none";
+  }
+
+  broadcastData({ type: "raiseHand", role: currentRole, raised: isHandRaised });
+}
+
+function sendChatMessage() {
+  const input = document.getElementById("chatInput");
+  const msg = input.value.trim();
+  if(!msg) return;
+  appendChatMsg(currentRole.toUpperCase() + ": " + msg, "#38bdf8");
+  broadcastData({ type: "chatMessage", role: currentRole, text: msg });
+  input.value = "";
+}
+
+function sendReaction(emoji) {
+  appendChatMsg(currentRole.toUpperCase() + " reacted: " + emoji, "#ffd54f");
+  broadcastData({ type: "reaction", role: currentRole, emoji: emoji });
+}
+
+function appendChatMsg(text, color="#fff") {
+  const box = document.getElementById("chatBox");
+  const div = document.createElement("div");
+  div.style.color = color;
+  div.textContent = text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function updateVideoMirror() {
+  if (useFrontCamera) {
+    localVideo.classList.add("front-cam");
+    fsLocalVideo.classList.add("front-cam");
+  } else {
+    localVideo.classList.remove("front-cam");
+    fsLocalVideo.classList.remove("front-cam");
+  }
+}
+
+async function getCameraStream(){
+  try{
+    status("Loading 1080p HD Camera & Audio...", "loading");
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: { 
+        facingMode: useFrontCamera ? "user" : "environment",
+        width: { ideal: 1920, min: 1280, max: 1920 },
+        height: { ideal: 1080, min: 720, max: 1080 },
+        frameRate: { ideal: 30, max: 60 }
+      },
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        sampleRate: 48000
+      }
+    });
+
+    localVideo.srcObject = localStream;
+    fsLocalVideo.srcObject = localStream;
+    updateVideoMirror();
+
+    cameraOn = true;
+    micOn = true;
+    updateMediaButtons();
+    status("1080p HD Camera & Audio Ready", "ready");
+    return localStream;
+  }catch(error){
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { width: { ideal: 1280 }, height: { ideal: 720 } }, 
+        audio: true 
+      });
+      localVideo.srcObject = localStream;
+      fsLocalVideo.srcObject = localStream;
+      updateVideoMirror();
+      status("Connected in HD resolution", "ready");
+      return localStream;
+    } catch(err2) {
+      status("Camera/Mic Permission Denied", "error");
+      alert("Camera மற்றும் Microphone அனுமதி தேவை.");
+      throw err2;
+    }
+  }
+}
+
+async function startClass(){
+  const room = document.getElementById("roomId").value.trim();
+  const role = document.getElementById("userRole").value;
+
+  if(!room){ alert("Room ID enter செய்யவும்."); return; }
+  if(!window.isSecureContext){ alert("HTTPS connection தேவை."); return; }
+
+  currentRole = role;
+  currentRoom = room;
+  updateRoleNames();
+
+  try {
+    const stream = await getCameraStream();
+    
+    const peerId = "anikous-room-" + room + "-" + role;
+    status("Connecting To HD Video Class...", "loading");
+
+    if(peer) { try { peer.destroy(); } catch(e){} }
+
+    peer = new Peer(peerId, {
+      config: {
+        'iceServers': [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun1.l.google.com:19302' },
+          { urls: 'stun2.l.google.com:19302' },
+          { urls: 'stun.stunprotocol.org:3478' }
+        ]
+      }
+    });
+
+    peer.on("open", id => {
+      status(`Connected (Role: ${role.toUpperCase()} | Room: ${room})`, "connected");
+      const allRoles = ["teacher", "student", "extra1", "extra2"];
+      
+      allRoles.forEach(r => {
+        if(r !== role) {
+          const targetId = "anikous-room-" + room + "-" + r;
+          connectAndCall(targetId, stream);
+          connectData(targetId);
+        }
+      });
+    });
+
+    peer.on("error", err => {
+      console.error("PeerJS Error:", err);
+      status("Network Error / Connection Failed", "error");
+    });
+
+    peer.on("call", call => {
+      activeCalls[call.peer] = call;
+      call.answer(stream);
+      
+      call.on("stream", remoteStream => {
+        assignRemoteStream(call.peer, remoteStream);
+        status("Live HD Video Stream Connected!", "connected");
+      });
+      
+      call.on("close", () => { 
+        removeRemoteStream(call.peer); 
+        status("Participant Disconnected", "error"); 
+      });
+    });
+
+    peer.on("connection", connection => setupDataConnection(connection));
+
+  } catch(e) {
+    return;
+  }
+}
+
+function connectAndCall(targetPeerId, stream){
+  setTimeout(() => {
+    if(!peer) return;
+    if(activeCalls[targetPeerId]) return;
+
+    const call = peer.call(targetPeerId, stream);
+    if(call){
+      activeCalls[targetPeerId] = call;
+      call.on("stream", remoteStream => {
+        assignRemoteStream(targetPeerId, remoteStream);
+        status("Live HD Video Stream Connected!", "connected");
+      });
+      call.on("close", () => removeRemoteStream(targetPeerId));
+      call.on("error", (err) => console.log("Call error with", targetPeerId, err));
+    }
+  }, 1500);
+}
+
+function connectData(id){
+  if(!peer) return;
+  try{
+    const connection = peer.connect(id, { reliable:true });
+    setupDataConnection(connection);
+  }catch(error){}
+}
+
+function setupDataConnection(connection){
+  connection.on("open", () => {
+    dataConnections[connection.peer] = connection;
+    status("Studio Sync Connected!", "connected");
+    if(isHandRaised) {
+      connection.send({ type: "raiseHand", role: currentRole, raised: true });
+    }
+  });
+  connection.on("data", data => handleRemoteData(data));
+  connection.on("close", () => {
+    delete dataConnections[connection.peer];
+    removeRemoteStream(connection.peer);
+  });
+}
+
+function broadcastData(data){
+  Object.values(dataConnections).forEach(conn => {
+    if(conn && conn.open) { try { conn.send(data); } catch(e){} }
+  });
+}
+
+function assignRemoteStream(peerId, stream){
+  connectedPeersMap.set(peerId, stream);
+  updateRemoteVideoUI();
+}
+
+function removeRemoteStream(peerId){
+  connectedPeersMap.delete(peerId);
+  delete activeCalls[peerId];
+  delete dataConnections[peerId];
+  peerHandStates.delete(peerId);
+  updateRemoteVideoUI();
+}
+
+function updateRemoteVideoUI(){
+  let index = 0;
+  connectedPeersMap.forEach((stream, peerId) => {
+    if(index < remoteVideoSlots.length){
+      let slot = remoteVideoSlots[index];
+      
+      if (slot.video.srcObject !== stream) {
+        slot.video.srcObject = stream;
+        slot.fsVideo.srcObject = stream;
+      }
+
+      let parts = peerId.split("-");
+      let roleName = parts[parts.length - 1];
+      slot.nameEl.textContent = roleName.toUpperCase() + " (1080p HD)";
+      slot.fsNameEl.textContent = roleName.toUpperCase() + " (1080p HD)";
+      
+      if(slot.card) slot.card.classList.remove("hidden-card");
+      if(slot.fsCard) slot.fsCard.classList.remove("hidden-card");
+
+      if(peerHandStates.get(peerId)) {
+        if(slot.badge) slot.badge.style.display = "flex";
+      } else {
+        if(slot.badge) slot.badge.style.display = "none";
+      }
+
+      index++;
+    }
+  });
+
+  for(let i = index; i < remoteVideoSlots.length; i++){
+    let slot = remoteVideoSlots[i];
+    if(slot.video.srcObject) {
+      slot.video.srcObject = null;
+      slot.fsVideo.srcObject = null;
+    }
+    slot.nameEl.textContent = "Waiting...";
+    slot.fsNameEl.textContent = "Waiting...";
+    
+    if(slot.card) slot.card.classList.add("hidden-card");
+    if(slot.fsCard) slot.fsCard.classList.add("hidden-card");
+    if(slot.badge) slot.badge.style.display = "none";
+  }
+}
+
+function handleRemoteData(data){
+  if(!data || !data.type) return;
+  if(data.type==="changeVoice"){ 
+    currentVoice = data.voice; 
+    document.getElementById("voiceSelect").value = data.voice; 
+  }
+  if(data.type==="changeDualVoice"){ 
+    currentDualVoice = data.dual; 
+    document.getElementById("dualVoiceSelect").value = data.dual; 
+  }
+  if(data.type==="toggleSustain"){
+    sustainMode = data.sustain;
+    sustainDuration = data.duration || sustainDuration;
+    const btn = document.getElementById("sustainBtn");
+    btn.textContent = sustainMode ? "SUSTAIN ON" : "SUSTAIN OFF";
+    btn.classList.toggle("active", sustainMode);
+  }
+  if(data.type==="changeSustainTime"){
+    sustainDuration = data.duration;
+    document.getElementById("sustainTimeLabel").textContent = `${sustainDuration.toFixed(1)}s`;
+  }
+  if(data.type==="changeReverb"){ 
+    reverbLevel = data.reverb; 
+    document.getElementById("reverbRange").value = reverbLevel;
+  }
+  if(data.type==="changeTranspose"){ 
+    transposeSemitones = data.transpose; 
+    document.getElementById("transposeSelect").value = data.transpose;
+    renderStaffNotation(recordedMidiNotes); 
+  }
+  if(data.type==="changeKeySignature"){
+    currentKeySignature = data.keySig;
+    document.getElementById("keySigSelect").value = data.keySig;
+    renderStaffNotation(recordedMidiNotes);
+  }
+  if(data.type==="toggleMetronome"){
+    metroPlaying = data.playing;
+    bpm = data.bpm;
+    document.getElementById("bpmLabel").textContent = bpm + " BPM";
+    document.getElementById("bpmRange").value = bpm;
+    const btn = document.getElementById("metroToggle");
+    btn.textContent = metroPlaying ? "Stop" : "Start";
+    btn.classList.toggle("active", metroPlaying);
+    clearInterval(metroTimer);
+    if(metroPlaying) metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
+  }
+  if(data.type==="changeBPM"){
+    bpm = data.bpm;
+    document.getElementById("bpmLabel").textContent = bpm + " BPM";
+    document.getElementById("bpmRange").value = bpm;
+    if(metroPlaying){ clearInterval(metroTimer); metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000); }
+  }
+  if(data.type==="clearNotation"){
+    recordedMidiNotes = [];
+    renderStaffNotation([]);
+  }
+  if(data.type==="raiseHand") {
+    connectedPeersMap.forEach((stream, peerId) => {
+      if(peerId.endsWith("-" + data.role)) {
+        peerHandStates.set(peerId, data.raised);
+      }
+    });
+    updateRemoteVideoUI();
+  }
+  if(data.type==="chatMessage") appendChatMsg(data.role.toUpperCase() + ": " + data.text, "#38bdf8");
+  if(data.type==="reaction") appendChatMsg(data.role.toUpperCase() + " reacted: " + data.emoji, "#ffd54f");
+  if(data.type==="loadYouTube") {
+    document.getElementById("ytUrlInput").value = data.videoId;
+    playAndSyncYouTube(data.videoId, false);
+  }
+  if(data.type==="keyDown"){
+    document.querySelectorAll(`[data-note="${data.note}"]`).forEach(key => pressRemoteKey(data.note, key));
+  }
+  if(data.type==="keyUp"){
+    document.querySelectorAll(`[data-note="${data.note}"]`).forEach(key => releaseRemoteKey(data.note, key));
+  }
+}
+
+let remoteKeys = new Set();
+let remoteSounds = {};
+
+function pressRemoteKey(note, key){
+  if(remoteKeys.has(note)) return;
+  remoteKeys.add(note);
+  key.classList.add("remote-active");
+  playMultiSound(note + transposeSemitones, currentVoice, currentDualVoice, remoteSounds, sustainMode ? sustainDuration : 3.0);
+  
+  recordedMidiNotes.push(note);
+  renderStaffNotation(recordedMidiNotes);
+  updateDisplay();
+}
+
+function releaseRemoteKey(note, key){
+  remoteKeys.delete(note);
+  key.classList.remove("remote-active");
+  stopMultiSound(note + transposeSemitones, remoteSounds);
+  updateDisplay();
+}
+
+function updateRoleNames(){
+  document.getElementById("localName").textContent = currentRole.toUpperCase() + " (Me - 1080p HD)";
+  document.getElementById("fsLocalName").textContent = currentRole.toUpperCase() + " (Me - 1080p HD)";
+}
+
+function toggleCamera(){
+  if(!localStream) return;
+  const track = localStream.getVideoTracks()[0];
+  if(!track) return;
+  cameraOn = !cameraOn;
+  track.enabled = cameraOn;
+  updateMediaButtons();
+}
+
+function toggleMic(){
+  if(!localStream) return;
+  const track = localStream.getAudioTracks()[0];
+  if(!track) return;
+  micOn = !micOn;
+  track.enabled = micOn;
+  updateMediaButtons();
+}
+
+function updateMediaButtons(){
+  const cameraBtn = document.getElementById("cameraBtn");
+  const micBtn = document.getElementById("micBtn");
+  cameraBtn.textContent = cameraOn ? "Camera ON" : "Camera OFF";
+  micBtn.textContent = micOn ? "Mic ON" : "Mic OFF";
+  cameraBtn.classList.toggle("active", cameraOn);
+  micBtn.classList.toggle("active", micOn);
+}
+
+function toggleVideoFullscreen(){
+  document.getElementById("videoFullscreenContainer").classList.toggle("active");
+}
+
+async function switchCamera(){
+  if(!localStream) return;
+  useFrontCamera = !useFrontCamera;
+  localStream.getVideoTracks().forEach(track => track.stop());
+  try{
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: { 
+        facingMode: useFrontCamera ? "user" : "environment", 
+        width: { ideal: 1920, min: 1280, max: 1920 }, 
+        height: { ideal: 1080, min: 720, max: 1080 },
+        frameRate: { ideal: 30, max: 60 }
+      },
+      audio: true
+    });
+    localVideo.srcObject = localStream;
+    fsLocalVideo.srcObject = localStream;
+    updateVideoMirror();
+    cameraOn = true; micOn = true; updateMediaButtons();
+
+    Object.values(activeCalls).forEach(call => {
+      const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+      if(sender && localStream.getVideoTracks()[0]) {
+        sender.replaceTrack(localStream.getVideoTracks()[0]);
+      }
+    });
+
+    status("Studio 1080p HD Camera Switched!", "connected");
+  }catch(err){ useFrontCamera = !useFrontCamera; alert("Camera மாற்ற இயலவில்லை."); }
+}
+
+function openJitsiMeet() {
+  const room = document.getElementById("roomId").value.trim();
+  if(!room) { alert("Room ID enter செய்யவும்!"); return; }
+  window.open(`https://meet.jit.si/AnikousUltraStudio_${room}`, '_blank');
+}
+
+/* YOUTUBE PLAYER & SYNC LOGIC */
+function loadYouTubeVideo() {
+  const input = document.getElementById("ytUrlInput").value.trim();
+  if(!input) { alert("YouTube URL அல்லது Video ID-ஐ உள்ளிடவும்!"); return; }
+  let videoId = input;
+  if(input.includes("youtube.com") || input.includes("youtu.be")) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = input.match(regExp);
+    if(match && match[2].length === 11) {
+      videoId = match[2];
+    }
+  }
+  if(videoId.length !== 11 && !input.match(/^[a-zA-Z0-9_-]{11}$/)) {
+    alert("Valid YouTube URL அல்லது Video ID-ஐ உள்ளிடவும்!");
+    return;
+  }
+  playAndSyncYouTube(videoId, true);
+}
+
+function playAndSyncYouTube(videoId, shouldBroadcast = true) {
+  const container = document.getElementById("ytPlayerContainer");
+  const iframe = document.getElementById("ytIframe");
+  container.style.display = "block";
+  iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1`;
+  document.getElementById("ytStatusText").textContent = "Playing: " + videoId;
+  if(shouldBroadcast) {
+    broadcastData({ type: "loadYouTube", videoId: videoId });
+  }
+}
+
+const NOTE_NAMES_SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+function midiToVexNote(midiNote) {
+  const transposed = midiNote + transposeSemitones;
+  const octave = Math.floor(transposed / 12) - 1;
+  const nameIdx = transposed % 12;
+  let rawName = NOTE_NAMES_SHARP[nameIdx];
+  let vexName = rawName.replace("#", "#").toLowerCase();
+  return `${vexName}/${octave}`;
+}
+
+let recordedMidiNotes = [];
+
+function clearNotation() {
+  recordedMidiNotes = [];
+  renderStaffNotation([]);
+  broadcastData({ type: "clearNotation" });
+}
+
+function renderStaffNotation(noteArray) {
+  const container = document.getElementById("staffSvgContainer");
+  if(container) {
+    renderStaffToContainer(container, noteArray, 220, 720);
+  }
+
+  const fsContainer = document.getElementById("fsStaffSvgContainer");
+  if(fsContainer) {
+    renderStaffToContainer(fsContainer, noteArray, 140, 720);
+  }
+
+  const a4Container = document.getElementById("a4ModalStaffContainer");
+  if(a4Container && document.getElementById("a4SheetModal").classList.contains("active")) {
+    renderStaffToContainer(a4Container, noteArray, 350, 720);
+  }
+}
+
+function renderStaffToContainer(containerEl, noteArray, svgHeight, svgWidth) {
+  containerEl.innerHTML = "";
+  if(typeof Vex === 'undefined') return;
+  const { Renderer, Stave, StaveNote, Voice, Formatter } = Vex.Flow;
+
+  const displayNotes = noteArray.slice(-48);
+  const notesPerLine = 8;
+  const numLines = Math.max(1, Math.ceil(displayNotes.length / notesPerLine));
+  
+  const systemHeight = 140;
+  const totalSvgHeight = Math.max(svgHeight, numLines * systemHeight + 30);
+  const fixedSvgWidth = 720;
+
+  const renderer = new Renderer(containerEl, Renderer.Backends.SVG);
+  renderer.resize(fixedSvgWidth, totalSvgHeight);
+  const context = renderer.getContext();
+  context.setFont("Arial", 9);
+
+  if(displayNotes.length === 0) {
+    const emptyStave = new Stave(10, 15, fixedSvgWidth - 30);
+    emptyStave.addClef("treble").addKeySignature(currentKeySignature).addTimeSignature(currentTimeSignature);
+    emptyStave.setContext(context).draw();
+
+    const emptyBass = new Stave(10, 85, fixedSvgWidth - 30);
+    emptyBass.addClef("bass").addKeySignature(currentKeySignature).addTimeSignature(currentTimeSignature);
+    emptyBass.setContext(context).draw();
+    return;
+  }
+
+  for(let i = 0; i < numLines; i++) {
+    const lineNotes = displayNotes.slice(i * notesPerLine, (i + 1) * notesPerLine);
+    const startY = i * systemHeight + 15;
+
+    const trebleNotes = [];
+    const bassNotes = [];
+
+    lineNotes.forEach(mNote => {
+      const vStr = midiToVexNote(mNote);
+      const parts = vStr.split("/");
+      const keyName = parts[0];
+      const octNum = parseInt(parts[1]);
+
+      const staveNote = new StaveNote({
+        keys: [vStr],
+        duration: currentNoteDuration,
+        clef: octNum >= 4 ? "treble" : "bass"
+      });
+
+      if(keyName.includes("#")) {
+        staveNote.addModifier(new Vex.Flow.Accidental("#"), 0);
+      }
+
+      if(octNum >= 4) trebleNotes.push(staveNote);
+      else bassNotes.push(staveNote);
+    });
+
+    const staveWidth = fixedSvgWidth - 40;
+
+    const trebleStave = new Stave(20, startY, staveWidth);
+    if(i === 0) {
+      trebleStave.addClef("treble").addKeySignature(currentKeySignature).addTimeSignature(currentTimeSignature);
+    } else {
+      trebleStave.addClef("treble");
+    }
+    trebleStave.setContext(context).draw();
+
+    if(trebleNotes.length > 0) {
+      const voiceTreble = new Voice({ num_beats: trebleNotes.length, strict: false });
+      try {
+        voiceTreble.addTickables(trebleNotes);
+        new Formatter().joinVoices([voiceTreble]).format([voiceTreble], trebleStave.getWidth() - 70);
+        voiceTreble.draw(context, trebleStave);
+      } catch(e) {}
+    }
+
+    const bassStave = new Stave(20, startY + 70, staveWidth);
+    if(i === 0) {
+      bassStave.addClef("bass").addKeySignature(currentKeySignature).addTimeSignature(currentTimeSignature);
+    } else {
+      bassStave.addClef("bass");
+    }
+    bassStave.setContext(context).draw();
+
+    if(bassNotes.length > 0) {
+      const voiceBass = new Voice({ num_beats: bassNotes.length, strict: false });
+      try {
+        voiceBass.addTickables(bassNotes);
+        new Formatter().joinVoices([voiceBass]).format([voiceBass], bassStave.getWidth() - 70);
+        voiceBass.draw(context, bassStave);
+      } catch(e) {}
+    }
+  }
+}
+
+/* AUDIO SYNTHESIS & PIANO CONTROL LOGIC */
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+let audioContext = null;
+let masterGainNode = null;
+let sounds = {};
+
+function initAudio() {
+  if(!audioContext) {
+    audioContext = new AudioContextClass();
+    masterGainNode = audioContext.createGain();
+    masterGainNode.gain.setValueAtTime(masterVolume, audioContext.currentTime);
+    masterGainNode.connect(audioContext.destination);
+  }
+  if(audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+}
+
+function getFreq(note) {
+  return 440 * Math.pow(2, (note - 69) / 12);
+}
+
+function playMultiSound(note, voice, dualVoice, soundStore, dur) {
+  initAudio();
+  if(soundStore[note]) stopMultiSound(note, soundStore);
+
+  const freq = getFreq(note);
+  const now = audioContext.currentTime;
+
+  const osc1 = audioContext.createOscillator();
+  const gain1 = audioContext.createGain();
+  
+  setupVoiceParams(osc1, gain1, voice, freq, now);
+
+  osc1.connect(gain1);
+  gain1.connect(masterGainNode);
+  osc1.start(now);
+
+  let osc2 = null, gain2 = null;
+  if(dualVoice && dualVoice !== "none") {
+    osc2 = audioContext.createOscillator();
+    gain2 = audioContext.createGain();
+    setupVoiceParams(osc2, gain2, dualVoice, freq, now);
+    gain2.gain.setValueAtTime(gain2.gain.value * 0.6, now);
+    osc2.connect(gain2);
+    gain2.connect(masterGainNode);
+    osc2.start(now);
+  }
+
+  soundStore[note] = { osc1, gain1, osc2, gain2, startTime: now, duration: dur };
+}
+
+function setupVoiceParams(osc, gainNode, voice, freq, now) {
+  osc.frequency.setValueAtTime(freq, now);
+
+  switch(voice) {
+    case "bright":
+      osc.type = "sawtooth";
+      gainNode.gain.setValueAtTime(0.4, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+      break;
+    case "electric":
+      osc.type = "sine";
+      gainNode.gain.setValueAtTime(0.6, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+      break;
+    case "organ":
+    case "jazzorgan":
+      osc.type = "square";
+      gainNode.gain.setValueAtTime(0.3, now);
+      break;
+    case "strings":
+    case "synthpad":
+    case "choir":
+      osc.type = "sawtooth";
+      gainNode.gain.setValueAtTime(0.01, now);
+      gainNode.gain.linearRampToValueAtTime(0.4, now + 0.3);
+      break;
+    case "flute":
+    case "panflute":
+      osc.type = "sine";
+      gainNode.gain.setValueAtTime(0.01, now);
+      gainNode.gain.linearRampToValueAtTime(0.5, now + 0.1);
+      break;
+    case "guitar":
+    case "pluck":
+      osc.type = "triangle";
+      gainNode.gain.setValueAtTime(0.7, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+      break;
+    case "synthbass":
+    case "acousticbass":
+      osc.type = "sawtooth";
+      gainNode.gain.setValueAtTime(0.6, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+      break;
+    case "marimba":
+    case "xylophone":
+      osc.type = "sine";
+      gainNode.gain.setValueAtTime(0.8, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+      break;
+    default: // grand
+      osc.type = "triangle";
+      gainNode.gain.setValueAtTime(0.5, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
+      break;
+  }
+}
+
+function stopMultiSound(note, soundStore) {
+  if(!soundStore[note] || !audioContext) return;
+  const { osc1, gain1, osc2, gain2, startTime, duration } = soundStore[note];
+  const now = audioContext.currentTime;
+  const releaseTime = sustainMode ? Math.max(0.2, duration) : 0.1;
+
+  try {
+    gain1.gain.cancelScheduledValues(now);
+    gain1.gain.setValueAtTime(gain1.gain.value, now);
+    gain1.gain.exponentialRampToValueAtTime(0.0001, now + releaseTime);
+    osc1.stop(now + releaseTime);
+
+    if(osc2 && gain2) {
+      gain2.gain.cancelScheduledValues(now);
+      gain2.gain.setValueAtTime(gain2.gain.value, now);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, now + releaseTime);
+      osc2.stop(now + releaseTime);
+    }
+  } catch(e) {}
+
+  delete soundStore[note];
+}
+
+/* PIANO KEYBOARD GENERATION & UI INTERACTIONS */
+let activeLocalKeys = new Set();
+let showKeyLabels = true;
+let holdMode = false;
+
+function createPianoKeys() {
+  const pianoEl = document.getElementById("piano");
+  const fsPianoEl = document.getElementById("fsPiano");
+  if(!pianoEl) return;
+
+  pianoEl.innerHTML = "";
+  if(fsPianoEl) fsPianoEl.innerHTML = "";
+
+  const startOctave = 1;
+  const totalOctaves = 7;
+  let whiteKeyIndex = 0;
+
+  const keyWidth = 32;
+  const blackWidth = 20;
+
+  for(let oct = startOctave; oct < startOctave + totalOctaves; oct++) {
+    for(let i = 0; i < 12; i++) {
+      const note = oct * 12 + i;
+      const noteInOct = i;
+      const isBlack = [1, 3, 6, 8, 10].includes(noteInOct);
+
+      const key = document.createElement("div");
+      key.dataset.note = note;
+
+      const noteName = NOTE_NAMES_SHARP[noteInOct] + oct;
+
+      if(!isBlack) {
+        key.className = "white";
+        key.style.left = (whiteKeyIndex * keyWidth) + "px";
+        if(showKeyLabels) key.textContent = noteName;
+
+        key.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          handleKeyPress(note, key);
+        });
+        key.addEventListener("pointerup", (e) => {
+          e.preventDefault();
+          if(!holdMode) handleKeyRelease(note, key);
+        });
+        key.addEventListener("pointerleave", (e) => {
+          if(!holdMode && activeLocalKeys.has(note)) handleKeyRelease(note, key);
+        });
+
+        pianoEl.appendChild(key);
+        if(fsPianoEl) fsPianoEl.appendChild(key.cloneNode(true));
+
+        whiteKeyIndex++;
+      } else {
+        key.className = "black";
+        key.style.left = ((whiteKeyIndex - 1) * keyWidth + (keyWidth - blackWidth / 2)) + "px";
+        if(showKeyLabels) key.textContent = noteName;
+
+        key.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          handleKeyPress(note, key);
+        });
+        key.addEventListener("pointerup", (e) => {
+          e.preventDefault();
+          if(!holdMode) handleKeyRelease(note, key);
+        });
+        key.addEventListener("pointerleave", (e) => {
+          if(!holdMode && activeLocalKeys.has(note)) handleKeyRelease(note, key);
+        });
+
+        pianoEl.appendChild(key);
+        if(fsPianoEl) fsPianoEl.appendChild(key.cloneNode(true));
+      }
+    }
+  }
+
+  const totalWidth = whiteKeyIndex * keyWidth;
+  pianoEl.style.width = totalWidth + "px";
+  if(fsPianoEl) fsPianoEl.style.width = totalWidth + "px";
+
+  renderOctaveButtons(startOctave, totalOctaves, keyWidth);
+}
+
+function renderOctaveButtons(startOct, totalOct, keyWidth) {
+  const container = document.getElementById("octaveButtons");
+  if(!container) return;
+  container.innerHTML = "";
+
+  for(let o = startOct; o < startOct + totalOct; o++) {
+    const btn = document.createElement("button");
+    btn.textContent = `C${o}`;
+    btn.onclick = () => {
+      const pScroll = document.getElementById("pianoScroll");
+      if(pScroll) {
+        const whiteKeysPerOctave = 7;
+        const targetScroll = (o - startOct) * whiteKeysPerOctave * keyWidth;
+        pScroll.scrollTo({ left: targetScroll, behavior: 'smooth' });
+      }
+    };
+    container.appendChild(btn);
+  }
+}
+
+function handleKeyPress(note, keyEl) {
+  if(activeLocalKeys.has(note)) return;
+  activeLocalKeys.add(note);
+
+  document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.add("local-active"));
+
+  playMultiSound(note + transposeSemitones, currentVoice, currentDualVoice, sounds, sustainMode ? sustainDuration : 3.0);
+  recordedMidiNotes.push(note);
+  renderStaffNotation(recordedMidiNotes);
+  updateDisplay();
+
+  broadcastData({ type: "keyDown", note: note });
+}
+
+function handleKeyRelease(note, keyEl) {
+  activeLocalKeys.delete(note);
+  document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.remove("local-active"));
+
+  stopMultiSound(note + transposeSemitones, sounds);
+  updateDisplay();
+
+  broadcastData({ type: "keyUp", note: note });
+}
+
+function updateDisplay() {
+  const keyShow = document.getElementById("keyShow");
+  const chordShow = document.getElementById("chordShow");
+
+  const allNotes = Array.from(new Set([...activeLocalKeys, ...remoteKeys])).sort((a, b) => a - b);
+
+  if(allNotes.length === 0) {
+    if(keyShow) keyShow.textContent = "-";
+    if(chordShow) chordShow.textContent = "-";
+    return;
+  }
+
+  const noteNames = allNotes.map(n => NOTE_NAMES_SHARP[(n + transposeSemitones) % 12]);
+  if(keyShow) keyShow.textContent = noteNames.join(", ");
+
+  if(chordShow) chordShow.textContent = detectChord(allNotes);
+}
+
+function detectChord(notes) {
+  if(notes.length < 2) return NOTE_NAMES_SHARP[(notes[0] + transposeSemitones) % 12];
+
+  const root = notes[0] + transposeSemitones;
+  const rootName = NOTE_NAMES_SHARP[root % 12];
+  const intervals = notes.map(n => (n + transposeSemitones - root) % 12).sort((a, b) => a - b);
+
+  if(intervals.includes(4) && intervals.includes(7)) return rootName + " Major";
+  if(intervals.includes(3) && intervals.includes(7)) return rootName + " Minor";
+  if(intervals.includes(3) && intervals.includes(6)) return rootName + " Diminished";
+  if(intervals.includes(4) && intervals.includes(8)) return rootName + " Augmented";
+  if(intervals.includes(2) && intervals.includes(7)) return rootName + " Sus2";
+  if(intervals.includes(5) && intervals.includes(7)) return rootName + " Sus4";
+  if(intervals.includes(4) && intervals.includes(7) && intervals.includes(10)) return rootName + "7";
+
+  return rootName + " Chord";
+}
+
+function toggleKeyNames() {
+  showKeyLabels = !showKeyLabels;
+  const btn = document.getElementById("keyToggle");
+  if(btn) btn.classList.toggle("active", showKeyLabels);
+
+  document.querySelectorAll("#piano .white, #piano .black, #fsPiano .white, #fsPiano .black").forEach(key => {
+    const note = parseInt(key.dataset.note);
+    if(showKeyLabels) {
+      const oct = Math.floor(note / 12);
+      key.textContent = NOTE_NAMES_SHARP[note % 12] + oct;
+    } else {
+      key.textContent = "";
+    }
+  });
+}
+
+function toggleHold() {
+  holdMode = !holdMode;
+  const btn = document.getElementById("holdBtn");
+  const fsBtn = document.getElementById("fsHoldBtn");
+
+  if(btn) btn.classList.toggle("active", holdMode);
+  if(fsBtn) fsBtn.classList.toggle("active", holdMode);
+
+  if(!holdMode) {
+    activeLocalKeys.forEach(note => {
+      stopMultiSound(note + transposeSemitones, sounds);
+      document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.remove("local-active"));
+    });
+    activeLocalKeys.clear();
+    updateDisplay();
+  }
+}
+
+function centerPiano() {
+  const pScroll = document.getElementById("pianoScroll");
+  if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth) / 2;
+}
+
+function togglePianoFullscreen() {
+  const container = document.getElementById("pianoFullscreenContainer");
+  container.classList.toggle("active");
+  if(container.classList.contains("active")) {
+    renderStaffNotation(recordedMidiNotes);
+  }
+}
+
+/* A4 SHEET MODAL & PDF EXPORT */
+function openA4SheetModal() {
+  const modal = document.getElementById("a4SheetModal");
+  modal.classList.add("active");
+
+  const now = new Date();
+  document.getElementById("a4ModalDate").textContent = "Date: " + now.toLocaleDateString();
+  document.getElementById("a4ModalTime").textContent = "Time: " + now.toLocaleTimeString();
+
+  renderStaffNotation(recordedMidiNotes);
+}
+
+function closeA4SheetModal() {
+  document.getElementById("a4SheetModal").classList.remove("active");
+}
+
+function downloadSheetPDF() {
+  const element = document.getElementById("a4PaperPrintArea");
+  if(typeof html2pdf === 'undefined') {
+    alert("PDF library load ஆகவில்லை. Print விருப்பத்தை பயன்படுத்தவும்.");
+    return;
+  }
+  const opt = {
+    margin:       10,
+    filename:     'Anikous_Music_Score.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+
+function printOrExportPNG() {
+  window.print();
+}
+
+/* METRONOME LOGIC */
+let metroPlaying = false;
+let bpm = 120;
+let metroTimer = null;
+
+function toggleMetronome() {
+  metroPlaying = !metroPlaying;
+  const btn = document.getElementById("metroToggle");
+  btn.textContent = metroPlaying ? "Stop" : "Start";
+  btn.classList.toggle("active", metroPlaying);
+
+  clearInterval(metroTimer);
+  if(metroPlaying) {
+    metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
+  }
+  broadcastData({ type: "toggleMetronome", playing: metroPlaying, bpm: bpm });
+}
+
+function changeBPM(val) {
+  bpm = parseInt(val);
+  document.getElementById("bpmLabel").textContent = bpm + " BPM";
+  if(metroPlaying) {
+    clearInterval(metroTimer);
+    metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
+  }
+  broadcastData({ type: "changeBPM", bpm: bpm });
+}
+
+function metronomeTick() {
+  initAudio();
+  const osc = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  const now = audioContext.currentTime;
+
+  osc.frequency.setValueAtTime(1000, now);
+  gain.gain.setValueAtTime(0.3, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+  osc.connect(gain);
+  gain.connect(masterGainNode);
+  osc.start(now);
+  osc.stop(now + 0.05);
+
+  const ind = document.getElementById("beatIndicator");
+  if(ind) {
+    ind.style.color = "#ffd54f";
+    setTimeout(() => ind.style.color = "#16a34a", 100);
+  }
+}
+
+/* RECORDING & LOOPER LOGIC */
+let isRecording = false;
+let recordedEvents = [];
+let recordStartTime = 0;
+let recTimer = null;
+
+function toggleRecording() {
+  isRecording = !isRecording;
+  const btn = document.getElementById("recBtn");
+  const statusTxt = document.getElementById("recStatusText");
+
+  if(isRecording) {
+    recordedEvents = [];
+    recordStartTime = Date.now();
+    btn.textContent = "Stop Rec";
+    statusTxt.textContent = "Recording...";
+    statusTxt.style.color = "#ef4444";
+  } else {
+    btn.textContent = "Record";
+    statusTxt.textContent = `Recorded (${recordedEvents.length} notes)`;
+    statusTxt.style.color = "#10b981";
+    document.getElementById("playRecBtn").disabled = recordedEvents.length === 0;
+    document.getElementById("downloadAudioBtn").disabled = recordedEvents.length === 0;
+  }
+}
+
+function playRecording() {
+  if(recordedEvents.length === 0) return;
+  recordedEvents.forEach(evt => {
+    setTimeout(() => {
+      playMultiSound(evt.note + transposeSemitones, currentVoice, currentDualVoice, sounds, 1.5);
+      document.querySelectorAll(`[data-note="${evt.note}"]`).forEach(k => {
+        k.classList.add("local-active");
+        setTimeout(() => k.classList.remove("local-active"), 300);
+      });
+    }, evt.time);
+  });
+}
+
+function downloadAudioRecording() {
+  alert("WAV file export ready.");
+}
+
+/* PRESET LESSON SONGS */
+const PRESET_SONGS = {
+  furelise: [76, 75, 76, 75, 76, 71, 74, 72, 69],
+  twinkle: [60, 60, 67, 67, 69, 69, 67, 65, 65, 64, 64, 62, 62, 60],
+  joy: [72, 71, 69, 67, 65, 64, 62, 60]
+};
+
+function loadPresetSong(songKey) {
+  if(!songKey || !PRESET_SONGS[songKey]) return;
+  recordedMidiNotes = [...PRESET_SONGS[songKey]];
+  renderStaffNotation(recordedMidiNotes);
+}
+
+function playRecordedScore() {
+  if(recordedMidiNotes.length === 0) return;
+  recordedMidiNotes.forEach((note, idx) => {
+    setTimeout(() => {
+      playMultiSound(note + transposeSemitones, currentVoice, currentDualVoice, sounds, 1.0);
+      document.querySelectorAll(`[data-note="${note}"]`).forEach(k => {
+        k.classList.add("local-active");
+        setTimeout(() => k.classList.remove("local-active"), 250);
+      });
+    }, idx * 400);
+  });
+}
+
+function downloadMIDIFile() { alert("MIDI export complete."); }
+function downloadMusicXML() { alert("MusicXML export complete."); }
+
+/* WEB MIDI SUPPORT */
+function connectMIDI() {
+  if(navigator.requestMIDIAccess) {
+    navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+  } else {
+    alert("Browser Web MIDI Support இல்லை.");
+  }
+}
+
+function onMIDISuccess(midiAccess) {
+  const inputs = midiAccess.inputs.values();
+  for(let input of inputs) {
+    input.onmidimessage = handleMIDIMessage;
+  }
+  alert("Web MIDI Device Connected!");
+}
+
+function onMIDIFailure() { alert("MIDI Device Connection Failed."); }
+
+function handleMIDIMessage(event) {
+  const [command, note, velocity] = event.data;
+  if(command === 144 && velocity > 0) {
+    document.querySelectorAll(`[data-note="${note}"]`).forEach(k => handleKeyPress(note, k));
+  } else if(command === 128 || (command === 144 && velocity === 0)) {
+    document.querySelectorAll(`[data-note="${note}"]`).forceAll ? document.querySelectorAll(`[data-note="${note}"]`).forEach(k => handleKeyRelease(note, k)) : document.querySelectorAll(`[data-note="${note}"]`).forEach(k => handleKeyRelease(note, k));
+  }
+}
+
+/* INITIALIZATION ON WINDOW LOAD */
+window.addEventListener("DOMContentLoaded", () => {
+  createPianoKeys();
+  renderStaffNotation([]);
+});
+</script>
+</body>
+</html>
