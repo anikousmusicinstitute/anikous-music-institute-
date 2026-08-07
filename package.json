@@ -1,0 +1,12 @@
+{
+  "name": "anikous-music-institute",
+  "version": "1.0.0",
+  "description": "Anikous Music Institute - Master Pro Studio Suite with HD Video & Piano",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
