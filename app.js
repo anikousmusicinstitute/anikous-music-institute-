@@ -6,11 +6,9 @@ document.getElementById('join-room-btn').addEventListener('click', () => {
         return;
     }
 
-    // Hide Room Section and Show Studio Section
     document.getElementById('room-section').style.display = 'none';
-    document.getElementById('studio-section').style.display = 'block';
+    document.getElementById('studio-section').style.display = 'flex';
 
-    // Start Local Camera & Connect to Room
     startLocalVideo();
     joinRoom(roomId);
 });
