@@ -49,5 +49,45 @@
     <script src="firebase.js"></script>
     <script src="video.js"></script>
     <script src="app.js"></script>
+        <!-- 3. Video Call & Studio Section -->
+    <div id="studio-section" style="display: none; display: flex; width: 95vw; height: 90vh; gap: 20px;">
+        
+        <!-- Left Side: Videos & Controls -->
+        <div style="flex: 3; display: flex; flex-direction: column;">
+            <div id="video-grid" style="flex: 1;">
+                <div class="video-box">
+                    <video id="local-video" autoplay muted playsinline></video>
+                    <span id="local-user-label" class="user-label">You</span>
+                </div>
+            </div>
+
+            <div id="controls">
+                <button id="mic-btn">Mute Mic</button>
+                <button id="camera-btn">Stop Camera</button>
+                <button id="screen-share-btn">Share Screen</button>
+                <button id="raise-hand-btn">✋ Raise Hand</button>
+            </div>
+        </div>
+
+        <!-- Right Side: Live Class Tools (Chat & Student List) -->
+        <div id="sidebar" style="flex: 1; background: #1e1e1e; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h3>Students List (<span id="student-count">0</span>)</h3>
+                <ul id="student-list" style="list-style: none; padding: 0; max-height: 150px; overflow-y: auto;"></ul>
+                <hr style="border-color: #333;">
+            </div>
+
+            <!-- Chat Box -->
+            <div style="display: flex; flex-direction: column; height: 60%;">
+                <h3>Live Chat</h3>
+                <div id="chat-messages" style="flex: 1; background: #121212; padding: 10px; border-radius: 5px; overflow-y: auto; margin-bottom: 10px; font-size: 14px;"></div>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="chat-input" placeholder="Type a message..." style="flex: 1; margin: 0; padding: 8px;">
+                    <button id="send-chat-btn" style="margin: 0; padding: 8px 12px;">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
