@@ -5,30 +5,24 @@ const io = require('socket.io')(http, {
   cors: { origin: "*" }
 });
 
-const rooms = {}; // Track users in rooms
+const rooms = {};
 
 io.on('connection', (socket) => {
   console.log('User Connected:', socket.id);
 
   socket.on('join-room', (roomId, userId, userName) => {
     socket.join(roomId);
-    
     if (!rooms[roomId]) rooms[roomId] = [];
-    rooms[roomId].push({ id: userId, name: userName });
+    rooms[roomId].push({ id: userId, name: userName || 'User' });
 
-    // Notify others
     socket.to(roomId).emit('user-connected', userId, userName);
-    
-    // Send updated student list to room
     io.to(roomId).emit('update-student-list', rooms[roomId]);
   });
 
-  // Chat message event
   socket.on('send-message', (data) => {
     io.to(data.roomId).emit('receive-message', data);
   });
 
-  // Raise hand event
   socket.on('raise-hand', (data) => {
     io.to(data.roomId).emit('user-raised-hand', data);
   });
@@ -42,6 +36,7 @@ io.on('connection', (socket) => {
   });
 });
 
-http.listen(3000, () => {
-  console.log('Server running on port 3000');
+const PORT = process.env.PORT || 3000;
+http.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
