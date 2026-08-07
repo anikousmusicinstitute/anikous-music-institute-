@@ -1,103 +1,803 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Music Teaching Platform</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Tone.js for Audio/Piano -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <!-- VexFlow for Sheet Music -->
-    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=no">
+
+<title>ANIKOUS Master Pro Studio</title>
+
+<meta name="theme-color" content="#0f172a">
+<meta name="description" content="ANIKOUS Master Pro Studio - Online Music Teaching Platform">
+
+<link rel="stylesheet" href="style.css">
+
+<!-- Tone.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+<!-- VexFlow -->
+<script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
 </head>
+
 <body>
 
-    <!-- 1. Firebase Login Section -->
-    <div id="auth-section" class="container">
-        <h2>Music Studio Login</h2>
-        <button id="google-login-btn">Login with Google</button>
-    </div>
+<!-- Loading Screen -->
 
-    <!-- 2. Room Join Section -->
-    <div id="room-section" class="container" style="display: none;">
-        <h2>Welcome, <span id="user-name"></span></h2>
-        <input type="text" id="room-input" placeholder="Enter Room ID">
-        <button id="join-room-btn">Join Class</button>
-    </div>
+<div id="loading-screen">
 
-    <!-- 3. Video Call & Studio Section -->
-    <div id="studio-section" style="display: none;">
-        <div class="main-studio-layout">
-            <!-- Left Side: Videos & Controls -->
-            <div class="left-panel">
-                <div id="video-grid">
-                    <div class="video-box">
-                        <video id="local-video" autoplay muted playsinline></video>
-                        <span id="local-user-label" class="user-label">You</span>
+<div class="loader"></div>
+
+<h2>ANIKOUS</h2>
+
+<p>Master Pro Studio</p>
+
+</div>
+
+<!-- HEADER -->
+
+<header class="top-header">
+
+<div class="logo">
+
+🎼 ANIKOUS MUSIC INSTITUTE
+
+</div>
+
+<div class="header-right">
+
+<span id="network-status">
+
+🟢 Connected
+
+</span>
+
+<span id="room-id-display">
+
+Room : -
+
+</span>
+
+</div>
+
+</header>
+
+<!-- LOGIN -->
+
+<section id="auth-section" class="page">
+
+<div class="login-card">
+
+<h1>Welcome</h1>
+
+<h3>Master Pro Studio</h3>
+
+<p>
+
+Professional Online Music Teaching Platform
+
+</p>
+
+<button id="google-login-btn">
+
+Continue with Google
+
+</button>
+
+</div>
+
+</section>
+
+<!-- ROOM JOIN -->
+
+<section id="room-section"
+
+class="page"
+
+style="display:none;">
+
+<div class="room-card">
+
+<h2>Hello,
+
+<span id="user-name"></span>
+
+</h2>
+
+<input
+
+id="room-input"
+
+placeholder="Enter Room ID">
+
+<div class="room-buttons">
+
+<button id="join-room-btn">
+
+Join Class
+
+</button>
+
+<button id="create-room-btn">
+
+Create Room
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- MAIN STUDIO -->
+
+<section id="studio-section"
+
+style="display:none;">
+
+<div class="studio-container">
+
+<!-- LEFT PANEL -->
+
+<div class="left-panel">
+
+<!-- VIDEO GRID -->
+
+<div id="video-grid">
+
+<div class="video-card">
+
+<video
+
+id="local-video"
+
+autoplay
+
+playsinline
+
+muted>
+
+</video>
+
+<div class="video-name">
+
+Teacher
+
+</div>
+
+</div>
+
+<div id="remote-videos">
+
+<!-- Remote Users -->
+
+</div>
+
+</div>
+
+<!-- VIDEO CONTROLS -->
+
+<div class="controls">
+
+<button id="mic-btn">
+
+🎤 Mic
+
+</button>
+
+<button id="camera-btn">
+
+📷 Camera
+
+</button>
+
+<button id="screen-share-btn">
+
+🖥 Share
+
+</button>
+
+<button id="record-btn">
+
+⏺ Record
+
+</button>
+
+<button id="raise-hand-btn">
+
+✋ Raise Hand
+
+</button>
+
+<button id="fullscreen-btn">
+
+⛶ Full
+
+</button>
+
+</div>
+
+</div>
+        <!-- RIGHT PANEL -->
+        <aside class="right-panel">
+
+            <!-- Teacher Dashboard -->
+            <div class="card dashboard-card">
+
+                <h2>Teacher Dashboard</h2>
+
+                <div class="dashboard-grid">
+
+                    <div class="dashboard-item">
+                        <span>Room</span>
+                        <strong id="dashboard-room">-</strong>
                     </div>
+
+                    <div class="dashboard-item">
+                        <span>Students</span>
+                        <strong id="student-count">0</strong>
+                    </div>
+
+                    <div class="dashboard-item">
+                        <span>Attendance</span>
+                        <strong id="attendance-count">0</strong>
+                    </div>
+
+                    <div class="dashboard-item">
+                        <span>Recording</span>
+                        <strong id="record-status">OFF</strong>
+                    </div>
+
+                    <div class="dashboard-item">
+                        <span>Connection</span>
+                        <strong id="connection-quality">Excellent</strong>
+                    </div>
+
+                    <div class="dashboard-item">
+                        <span>Class Time</span>
+                        <strong id="class-timer">00:00:00</strong>
+                    </div>
+
                 </div>
-                <div id="controls">
-                    <button id="mic-btn">Mute Mic</button>
-                    <button id="camera-btn">Stop Camera</button>
-                    <button id="screen-share-btn">Share Screen</button>
-                    <button id="raise-hand-btn">✋ Raise Hand</button>
-                    <button id="record-btn">⏺ Start Recording</button>
-                </div>
+
             </div>
 
-            <!-- Right Side: Live Class Tools (Chat & Student List) -->
-            <div id="sidebar" class="sidebar">
-                <div>
-                    <h3>Students List (<span id="student-count">0</span>)</h3>
-                    <ul id="student-list"></ul>
-                    <hr class="divider">
-                </div>
-                <div class="chat-container">
-                    <h3>Live Chat</h3>
-                    <div id="chat-messages"></div>
-                    <div class="chat-input-row">
-                        <input type="text" id="chat-input" placeholder="Type a message...">
-                        <button id="send-chat-btn">Send</button>
-                    </div>
-                </div>
+            <!-- Students -->
+            <div class="card">
+
+                <h2>Students</h2>
+
+                <ul id="student-list">
+
+                </ul>
+
             </div>
+
+            <!-- Attendance -->
+
+            <div class="card">
+
+                <h2>Attendance</h2>
+
+                <table class="attendance-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Name</th>
+
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="attendance-body">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- Raise Hand -->
+
+            <div class="card">
+
+                <h2>Raise Hand</h2>
+
+                <div id="raise-hand-list">
+
+                    No Requests
+
+                </div>
+
+            </div>
+
+            <!-- Notifications -->
+
+            <div class="card">
+
+                <h2>Notifications</h2>
+
+                <div id="notification-list">
+
+                    Waiting...
+
+                </div>
+
+            </div>
+
+            <!-- Live Chat -->
+
+            <div class="card chat-card">
+
+                <h2>Live Chat</h2>
+
+                <div id="chat-messages">
+
+                </div>
+
+                <div class="chat-input">
+
+                    <input
+                        type="text"
+                        id="chat-input"
+                        placeholder="Type message...">
+
+                    <button
+                        id="send-chat-btn">
+
+                        Send
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+    <!-- END STUDIO CONTAINER -->
+        <!-- ========================= -->
+    <!-- DIGITAL PIANO STUDIO -->
+    <!-- ========================= -->
+
+    <section id="piano-section">
+
+        <div class="section-title">
+
+            <h2>🎹 Digital Piano Studio</h2>
+
         </div>
 
-        <!-- Piano Section -->
-        <div id="piano-section">
-            <label>Select Instrument: </label>
+        <!-- Piano Toolbar -->
+
+        <div class="piano-toolbar">
+
             <select id="instrument-select">
-                <option value="acoustic_grand_piano">Acoustic Piano</option>
-                <option value="electric_piano_1">Electric Piano</option>
-                <option value="synth_bass">Synth Bass</option>
+
+                <option value="acoustic_grand_piano">Acoustic Grand Piano</option>
+                <option value="bright_acoustic_piano">Bright Piano</option>
+                <option value="electric_grand_piano">Electric Grand</option>
+                <option value="electric_piano_1">Electric Piano 1</option>
+                <option value="electric_piano_2">Electric Piano 2</option>
+                <option value="honky_tonk">Honky Tonk</option>
+                <option value="harpsichord">Harpsichord</option>
+                <option value="clavinet">Clavinet</option>
+                <option value="church_organ">Church Organ</option>
+                <option value="reed_organ">Reed Organ</option>
+                <option value="nylon_guitar">Nylon Guitar</option>
+                <option value="steel_guitar">Steel Guitar</option>
+                <option value="violin">Violin</option>
+                <option value="cello">Cello</option>
+                <option value="strings">String Ensemble</option>
+                <option value="choir">Choir</option>
+                <option value="trumpet">Trumpet</option>
+                <option value="saxophone">Saxophone</option>
+                <option value="flute">Flute</option>
+                <option value="synth_pad">Synth Pad</option>
+
             </select>
-            <div id="piano-keyboard"></div>
+
+            <button id="midi-connect-btn">
+                🎹 MIDI Connect
+            </button>
+
+            <button id="sustain-btn">
+                Sustain OFF
+            </button>
+
+            <button id="keyname-btn">
+                Key Names
+            </button>
+
+            <button id="chord-btn">
+                Chord Detect
+            </button>
+
+            <button id="zoom-in-btn">
+                ＋
+            </button>
+
+            <button id="zoom-out-btn">
+                －
+            </button>
+
+            <button id="fullscreen-piano-btn">
+                Full Screen
+            </button>
+
         </div>
 
-        <!-- Sheet Music Section -->
-        <div id="sheet-music-section">
-            <h3>Live Sheet Music</h3>
-            <div id="output"></div>
-            <div class="export-controls">
-                <button id="export-pdf-btn">Export PDF</button>
-                <button id="export-midi-btn">Export MIDI</button>
+        <!-- Piano Status -->
+
+        <div class="piano-status">
+
+            <span>
+                Instrument :
+                <strong id="current-instrument">
+                    Acoustic Grand Piano
+                </strong>
+            </span>
+
+            <span>
+                MIDI :
+                <strong id="midi-status">
+                    Not Connected
+                </strong>
+            </span>
+
+            <span>
+                Sustain :
+                <strong id="sustain-status">
+                    OFF
+                </strong>
+            </span>
+
+            <span>
+                Chord :
+                <strong id="detected-chord">
+                    ---
+                </strong>
+            </span>
+
+        </div>
+
+        <!-- Piano -->
+
+        <div id="piano-wrapper">
+
+            <div id="piano-keyboard">
+
+                <!-- piano.js creates keys here -->
+
             </div>
+
         </div>
-    </div>
 
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    
-    <!-- Socket.io -->
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    </section>
 
-    <!-- Modular JS Files -->
-    <script src="firebase.js"></script>
-    <script src="video.js"></script>
-    <script src="chat.js"></script>
-    <script src="piano.js"></script>
-    <script src="notation.js"></script>
-    <script src="app.js"></script>
+    <!-- END DIGITAL PIANO -->
+        <!-- ===================================== -->
+    <!-- LIVE SHEET MUSIC & NOTATION SECTION -->
+    <!-- ===================================== -->
+
+    <section id="notation-section">
+
+        <div class="section-title">
+            <h2>🎼 Live Sheet Music</h2>
+        </div>
+
+        <!-- Notation Toolbar -->
+
+        <div class="notation-toolbar">
+
+            <button id="new-score-btn">
+                New Score
+            </button>
+
+            <button id="clear-score-btn">
+                Clear
+            </button>
+
+            <button id="play-score-btn">
+                ▶ Play
+            </button>
+
+            <button id="stop-score-btn">
+                ■ Stop
+            </button>
+
+            <button id="metronome-btn">
+                🎵 Metronome
+            </button>
+
+            <button id="record-midi-btn">
+                ⏺ Record MIDI
+            </button>
+
+            <button id="import-musicxml-btn">
+                Import MusicXML
+            </button>
+
+            <button id="export-musicxml-btn">
+                Export MusicXML
+            </button>
+
+            <button id="export-midi-btn">
+                Export MIDI
+            </button>
+
+            <button id="export-pdf-btn">
+                Export PDF
+            </button>
+
+        </div>
+
+        <!-- Score Information -->
+
+        <div class="score-info">
+
+            <div>
+                <strong>Title :</strong>
+                <span id="score-title">
+                    Untitled Score
+                </span>
+            </div>
+
+            <div>
+                <strong>Tempo :</strong>
+                <span id="tempo-display">
+                    120 BPM
+                </span>
+            </div>
+
+            <div>
+                <strong>Time :</strong>
+                <span id="time-signature">
+                    4/4
+                </span>
+            </div>
+
+            <div>
+                <strong>Key :</strong>
+                <span id="key-signature">
+                    C Major
+                </span>
+            </div>
+
+        </div>
+
+        <!-- Grand Staff -->
+
+        <div id="sheet-container">
+
+            <div id="treble-staff">
+
+                <!-- Treble Clef generated by notation.js -->
+
+            </div>
+
+            <div id="bass-staff">
+
+                <!-- Bass Clef generated by notation.js -->
+
+            </div>
+
+        </div>
+
+        <!-- Live Note Information -->
+
+        <div class="live-note-panel">
+
+            <div>
+
+                Current Note :
+
+                <strong id="current-note">
+
+                    --
+
+                </strong>
+
+            </div>
+
+            <div>
+
+                Chord :
+
+                <strong id="current-chord">
+
+                    --
+
+                </strong>
+
+            </div>
+
+            <div>
+
+                Measure :
+
+                <strong id="current-measure">
+
+                    1
+
+                </strong>
+
+            </div>
+
+            <div>
+
+                Beat :
+
+                <strong id="current-beat">
+
+                    1
+
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- END NOTATION SECTION -->
+        <!-- ===================================== -->
+    <!-- RECORDING & MEDIA SECTION -->
+    <!-- ===================================== -->
+
+    <section id="recording-section">
+
+        <div class="section-title">
+            <h2>🎥 Recording Studio</h2>
+        </div>
+
+        <div class="recording-controls">
+
+            <button id="start-recording-btn">
+                ⏺ Start Recording
+            </button>
+
+            <button id="pause-recording-btn">
+                ⏸ Pause
+            </button>
+
+            <button id="stop-recording-btn">
+                ⏹ Stop
+            </button>
+
+            <button id="download-recording-btn">
+                ⬇ Download
+            </button>
+
+        </div>
+
+        <video
+            id="recording-preview"
+            controls
+            playsinline
+            style="width:100%;">
+        </video>
+
+    </section>
+
+    <!-- ===================================== -->
+    <!-- ASSIGNMENTS -->
+    <!-- ===================================== -->
+
+    <section id="assignment-section">
+
+        <div class="section-title">
+            <h2>📚 Assignments</h2>
+        </div>
+
+        <input
+            type="file"
+            id="assignment-upload"
+            multiple>
+
+        <div id="assignment-list"></div>
+
+    </section>
+
+    <!-- ===================================== -->
+    <!-- SETTINGS -->
+    <!-- ===================================== -->
+
+    <section id="settings-section">
+
+        <div class="section-title">
+            <h2>⚙ Settings</h2>
+        </div>
+
+        <label>
+            <input type="checkbox" id="dark-mode">
+            Dark Mode
+        </label>
+
+        <br><br>
+
+        <label>
+            <input type="checkbox" id="show-key-names">
+            Show Piano Key Names
+        </label>
+
+        <br><br>
+
+        <label>
+            <input type="checkbox" id="enable-metronome">
+            Enable Metronome
+        </label>
+
+    </section>
+
+</section>
+
+<!-- Footer -->
+
+<footer>
+
+    <h3>ANIKOUS Master Pro Studio</h3>
+
+    <p>
+        Professional Online Music Teaching Platform
+    </p>
+
+    <p>
+        Version 1.0.0
+    </p>
+
+</footer>
+
+<!-- Socket.IO -->
+
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- Firebase -->
+
+<script src="firebase.js"></script>
+
+<!-- Main Application -->
+
+<script src="app.js"></script>
+
+<!-- Video -->
+
+<script src="video.js"></script>
+
+<!-- Chat -->
+
+<script src="chat.js"></script>
+
+<!-- Piano -->
+
+<script src="piano.js"></script>
+
+<!-- Sheet Music -->
+
+<script src="notation.js"></script>
+
+<!-- Attendance -->
+
+<script src="attendance.js"></script>
+
+<!-- Recorder -->
+
+<script src="recorder.js"></script>
+
+<!-- Utilities -->
+
+<script src="utils.js"></script>
+
 </body>
 </html>
