@@ -159,3 +159,32 @@ function getMIDIMessage(message) {
         currentSynth.triggerAttackRelease(freq, '8n');
     }
 }
+@media (max-width: 768px) {
+    #studio-section {
+        flex-direction: column !important;
+        width: 100vw !important;
+        height: auto !important;
+        padding: 5px;
+    }
+    
+    #video-grid {
+        width: 100vw;
+        max-height: 40vh;
+    }
+
+    #sidebar {
+        width: 100vw;
+        height: 40vh;
+    }
+
+    .white-key {
+        width: 30px;
+        height: 80px;
+    }
+
+    .black-key {
+        width: 18px;
+        height: 50px;
+        margin-left: -9px;
+    }
+}
