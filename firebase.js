@@ -1,4 +1,3 @@
-// உங்கள் Firebase கான்ஃபிகரேஷன் விவரங்களை இங்கே உள்ளிடவும்
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_AUTH_DOMAIN",
@@ -13,14 +12,15 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-// Login Function
+let loggedInUserName = "User";
+
 function loginWithGoogle() {
     auth.signInWithPopup(googleProvider)
     .then((result) => {
-        console.log("Logged in as:", result.user.displayName);
+        loggedInUserName = result.user.displayName || "User";
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('room-section').style.display = 'block';
-        document.getElementById('user-name').innerText = result.user.displayName;
+        document.getElementById('user-name').innerText = loggedInUserName;
     })
     .catch((error) => {
         console.error("Login Error:", error);
