@@ -7,7 +7,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .container {
@@ -18,9 +18,9 @@ body {
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-input, button {
+input, select, button {
     padding: 10px 15px;
-    margin: 10px 0;
+    margin: 5px 0;
     font-size: 16px;
     border-radius: 5px;
     border: none;
@@ -36,12 +36,33 @@ button:hover {
     background-color: #3700b3;
 }
 
-#video-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+#studio-section {
+    display: flex;
+    flex-direction: column;
+    width: 95vw;
     gap: 15px;
-    width: 80vw;
-    max-height: 70vh;
+}
+
+.main-studio-layout {
+    display: flex;
+    gap: 20px;
+    height: 50vh;
+}
+
+.left-panel {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+}
+
+#video-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    background: #181818;
+    padding: 10px;
+    border-radius: 8px;
 }
 
 .video-box {
@@ -69,122 +90,111 @@ video {
 }
 
 #controls {
-    margin-top: 20px;
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sidebar {
+    flex: 1;
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#student-list {
+    list-style: none;
+    padding: 0;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.divider {
+    border-color: #333;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 60%;
+}
+
+#chat-messages {
+    flex: 1;
+    background: #121212;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.chat-input-row {
+    display: flex;
+    gap: 5px;
+}
+
+#piano-section, #sheet-music-section {
+    background: #181818;
+    padding: 15px;
+    border-radius: 8px;
     text-align: center;
 }
-// Initialize Tone.js Sampler or Synth
-let currentSynth = new Tone.Synth().toDestination();
 
-// Instrument change listener (Mockup for multiple instruments)
-document.getElementById('instrument-select').addEventListener('change', (e) => {
-    const selected = e.target.value;
-    // Here we can switch synths or use Tone.Sampler with soundfonts
-    console.log("Selected Instrument:", selected);
-});
-
-// Generate Piano Keys (Simplified 2-Octave view for UI, expandable to 7)
-const pianoContainer = document.getElementById('piano-keyboard');
-
-const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const startOctave = 4;
-const numOctaves = 2; // Can be expanded up to 7
-
-for (let octave = startOctave; octave < startOctave + numOctaves; octave++) {
-    notes.forEach(note => {
-        const fullNote = note + octave;
-        const key = document.createElement('div');
-        
-        const isSharp = note.includes('#');
-        key.className = isSharp ? 'piano-key black-key' : 'piano-key white-key';
-        key.dataset.note = fullNote;
-
-        key.addEventListener('mousedown', async () => {
-            await Tone.start();
-            currentSynth.triggerAttackRelease(fullNote, '8n');
-            key.style.background = '#6200ee';
-        });
-
-        key.addEventListener('mouseup', () => {
-            key.style.background = isSharp ? '#000' : '#fff';
-        });
-
-        pianoContainer.appendChild(key);
-    });
+#piano-keyboard {
+    display: flex;
+    position: relative;
+    user-select: none;
+    justify-content: center;
+    overflow-x: auto;
+    height: 120px;
+    background: #000;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
 }
 
-// Computer Keyboard Mapping (A-Z to Piano Notes)
-window.addEventListener('keydown', async (e) => {
-    if (e.repeat) return;
-    await Tone.start();
-    
-    let noteToPlay = null;
-    if (e.key === 'a') noteToPlay = 'C4';
-    if (e.key === 's') noteToPlay = 'D4';
-    if (e.key === 'd') noteToPlay = 'E4';
-    if (e.key === 'f') noteToPlay = 'F4';
-    if (e.key === 'g') noteToPlay = 'G4';
-    if (e.key === 'h') noteToPlay = 'A4';
-    if (e.key === 'j') noteToPlay = 'B4';
-
-    if (noteToPlay) {
-        currentSynth.triggerAttackRelease(noteToPlay, '8n');
-    }
-});
-
-// MIDI Keyboard Support (Web MIDI API)
-if (navigator.requestMIDIAccess) {
-    navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
-} else {
-    console.warn("Web MIDI API not supported in this browser.");
+.piano-key {
+    cursor: pointer;
+    border: 1px solid #333;
+    box-sizing: border-box;
+    transition: background 0.1s;
 }
 
-function onMIDISuccess(midiAccess) {
-    for (var input of midiAccess.inputs.values()) {
-        input.onmidimessage = getMIDIMessage;
-    }
+.white-key {
+    width: 40px;
+    height: 100px;
+    background: #ffffff;
+    z-index: 1;
 }
 
-function onMIDIFailure() {
-    console.error("Could not access MIDI devices.");
+.black-key {
+    width: 24px;
+    height: 60px;
+    background: #000000;
+    position: absolute;
+    z-index: 2;
+    margin-left: -12px;
 }
 
-function getMIDIMessage(message) {
-    var command = message.data[0];
-    var noteNumber = message.data[1];
-    var velocity = message.data[2];
-
-    // Note On message (approximate conversion)
-    if (command === 144 && velocity > 0) {
-        const freq = Tone.Frequency(noteNumber, "midi").toNote();
-        currentSynth.triggerAttackRelease(freq, '8n');
-    }
+#output {
+    background: #fff;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 10px;
+    min-width: 500px;
+    min-height: 150px;
+    color: #000;
 }
+
 @media (max-width: 768px) {
-    #studio-section {
-        flex-direction: column !important;
-        width: 100vw !important;
-        height: auto !important;
-        padding: 5px;
-    }
-    
-    #video-grid {
-        width: 100vw;
-        max-height: 40vh;
-    }
-
-    #sidebar {
-        width: 100vw;
-        height: 40vh;
-    }
-
-    .white-key {
-        width: 30px;
-        height: 80px;
-    }
-
-    .black-key {
-        width: 18px;
-        height: 50px;
-        margin-left: -9px;
-    }
+    #studio-section { width: 100vw; }
+    .main-studio-layout { flex-direction: column; height: auto; }
+    .sidebar { height: 300px; }
+    .white-key { width: 30px; height: 80px; }
+    .black-key { width: 18px; height: 50px; margin-left: -9px; }
 }
