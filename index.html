@@ -4496,7 +4496,306 @@ const startAMI =
     }
 
   },300);
+<!-- =========================================================
+     ANIKOUS UNIVERSAL REMOTE CONTROL SYNC
+     Uses existing PeerJS broadcastData() system
+     Existing code is NOT removed
+     ========================================================= -->
 
+<script>
+(function(){
+
+  /* ---------- SEND REMOTE ACTION ---------- */
+  function amiRemoteAction(action, value = null){
+    try{
+      if(typeof broadcastData === "function"){
+        broadcastData({
+          type: "amiRemoteAction",
+          action: action,
+          value: value,
+          role: typeof currentRole !== "undefined" ? currentRole : "user",
+          time: Date.now()
+        });
+      }
+    }catch(e){
+      console.warn("Remote action error:", e);
+    }
+  }
+
+  /* ---------- RECEIVE REMOTE ACTION ---------- */
+  const oldHandleRemoteData =
+    typeof window.handleRemoteData === "function"
+      ? window.handleRemoteData
+      : null;
+
+  window.handleRemoteData = function(data){
+
+    /* Keep all existing remote functions working */
+    if(oldHandleRemoteData){
+      try{
+        oldHandleRemoteData(data);
+      }catch(e){
+        console.warn("Existing remote handler error:", e);
+      }
+    }
+
+    if(!data || data.type !== "amiRemoteAction") return;
+
+    const action = data.action;
+    const value  = data.value;
+
+    try{
+
+      /* ===== PRACTICE TIMER ===== */
+
+      if(action === "practiceStart"){
+        if(typeof amiStartPractice === "function")
+          amiStartPractice();
+      }
+
+      if(action === "practicePause"){
+        if(typeof amiPausePractice === "function")
+          amiPausePractice();
+      }
+
+      if(action === "practiceReset"){
+        if(typeof amiResetPractice === "function")
+          amiResetPractice();
+      }
+
+
+      /* ===== CLASS NOTES ===== */
+
+      if(action === "notesUpdate"){
+        const box = document.getElementById("amiClassNotes");
+        if(box && value !== null){
+          box.value = String(value);
+        }
+      }
+
+      if(action === "notesClear"){
+        const box = document.getElementById("amiClassNotes");
+        if(box) box.value = "";
+      }
+
+
+      /* ===== SCORE / NOTATION ===== */
+
+      if(action === "loadNotes"){
+        if(Array.isArray(value)){
+          recordedMidiNotes = [...value];
+
+          if(typeof renderStaffNotation === "function"){
+            renderStaffNotation(recordedMidiNotes);
+          }
+
+          if(typeof amiUpdateNotesCount === "function"){
+            amiUpdateNotesCount();
+          }
+        }
+      }
+
+
+      /* ===== YOUTUBE ===== */
+
+      if(action === "youtube"){
+        if(typeof loadYoutubeVideo === "function" && value){
+          loadYoutubeVideo(value, true);
+        }
+      }
+
+
+      /* ===== VOICE ===== */
+
+      if(action === "voice"){
+        if(typeof changeVoice === "function" && value){
+          changeVoice(value, true);
+        }
+      }
+
+
+      /* ===== DUAL VOICE ===== */
+
+      if(action === "dualVoice"){
+        if(typeof changeDualVoice === "function"){
+          changeDualVoice(value, true);
+        }
+      }
+
+
+      /* ===== TRANSPOSE ===== */
+
+      if(action === "transpose"){
+        if(typeof changeTranspose === "function"){
+          changeTranspose(parseInt(value), true);
+        }
+      }
+
+
+      /* ===== KEY SIGNATURE ===== */
+
+      if(action === "keySignature"){
+        if(typeof changeKeySignature === "function"){
+          changeKeySignature(value, true);
+        }
+      }
+
+
+      /* ===== METRONOME ===== */
+
+      if(action === "metronome"){
+        if(typeof toggleMetronome === "function"){
+          toggleMetronome(
+            true,
+            value && value.playing,
+            value && value.bpm
+          );
+        }
+      }
+
+
+      /* ===== EXTRA CAMERA 1 ===== */
+
+      if(action === "extra1"){
+        if(typeof toggleExtra1 === "function"){
+          toggleExtra1(true, !!value);
+        }
+      }
+
+
+      /* ===== EXTRA CAMERA 2 ===== */
+
+      if(action === "extra2"){
+        if(typeof toggleExtra2 === "function"){
+          toggleExtra2(true, !!value);
+        }
+      }
+
+
+      /* ===== CLEAR NOTATION ===== */
+
+      if(action === "clearNotation"){
+        recordedMidiNotes = [];
+
+        if(typeof renderStaffNotation === "function"){
+          renderStaffNotation([]);
+        }
+
+        if(typeof amiUpdateNotesCount === "function"){
+          amiUpdateNotesCount();
+        }
+      }
+
+    }catch(error){
+      console.warn("Remote operation failed:", error);
+    }
+  };
+
+
+  /* =========================================================
+     REMOTE BUTTON HELPERS
+     ========================================================= */
+
+  window.AMI_REMOTE = {
+
+    startPractice(){
+      amiRemoteAction("practiceStart");
+    },
+
+    pausePractice(){
+      amiRemoteAction("practicePause");
+    },
+
+    resetPractice(){
+      amiRemoteAction("practiceReset");
+    },
+
+    updateNotes(text){
+      amiRemoteAction("notesUpdate", text);
+    },
+
+    clearNotes(){
+      amiRemoteAction("notesClear");
+    },
+
+    loadNotes(notes){
+      amiRemoteAction("loadNotes", notes);
+    },
+
+    youtube(videoId){
+      amiRemoteAction("youtube", videoId);
+    },
+
+    voice(voice){
+      amiRemoteAction("voice", voice);
+    },
+
+    dualVoice(voice){
+      amiRemoteAction("dualVoice", voice);
+    },
+
+    transpose(value){
+      amiRemoteAction("transpose", value);
+    },
+
+    keySignature(value){
+      amiRemoteAction("keySignature", value);
+    },
+
+    metronome(playing, bpm){
+      amiRemoteAction("metronome", {
+        playing: playing,
+        bpm: bpm
+      });
+    },
+
+    extra1(state){
+      amiRemoteAction("extra1", state);
+    },
+
+    extra2(state){
+      amiRemoteAction("extra2", state);
+    },
+
+    clearNotation(){
+      amiRemoteAction("clearNotation");
+    }
+
+  };
+
+
+  /* =========================================================
+     AUTO SYNC CLASS NOTES
+     ========================================================= */
+
+  const notesBox =
+    document.getElementById("amiClassNotes");
+
+  if(notesBox){
+
+    let lastNotesValue = notesBox.value;
+
+    notesBox.addEventListener("input", function(){
+
+      const value = notesBox.value;
+
+      if(value === lastNotesValue) return;
+
+      lastNotesValue = value;
+
+      amiRemoteAction("notesUpdate", value);
+
+    });
+
+  }
+
+
+  console.log(
+    "✅ AMI Universal Remote Control Sync Loaded"
+  );
+
+})();
+</script>
 
 </script>
 </body>
