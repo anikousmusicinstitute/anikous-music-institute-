@@ -3831,5 +3831,673 @@ console.log(
 );
 
 </script>
+  <style>
+/* =========================================================
+   AMI MASTER DASHBOARD - PHASE 1
+   ========================================================= */
+
+#amiCloudDashboard{
+  width:min(1150px,96%);
+  margin:15px auto;
+  background:#0b0f19;
+  border:1px solid #273244;
+  border-radius:18px;
+  padding:16px;
+  color:#fff;
+  box-sizing:border-box;
+  box-shadow:0 15px 45px rgba(0,0,0,.35);
+}
+
+.amiDashHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+
+.amiDashTitle{
+  font-size:22px;
+  font-weight:800;
+}
+
+.amiUserInfo{
+  color:#aab4c5;
+  font-size:13px;
+}
+
+.amiRoleBadge{
+  display:inline-block;
+  margin-top:5px;
+  padding:5px 10px;
+  border-radius:20px;
+  background:#172033;
+  color:#ffd76a;
+  font-size:12px;
+  font-weight:700;
+}
+
+.amiDashGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.amiStat{
+  background:#111827;
+  border:1px solid #263246;
+  border-radius:14px;
+  padding:16px;
+}
+
+.amiStatIcon{
+  font-size:24px;
+}
+
+.amiStatLabel{
+  margin-top:8px;
+  color:#9ca8bb;
+  font-size:12px;
+}
+
+.amiStatValue{
+  margin-top:4px;
+  font-size:25px;
+  font-weight:800;
+}
+
+.amiDashSections{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:14px;
+}
+
+.amiPanel{
+  background:#111827;
+  border:1px solid #263246;
+  border-radius:14px;
+  padding:15px;
+}
+
+.amiPanel h3{
+  margin:0 0 12px;
+  font-size:16px;
+}
+
+.amiBtn{
+  border:0;
+  border-radius:10px;
+  padding:10px 13px;
+  background:#1d4ed8;
+  color:white;
+  cursor:pointer;
+  font-weight:700;
+  margin:4px;
+}
+
+.amiBtn:hover{
+  opacity:.88;
+}
+
+.amiBtn.red{
+  background:#991b1b;
+}
+
+.amiBtn.green{
+  background:#166534;
+}
+
+.amiList{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.amiListItem{
+  padding:10px;
+  border-radius:10px;
+  background:#0b1220;
+  border:1px solid #202c40;
+  color:#dbe4f2;
+  font-size:13px;
+}
+
+@media(max-width:800px){
+  .amiDashGrid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .amiDashSections{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:450px){
+  #amiCloudDashboard{
+    width:100%;
+    border-radius:12px;
+    padding:10px;
+  }
+
+  .amiDashGrid{
+    gap:8px;
+  }
+
+  .amiStat{
+    padding:12px;
+  }
+
+  .amiStatValue{
+    font-size:21px;
+  }
+}
+</style>
+
+
+<!-- =========================================================
+     AMI CLOUD DASHBOARD
+     ========================================================= -->
+
+<section id="amiCloudDashboard" style="display:none;">
+
+  <div class="amiDashHeader">
+
+    <div>
+      <div class="amiDashTitle">
+        🎹 AMI Master Dashboard
+      </div>
+
+      <div id="amiDashUserInfo"
+           class="amiUserInfo">
+        Loading user...
+      </div>
+
+      <div id="amiDashRole"
+           class="amiRoleBadge">
+        Loading...
+      </div>
+    </div>
+
+    <div>
+      <button class="amiBtn"
+              onclick="AMI_DASH.refresh()">
+        🔄 Refresh
+      </button>
+
+      <button class="amiBtn red"
+              onclick="AMI_DASH.logout()">
+        🚪 Logout
+      </button>
+    </div>
+
+  </div>
+
+
+  <div class="amiDashGrid">
+
+    <div class="amiStat">
+      <div class="amiStatIcon">📅</div>
+      <div class="amiStatLabel">Attendance</div>
+      <div id="amiAttendanceValue"
+           class="amiStatValue">
+        0%
+      </div>
+    </div>
+
+    <div class="amiStat">
+      <div class="amiStatIcon">📝</div>
+      <div class="amiStatLabel">Assignments</div>
+      <div id="amiAssignmentValue"
+           class="amiStatValue">
+        0
+      </div>
+    </div>
+
+    <div class="amiStat">
+      <div class="amiStatIcon">📈</div>
+      <div class="amiStatLabel">Progress</div>
+      <div id="amiProgressValue"
+           class="amiStatValue">
+        0%
+      </div>
+    </div>
+
+    <div class="amiStat">
+      <div class="amiStatIcon">🎼</div>
+      <div class="amiStatLabel">Saved Scores</div>
+      <div id="amiScoreValue"
+           class="amiStatValue">
+        0
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="amiDashSections">
+
+    <div class="amiPanel">
+
+      <h3>📚 Assignments</h3>
+
+      <div id="amiAssignmentList"
+           class="amiList">
+
+        <div class="amiListItem">
+          Loading assignments...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="amiPanel">
+
+      <h3>🔔 Notifications</h3>
+
+      <div id="amiNotificationList"
+           class="amiList">
+
+        <div class="amiListItem">
+          Loading notifications...
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<script type="module">
+
+/* =========================================================
+   AMI DASHBOARD ENGINE
+   ========================================================= */
+
+const AMI_DASH = {
+
+  user:null,
+  profile:null,
+
+  async start(){
+
+    if(!window.AMI_FIREBASE){
+      console.warn(
+        "AMI Firebase is not loaded yet."
+      );
+      return;
+    }
+
+    window.AMI_FIREBASE.watchAuth(
+      async (user, profile)=>{
+
+        this.user = user;
+        this.profile = profile;
+
+        if(!user){
+
+          const dash =
+            document.getElementById(
+              "amiCloudDashboard"
+            );
+
+          if(dash){
+            dash.style.display="none";
+          }
+
+          return;
+        }
+
+        await this.render();
+
+      }
+    );
+
+  },
+
+
+  async render(){
+
+    const dash =
+      document.getElementById(
+        "amiCloudDashboard"
+      );
+
+    if(!dash) return;
+
+    dash.style.display="block";
+
+    const userInfo =
+      document.getElementById(
+        "amiDashUserInfo"
+      );
+
+    const role =
+      document.getElementById(
+        "amiDashRole"
+      );
+
+    if(userInfo){
+
+      userInfo.textContent =
+        this.profile?.name ||
+        this.user.email ||
+        "AMI User";
+
+    }
+
+    if(role){
+
+      const userRole =
+        this.profile?.role ||
+        "student";
+
+      role.textContent =
+        userRole === "teacher"
+          ? "👨‍🏫 TEACHER"
+          : "👨‍🎓 STUDENT";
+
+    }
+
+    await this.loadStats();
+
+    await this.loadAssignments();
+
+    this.listenNotifications();
+
+  },
+
+
+  async loadStats(){
+
+    if(!this.user) return;
+
+    try{
+
+      const profile =
+        await window.AMI_FIREBASE
+          .getUserProfile(
+            this.user.uid
+          );
+
+      if(!profile) return;
+
+      this.profile = profile;
+
+      const attendance =
+        Number(
+          profile.attendancePercentage || 0
+        );
+
+      const progress =
+        Number(
+          profile.progressPercentage || 0
+        );
+
+      const completed =
+        Number(
+          profile.assignmentCompleted || 0
+        );
+
+      const total =
+        Number(
+          profile.assignmentTotal || 0
+        );
+
+      document.getElementById(
+        "amiAttendanceValue"
+      ).textContent =
+        attendance + "%";
+
+      document.getElementById(
+        "amiProgressValue"
+      ).textContent =
+        progress + "%";
+
+      document.getElementById(
+        "amiAssignmentValue"
+      ).textContent =
+        completed + "/" + total;
+
+      const scores =
+        await window.AMI_FIREBASE
+          .getStudentScores(
+            this.user.uid
+          );
+
+      document.getElementById(
+        "amiScoreValue"
+      ).textContent =
+        scores.length;
+
+    }catch(error){
+
+      console.error(
+        "AMI Dashboard Stats:",
+        error
+      );
+
+    }
+
+  },
+
+
+  async loadAssignments(){
+
+    if(!this.user) return;
+
+    const list =
+      document.getElementById(
+        "amiAssignmentList"
+      );
+
+    if(!list) return;
+
+    try{
+
+      const assignments =
+        await window.AMI_FIREBASE
+          .getAssignments(
+            this.user.uid
+          );
+
+      if(!assignments.length){
+
+        list.innerHTML =
+          `<div class="amiListItem">
+             No assignments yet.
+           </div>`;
+
+        return;
+      }
+
+      list.innerHTML =
+        assignments
+          .slice(0,10)
+          .map(a=>{
+
+            const title =
+              a.title ||
+              a.name ||
+              "Music Assignment";
+
+            const status =
+              a.status ||
+              "Pending";
+
+            return `
+              <div class="amiListItem">
+                <strong>${this.escape(title)}</strong>
+                <br>
+                <small>
+                  Status: ${this.escape(status)}
+                </small>
+              </div>
+            `;
+
+          })
+          .join("");
+
+    }catch(error){
+
+      console.error(
+        "AMI Assignments:",
+        error
+      );
+
+      list.innerHTML =
+        `<div class="amiListItem">
+          Unable to load assignments.
+        </div>`;
+
+    }
+
+  },
+
+
+  listenNotifications(){
+
+    if(!this.user) return;
+
+    const list =
+      document.getElementById(
+        "amiNotificationList"
+      );
+
+    if(!list) return;
+
+    window.AMI_FIREBASE
+      .listenNotifications(
+        this.user.uid,
+        notifications=>{
+
+          if(!notifications.length){
+
+            list.innerHTML =
+              `<div class="amiListItem">
+                No new notifications.
+              </div>`;
+
+            return;
+          }
+
+          list.innerHTML =
+            notifications
+              .slice(0,10)
+              .reverse()
+              .map(n=>{
+
+                const message =
+                  n.message ||
+                  n.title ||
+                  "New notification";
+
+                return `
+                  <div
+                    class="amiListItem"
+                    onclick="AMI_DASH.readNotification('${n.id}')"
+                    style="cursor:pointer;"
+                  >
+                    🔔
+                    ${this.escape(message)}
+                  </div>
+                `;
+
+              })
+              .join("");
+
+        }
+      );
+
+  },
+
+
+  async readNotification(id){
+
+    try{
+
+      await window.AMI_FIREBASE
+        .markNotificationRead(id);
+
+      this.listenNotifications();
+
+    }catch(error){
+
+      console.error(error);
+
+    }
+
+  },
+
+
+  async refresh(){
+
+    await this.loadStats();
+
+    await this.loadAssignments();
+
+  },
+
+
+  async logout(){
+
+    try{
+
+      await window.AMI_FIREBASE
+        .logoutUser();
+
+      location.reload();
+
+    }catch(error){
+
+      console.error(
+        "AMI Logout:",
+        error
+      );
+
+    }
+
+  },
+
+
+  escape(value){
+
+    return String(value ?? "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+
+  }
+
+};
+
+window.AMI_DASH = AMI_DASH;
+
+
+/* Start after Firebase module is available */
+
+const startAMI =
+  setInterval(()=>{
+
+    if(window.AMI_FIREBASE){
+
+      clearInterval(startAMI);
+
+      AMI_DASH.start();
+
+    }
+
+  },300);
+
+
+</script>
 </body>
 </html>
