@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Anikous Music Institute - Master Pro Studio Suite with HD Video</title>
+<title>Anikous Music Institute - Master Pro Studio Sheet Suite</title>
 
-<!-- PeerJS CDN for Multi-User Live Video Calling -->
+<!-- PeerJS CDN -->
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <!-- VexFlow CDN for Real Sheet Music Staff Notation -->
 <script src="https://unpkg.com/vexflow@4.2.0/build/cjs/vexflow.js"></script>
@@ -203,7 +203,6 @@ button.active{
   font-size: 14px;
 }
 
-/* DYNAMIC STATUS BOX STYLES */
 .status{
   margin-top:8px;
   padding:10px;
@@ -219,7 +218,6 @@ button.active{
 .status.connected { background: #064e3b; color: #a7f3d0; border: 1px solid #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
 .status.error { background: #7f1d1d; color: #fecaca; border: 1px solid #ef4444; }
 
-/* VIDEO GRID & DYNAMIC HIDDEN CARDS */
 .videoGrid{
   display:grid;
   grid-template-columns: repeat(2, 1fr);
@@ -247,7 +245,6 @@ button.active{
   object-fit:cover;
 }
 
-/* MIRROR FIX FOR 1080P HD CAMERAS */
 #localVideo.front-cam, #fsLocalVideo.front-cam {
   transform: scaleX(-1);
 }
@@ -255,7 +252,6 @@ button.active{
   transform: scaleX(1);
 }
 
-/* REMOTE CAMERAS STRICTLY NO MIRROR (NORMAL VIEW) */
 .videoCard video:not(#localVideo), .fsVideoCard video:not(#fsLocalVideo) {
   transform: none !important;
 }
@@ -271,24 +267,6 @@ button.active{
   z-index: 5;
 }
 
-/* RAISE HAND BADGE */
-.hand-raised-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #000;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  z-index: 10;
-}
-
 .controls{
   display:flex;
   flex-wrap:wrap;
@@ -302,7 +280,6 @@ button.active{
   padding: 8px 10px;
 }
 
-/* MASTER SHEET MUSIC SECTION */
 .notationSection {
   background: #030712;
   border: 1px solid #1f2937;
@@ -361,7 +338,6 @@ button.active{
   min-width: 100%;
 }
 
-/* A4 FULL SHEET MODAL STYLING */
 #a4SheetModal {
   display: none;
   position: fixed;
@@ -453,7 +429,6 @@ button.active{
   gap: 8px;
 }
 
-/* ULTRA PRO STUDIO TOOLS */
 .proToolsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -492,7 +467,6 @@ button.active{
   cursor: pointer;
 }
 
-/* CHAT & REACTIONS */
 .chatSection {
   margin-top: 10px;
   background: #030712;
@@ -502,7 +476,7 @@ button.active{
 }
 
 .chatBox {
-  height: 90px;
+  height: 100px;
   overflow-y: auto;
   background: #000;
   border-radius: 6px;
@@ -538,7 +512,6 @@ button.active{
   font-size: 12px;
 }
 
-/* FULLSCREEN VIDEO POPUP */
 #videoFullscreenContainer {
   display: none;
   position: fixed;
@@ -587,7 +560,6 @@ button.active{
   margin-bottom: 8px;
 }
 
-/* INFO */
 .info{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -614,7 +586,6 @@ button.active{
   color: #ffd54f;
 }
 
-/* PIANO */
 .pianoHeader{
   display:flex;
   align-items:center;
@@ -760,7 +731,7 @@ button.active{
 
 .black.remote-active{
   background:#38bdf8 !important;
-  color:#111 !important;
+  color:#fff !important;
   box-shadow:0 0 10px rgba(56,189,248,.9);
   transform:translateY(2px);
 }
@@ -773,7 +744,6 @@ button.active{
   justify-content: center;
 }
 
-/* FULLSCREEN LANDSCAPE PIANO */
 #pianoFullscreenContainer {
   display: none;
   position: fixed;
@@ -962,61 +932,55 @@ button.active{
 <div id="mainPage" style="display:none;">
 <header class="top">
   <h1>🎹 ANIKOUS MUSIC INSTITUTE 🎹</h1>
-  <div class="sub">Master Pro Studio Suite • Multi-Camera 1080p HD Live Video & Grand Staff Notation</div>
+  <div class="sub">Master Pro Studio Suite • Multi-Camera 1080p HD • Live Grand Staff Notation</div>
 </header>
 
-<!-- ROOM & VIDEO STREAMING CONTROL PANEL -->
+<!-- ROOM -->
 <section class="panel">
   <div class="roomRow">
-    <input id="roomId" placeholder="Enter Room ID (e.g., room123)">
+    <input id="roomId" placeholder="Enter Room ID">
     <select id="userRole">
       <option value="teacher">Teacher</option>
       <option value="student">Student</option>
-      <option value="extra1">Participant 3</option>
-      <option value="extra2">Participant 4</option>
+      <option value="extra1">Extra Camera 1</option>
+      <option value="extra2">Extra Camera 2</option>
     </select>
-    <button onclick="startClass()">Start HD Video Class</button>
+    <button onclick="startClass()">Start Studio Class</button>
   </div>
   <div id="status" class="status ready">
-    Ready - Enter Room ID and Start HD Video Class
+    Ready - Enter Room ID and Start Studio Class
   </div>
 </section>
 
-<!-- MULTI-CAMERA 1080P HD VIDEO SECTION -->
+<!-- VIDEO & PRO STUDIO CONTROLS -->
 <section class="panel">
   <div class="videoGrid" id="videoGridContainer">
-    <!-- Local Camera (Me) -->
-    <div class="videoCard" id="localCard">
+    <div class="videoCard">
       <video id="localVideo" autoplay playsinline muted></video>
       <div class="videoName" id="localName">My Camera (1080p HD)</div>
-      <div id="localHandBadge" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
-    <!-- Remote Participant 1 -->
     <div class="videoCard hidden-card" id="remoteCard1">
       <video id="remoteVideo1" autoplay playsinline></video>
-      <div class="videoName" id="remoteName1">Participant 2</div>
-      <div id="remoteHandBadge1" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+      <div class="videoName" id="remoteName1">Participant 2 (1080p HD)</div>
     </div>
-    <!-- Remote Participant 2 -->
     <div class="videoCard hidden-card" id="extraCard1">
       <video id="remoteVideo2" autoplay playsinline></video>
-      <div class="videoName" id="remoteName2">Participant 3</div>
-      <div id="remoteHandBadge2" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+      <div class="videoName" id="remoteName2">Extra Camera 1</div>
     </div>
-    <!-- Remote Participant 3 -->
     <div class="videoCard hidden-card" id="extraCard2">
       <video id="remoteVideo3" autoplay playsinline></video>
-      <div class="videoName" id="remoteName3">Participant 4</div>
-      <div id="remoteHandBadge3" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+      <div class="videoName" id="remoteName3">Extra Camera 2</div>
     </div>
   </div>
   
   <div class="controls">
     <button id="cameraBtn" onclick="toggleCamera()">Camera ON</button>
-    <button onclick="switchCamera()">Front / Back Cam</button>
+    <button onclick="switchCamera()">Front / Back</button>
     <button id="micBtn" onclick="toggleMic()">Mic ON</button>
+    <button id="extra1ToggleBtn" onclick="toggleExtra1()">📷 E1: OFF</button>
+    <button id="extra2ToggleBtn" onclick="toggleExtra2()">📷 E2: OFF</button>
     <button id="raiseHandBtn" onclick="raiseHand()" style="background:#eab308; color:#000;">✋ Raise Hand</button>
-    <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 1080p Full View</button>
+    <button onclick="toggleVideoFullscreen()" style="background:#0284c7;">🎥 1080p HD Full View</button>
     <button onclick="openJitsiMeet()" style="background:#2563eb;">Jitsi Backup</button>
     <button onclick="logoutUser()" style="background:#dc2626;">Logout</button>
   </div>
@@ -1024,7 +988,7 @@ button.active{
   <!-- CHAT & LIVE REACTIONS -->
   <div class="chatSection">
     <div class="chatBox" id="chatBox">
-      <div style="color:#9ca3af;">System: Welcome to Anikous Studio HD Video Chat. Play piano keys to generate sheet scores.</div>
+      <div style="color:#9ca3af;">System: Welcome to Anikous Studio Chat. All instruments & controls synced live!</div>
     </div>
     <div class="chatInputRow">
       <input type="text" id="chatInput" placeholder="Type message..." onkeydown="if(event.key==='Enter') sendChatMessage()">
@@ -1040,13 +1004,13 @@ button.active{
   <div class="proToolsGrid">
     <div class="proCard">
       <h4>
-        <span>⏱️ Metronome</span>
+        <span>⏱️ Metronome (Synced)</span>
         <span id="beatIndicator" style="color:#16a34a; font-size:14px;">●</span>
       </h4>
       <div class="toolRow">
         <button id="metroToggle" onclick="toggleMetronome()" style="padding:6px 10px;">Start</button>
         <span id="bpmLabel" style="font-weight:bold;">120 BPM</span>
-        <input id="bpmRange" type="range" min="40" max="240" value="120" oninput="changeBPM(this.value)">
+        <input type="range" id="bpmSlider" min="40" max="240" value="120" oninput="changeBPM(this.value)">
       </div>
     </div>
 
@@ -1056,9 +1020,9 @@ button.active{
       </h4>
       <div class="toolRow">
         <span style="color:#9ca3af; font-size:10px;">Reverb:</span>
-        <input id="reverbRange" type="range" min="0" max="1" step="0.1" value="0.3" oninput="changeReverb(this.value)">
+        <input type="range" min="0" max="1" step="0.1" value="0.3" oninput="changeReverb(this.value)">
         <span style="color:#9ca3af; font-size:10px;">Master Vol:</span>
-        <input id="masterVolRange" type="range" min="0" max="1" step="0.1" value="0.8" oninput="changeMasterGain(this.value)">
+        <input type="range" min="0" max="1" step="0.1" value="0.8" oninput="changeMasterGain(this.value)">
       </div>
     </div>
 
@@ -1073,50 +1037,31 @@ button.active{
         <button id="downloadAudioBtn" onclick="downloadAudioRecording()" disabled style="background:#7c3aed; padding:6px 10px;">💾 WAV</button>
       </div>
     </div>
-
-    <!-- YOUTUBE STUDIO PLAYER & SYNC -->
-    <div class="proCard" style="grid-column: span 3;">
-      <h4>
-        <span>📺 YouTube Studio Player & Sync</span>
-        <span id="ytStatusText" style="font-size:10px; color:#9ca3af;">Ready</span>
-      </h4>
-      <div class="toolRow" style="gap:8px; width:100%; margin-bottom: 6px;">
-        <input id="ytUrlInput" type="text" placeholder="Paste YouTube URL or Video ID (e.g., dQw4w9WgXcQ)" style="flex:1; background:#0b0f19; border:1px solid #374151; border-radius:6px; padding:6px 10px; color:white; font-size:12px; outline:none;" onkeydown="if(event.key==='Enter') loadYouTubeVideo()">
-        <button onclick="loadYouTubeVideo()" style="background:#dc2626; padding:6px 12px; font-size:11px;">Load & Sync</button>
-      </div>
-      <div id="ytPlayerContainer" style="width:100%; aspect-ratio: 16/9; background:#000; border-radius:6px; overflow:hidden; display:none; position:relative;">
-        <iframe id="ytIframe" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-    </div>
   </div>
 </section>
 
 <!-- VIDEO FULLSCREEN POPUP -->
 <div id="videoFullscreenContainer">
   <div class="fsVideoToolbar">
-    <span style="font-weight:bold; color:#a7f3d0;">Live 1080p HD Multi-View Fullscreen</span>
+    <span style="font-weight:bold; color:#a7f3d0;">Live 1080p HD Multi-View</span>
     <button class="fsIconBtn" onclick="toggleVideoFullscreen()" style="background:#dc2626;">✕ Exit</button>
   </div>
   <div class="fsVideoGrid" id="fsVideoGridContainer">
-    <div class="fsVideoCard" id="fsLocalCard">
+    <div class="fsVideoCard">
       <video id="fsLocalVideo" autoplay playsinline muted></video>
       <div class="videoName" id="fsLocalName">My Camera (1080p HD)</div>
-      <div id="fsLocalHandBadge" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
     <div class="fsVideoCard hidden-card" id="fsRemoteCard1">
       <video id="fsRemoteVideo1" autoplay playsinline></video>
       <div class="videoName" id="fsRemoteName1">Participant 2</div>
-      <div id="fsRemoteHandBadge1" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
     </div>
-    <div class="fsVideoCard fsExtraCard1 hidden-card" id="fsExtraCard1">
+    <div class="fsVideoCard fsExtraCard1 hidden-card">
       <video id="fsRemoteVideo2" autoplay playsinline></video>
-      <div class="videoName" id="fsRemoteName2">Participant 3</div>
-      <div id="fsRemoteHandBadge2" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+      <div class="videoName" id="fsRemoteName2">Extra Camera 1</div>
     </div>
-    <div class="fsVideoCard fsExtraCard2 hidden-card" id="fsExtraCard2">
+    <div class="fsVideoCard fsExtraCard2 hidden-card">
       <video id="fsRemoteVideo3" autoplay playsinline></video>
-      <div class="videoName" id="fsRemoteName3">Participant 4</div>
-      <div id="fsRemoteHandBadge3" class="hand-raised-badge" style="display:none;">✋ Hand Raised</div>
+      <div class="videoName" id="fsRemoteName3">Extra Camera 2</div>
     </div>
   </div>
 </div>
@@ -1135,7 +1080,18 @@ button.active{
   </div>
 </section>
 
-<!-- MASTER PIANO & LIVE SHEET MUSIC SECTION -->
+<!-- YOUTUBE PLAYER -->
+<div class="panel" style="margin-top:10px;background:#030712;border:1px solid #1f2937;border-radius:12px;padding:12px;">
+<h3 style="color:#ffd54f;margin-bottom:10px;">🎥 YouTube Lesson Player (Synced Remote)</h3>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+<input id="youtubeURL" type="text" placeholder="Paste YouTube URL or Video ID" style="flex:1;padding:10px;background:#111827;color:white;border:1px solid #374151;border-radius:8px;">
+<button onclick="loadYoutubeVideo()" style="background:#16a34a;">▶ Load</button>
+<button onclick="fullscreenYoutube()" style="background:#7c3aed;">📺 Fullscreen</button>
+</div>
+<iframe id="youtubeFrame" width="100%" height="350" src="https://www.youtube.com/embed/" allowfullscreen style="border:none;border-radius:10px;"></iframe>
+</div>
+
+<!-- SHEET MUSIC SECTION -->
 <section class="panel">
   <div class="notationSection">
     <div class="notationHeader">
@@ -1340,7 +1296,7 @@ button.active{
   </div>
 </div>
 
-<!-- FIREBASE AUTHENTICATION SCRIPT -->
+<!-- FIREBASE SCRIPT (Secured with placeholder config) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import {
@@ -1409,20 +1365,6 @@ window.forgotPassword = function() {
 };
 
 window.logoutUser = function() {
-  if(localStream) {
-    localStream.getTracks().forEach(track => track.stop());
-    localStream = null;
-  }
-  if(peer) {
-    try { peer.destroy(); } catch(e){}
-    peer = null;
-  }
-  connectedPeersMap.clear();
-  activeCalls = {};
-  dataConnections = {};
-  peerHandStates.clear();
-  updateRemoteVideoUI();
-
   signOut(auth).then(() => {
     document.getElementById("loginPage").style.display = "flex";
     document.getElementById("mainPage").style.display = "none";
@@ -1445,19 +1387,21 @@ onAuthStateChanged(auth, (user) => {
 });
 </script>
 
-<!-- HD VIDEO STREAMING & STUDIO LOGIC SCRIPT -->
+<!-- STUDIO LOGIC SCRIPT -->
 <script>
 let peer = null;
 let localStream = null;
 let activeCalls = {};
 let dataConnections = {};
+let connectionInterval = null;
 
 let useFrontCamera = true;
 let cameraOn = true;
 let micOn = true;
+let extra1Visible = false;
+let extra2Visible = false;
 let currentRole = "";
 let currentRoom = "";
-let isHandRaised = false;
 
 let currentVoice = "grand";
 let currentDualVoice = "strings";
@@ -1470,37 +1414,66 @@ let currentTimeSignature = "4/4";
 let currentNoteDuration = "q";
 let currentKeySignature = "C";
 let staffSpacingMultiplier = 45;
+let currentYoutubeVideoId = "";
 
 const localVideo = document.getElementById("localVideo");
 const fsLocalVideo = document.getElementById("fsLocalVideo");
 const statusBox = document.getElementById("status");
 
 const remoteVideoSlots = [
-  { video: document.getElementById("remoteVideo1"), fsVideo: document.getElementById("fsRemoteVideo1"), nameEl: document.getElementById("remoteName1"), fsNameEl: document.getElementById("fsRemoteName1"), card: document.getElementById("remoteCard1"), fsCard: document.getElementById("fsRemoteCard1"), badge: document.getElementById("remoteHandBadge1") },
-  { video: document.getElementById("remoteVideo2"), fsVideo: document.getElementById("fsRemoteVideo2"), nameEl: document.getElementById("remoteName2"), fsNameEl: document.getElementById("fsRemoteName2"), card: document.getElementById("extraCard1"), fsCard: document.querySelector(".fsExtraCard1"), badge: document.getElementById("remoteHandBadge2") },
-  { video: document.getElementById("remoteVideo3"), fsVideo: document.getElementById("fsRemoteVideo3"), nameEl: document.getElementById("remoteName3"), fsNameEl: document.getElementById("fsRemoteName3"), card: document.getElementById("extraCard2"), fsCard: document.querySelector(".fsExtraCard2"), badge: document.getElementById("remoteHandBadge3") }
+  { video: document.getElementById("remoteVideo1"), fsVideo: document.getElementById("fsRemoteVideo1"), nameEl: document.getElementById("remoteName1"), fsNameEl: document.getElementById("fsRemoteName1"), card: document.getElementById("remoteCard1"), fsCard: document.getElementById("fsRemoteCard1") },
+  { video: document.getElementById("remoteVideo2"), fsVideo: document.getElementById("fsRemoteVideo2"), nameEl: document.getElementById("remoteName2"), fsNameEl: document.getElementById("fsRemoteName2"), card: document.getElementById("extraCard1"), fsCard: document.querySelector(".fsExtraCard1") },
+  { video: document.getElementById("remoteVideo3"), fsVideo: document.getElementById("fsRemoteVideo3"), nameEl: document.getElementById("remoteName3"), fsNameEl: document.getElementById("fsRemoteName3"), card: document.getElementById("extraCard2"), fsCard: document.querySelector(".fsExtraCard2") }
 ];
 
 let connectedPeersMap = new Map();
-let peerHandStates = new Map();
+
+/* YOUTUBE PLAYER LOGIC WITH REMOTE SYNC */
+function extractVideoID(url) {
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    var match = url.match(regExp);
+    return (match && match[7].length == 11) ? match[7] : url;
+}
+
+window.loadYoutubeVideo = function(videoIdIn = null, isRemote = false) {
+    const url = videoIdIn || document.getElementById("youtubeURL").value.trim();
+    if(!url) {
+        if(!isRemote) alert("Please enter a YouTube URL or ID");
+        return;
+    }
+    const videoId = extractVideoID(url);
+    currentYoutubeVideoId = videoId;
+    document.getElementById("youtubeFrame").src = "https://www.youtube.com/embed/" + videoId;
+    if(!isRemote) broadcastData({ type: "youtube", video: videoId });
+};
+
+window.fullscreenYoutube = function() {
+    const iframe = document.getElementById("youtubeFrame");
+    if (iframe.requestFullscreen) { iframe.requestFullscreen(); }
+    else if (iframe.webkitRequestFullscreen) { iframe.webkitRequestFullscreen(); }
+    else if (iframe.msRequestFullscreen) { iframe.msRequestFullscreen(); }
+};
 
 function status(text, type = "ready"){
   statusBox.textContent = text;
   statusBox.className = "status " + type;
 }
 
-function changeVoice(voice){
+function changeVoice(voice, isRemote = false){
   currentVoice = voice;
-  broadcastData({ type:"changeVoice", voice:voice });
+  document.getElementById("voiceSelect").value = voice; 
+  if(!isRemote) broadcastData({ type:"changeVoice", voice:voice });
 }
 
-function changeDualVoice(voice){
+function changeDualVoice(voice, isRemote = false){
   currentDualVoice = voice;
-  broadcastData({ type:"changeDualVoice", dual:voice });
+  document.getElementById("dualVoiceSelect").value = voice; 
+  if(!isRemote) broadcastData({ type:"changeDualVoice", dual:voice });
 }
 
-function toggleSustain(){
-  sustainMode = !sustainMode;
+function toggleSustain(isRemote = false, remoteVal = null, remoteDur = null){
+  sustainMode = (remoteVal !== null) ? remoteVal : !sustainMode;
+  if(remoteDur) sustainDuration = remoteDur;
   const btn = document.getElementById("sustainBtn");
   btn.textContent = sustainMode ? "SUSTAIN ON" : "SUSTAIN OFF";
   btn.classList.toggle("active", sustainMode);
@@ -1508,39 +1481,38 @@ function toggleSustain(){
   if(!sustainMode) {
     Object.keys(sounds).forEach(note => stopMultiSound(parseInt(note), sounds));
   }
-  broadcastData({ type:"toggleSustain", sustain:sustainMode, duration:sustainDuration });
+  if(!isRemote) broadcastData({ type:"toggleSustain", sustain:sustainMode, duration:sustainDuration });
 }
 
-function changeSustainTime(val){
+function changeSustainTime(val, isRemote = false){
   sustainDuration = parseFloat(val);
+  document.getElementById("sustainTimeRange").value = val;
   document.getElementById("sustainTimeLabel").textContent = `${sustainDuration.toFixed(1)}s`;
-  broadcastData({ type:"changeSustainTime", duration:sustainDuration });
+  if(!isRemote) broadcastData({ type:"changeSustainTime", duration:sustainDuration });
 }
 
-function changeReverb(val){ 
+function changeReverb(val, isRemote = false){ 
   reverbLevel = parseFloat(val); 
-  document.getElementById("reverbRange").value = reverbLevel;
-  broadcastData({ type:"changeReverb", reverb:reverbLevel }); 
+  if(!isRemote) broadcastData({ type:"changeReverb", reverb:reverbLevel }); 
 }
 
 function changeMasterGain(val){ 
   masterVolume = parseFloat(val); 
-  document.getElementById("masterVolRange").value = masterVolume;
   if(masterGainNode) masterGainNode.gain.setValueAtTime(masterVolume, audioContext.currentTime); 
 }
 
-function changeTranspose(val){ 
+function changeTranspose(val, isRemote = false){ 
   transposeSemitones = parseInt(val); 
   document.getElementById("transposeSelect").value = val;
   renderStaffNotation(recordedMidiNotes); 
-  broadcastData({ type:"changeTranspose", transpose:transposeSemitones }); 
+  if(!isRemote) broadcastData({ type:"changeTranspose", transpose:transposeSemitones }); 
 }
 
-function changeKeySignature(val){ 
+function changeKeySignature(val, isRemote = false){ 
   currentKeySignature = val; 
   document.getElementById("keySigSelect").value = val;
   renderStaffNotation(recordedMidiNotes); 
-  broadcastData({ type:"changeKeySignature", keySig: val });
+  if(!isRemote) broadcastData({ type: "changeKeySignature", keySig: val });
 }
 
 function zoomStaffIn(){ 
@@ -1553,22 +1525,47 @@ function zoomStaffOut(){
   renderStaffNotation(recordedMidiNotes); 
 }
 
-function raiseHand() {
-  isHandRaised = !isHandRaised;
-  const btn = document.getElementById("raiseHandBtn");
-  btn.classList.toggle("active", isHandRaised);
-  
-  const localBadge = document.getElementById("localHandBadge");
-  const fsLocalBadge = document.getElementById("fsLocalHandBadge");
-  if(isHandRaised) {
-    localBadge.style.display = "flex";
-    fsLocalBadge.style.display = "flex";
-  } else {
-    localBadge.style.display = "none";
-    fsLocalBadge.style.display = "none";
-  }
+function toggleExtra1(isRemote = false, state = null) {
+  extra1Visible = (state !== null) ? state : !extra1Visible;
+  const btn = document.getElementById("extra1ToggleBtn");
+  btn.textContent = extra1Visible ? "📷 E1: ON" : "📷 E1: OFF";
+  btn.classList.toggle("active", extra1Visible);
 
-  broadcastData({ type: "raiseHand", role: currentRole, raised: isHandRaised });
+  const extraCard1 = document.getElementById("extraCard1");
+  const fsExtra1 = document.querySelector(".fsExtraCard1");
+
+  if(extra1Visible) {
+    if(extraCard1) extraCard1.classList.remove("hidden-card");
+    if(fsExtra1) fsExtra1.classList.remove("hidden-card");
+  } else {
+    if(extraCard1 && !extraCard1.hasAttribute("data-streaming")) extraCard1.classList.add("hidden-card");
+    if(fsExtra1 && !fsExtra1.hasAttribute("data-streaming")) fsExtra1.classList.add("hidden-card");
+  }
+  if(!isRemote) broadcastData({ type:"toggleExtra1", visible: extra1Visible });
+}
+
+function toggleExtra2(isRemote = false, state = null) {
+  extra2Visible = (state !== null) ? state : !extra2Visible;
+  const btn = document.getElementById("extra2ToggleBtn");
+  btn.textContent = extra2Visible ? "📷 E2: ON" : "📷 E2: OFF";
+  btn.classList.toggle("active", extra2Visible);
+
+  const extraCard2 = document.getElementById("extraCard2");
+  const fsExtra2 = document.querySelector(".fsExtraCard2");
+
+  if(extra2Visible) {
+    if(extraCard2) extraCard2.classList.remove("hidden-card");
+    if(fsExtra2) fsExtra2.classList.remove("hidden-card");
+  } else {
+    if(extraCard2 && !extraCard2.hasAttribute("data-streaming")) extraCard2.classList.add("hidden-card");
+    if(fsExtra2 && !fsExtra2.hasAttribute("data-streaming")) fsExtra2.classList.add("hidden-card");
+  }
+  if(!isRemote) broadcastData({ type:"toggleExtra2", visible: extra2Visible });
+}
+
+function raiseHand() {
+  alert("✋ Raise Hand alert sent to class!");
+  broadcastData({ type: "raiseHand", role: currentRole });
 }
 
 function sendChatMessage() {
@@ -1606,7 +1603,7 @@ function updateVideoMirror() {
 
 async function getCameraStream(){
   try{
-    status("Loading 1080p HD Camera & Audio...", "loading");
+    status("Loading Camera & Audio, Please Wait...", "loading");
     localStream = await navigator.mediaDevices.getUserMedia({
       video: { 
         facingMode: useFrontCamera ? "user" : "environment",
@@ -1629,7 +1626,7 @@ async function getCameraStream(){
     cameraOn = true;
     micOn = true;
     updateMediaButtons();
-    status("1080p HD Camera & Audio Ready", "ready");
+    status("Camera & Audio Ready", "ready");
     return localStream;
   }catch(error){
     try {
@@ -1643,8 +1640,8 @@ async function getCameraStream(){
       status("Connected in HD resolution", "ready");
       return localStream;
     } catch(err2) {
-      status("Camera/Mic Permission Denied", "error");
-      alert("Camera மற்றும் Microphone அனுமதி தேவை.");
+      status("Camera/Mic Permission Denied / Network Error", "error");
+      alert("Camera மற்றும் Mic அனுமதி தேவை.");
       throw err2;
     }
   }
@@ -1655,87 +1652,107 @@ async function startClass(){
   const role = document.getElementById("userRole").value;
 
   if(!room){ alert("Room ID enter செய்யவும்."); return; }
-  if(!window.isSecureContext){ alert("HTTPS connection தேவை."); return; }
+  if(!window.isSecureContext){ alert("HTTPS தேவை."); return; }
 
   currentRole = role;
   currentRoom = room;
   updateRoleNames();
 
-  try {
-    const stream = await getCameraStream();
-    
-    const peerId = "anikous-room-" + room + "-" + role;
-    status("Connecting To HD Video Class...", "loading");
+  try{ await getCameraStream(); }catch(e){ return; }
 
-    if(peer) { try { peer.destroy(); } catch(e){} }
+  const peerId = "anikous-ultra-" + room + "-" + role;
+  status("Connecting To Studio Class...", "loading");
 
-    peer = new Peer(peerId, {
-      config: {
-        'iceServers': [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun1.l.google.com:19302' },
-          { urls: 'stun2.l.google.com:19302' },
-          { urls: 'stun.stunprotocol.org:3478' }
-        ]
+  if(peer) { try { peer.destroy(); } catch(e){} }
+  if(connectionInterval) clearInterval(connectionInterval);
+
+  peer = new Peer(peerId, {
+    config: {
+      'iceServers': [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:global.stun.twilio.com:3478' }
+      ]
+    }
+  });
+
+  peer.on("open", id => {
+    status(`Connected (Role: ${role.toUpperCase()} | Room: ${room})`, "connected");
+    connectAllPeers(room, role);
+    connectionInterval = setInterval(() => {
+      connectAllPeers(room, role);
+    }, 4000);
+  });
+
+  peer.on("error", err => {
+    status("Network Error / Connection Failed", "error");
+  });
+
+  peer.on("call", call => {
+    activeCalls[call.peer] = call;
+    call.answer(localStream);
+    call.peerConnection.oniceconnectionstatechange = () => {
+      if(call.peerConnection.iceConnectionState === "connected") {
+        enforceHighBitrate(call);
+        status("Participant Connected Successfully!", "connected");
       }
+    };
+    call.on("stream", remoteStream => {
+      assignRemoteStream(call.peer, remoteStream);
+      status("Live Stream Connected!", "connected");
     });
+    call.on("close", () => { removeRemoteStream(call.peer); status("Participant Disconnected", "error"); });
+  });
 
-    peer.on("open", id => {
-      status(`Connected (Role: ${role.toUpperCase()} | Room: ${room})`, "connected");
-      const allRoles = ["teacher", "student", "extra1", "extra2"];
-      
-      allRoles.forEach(r => {
-        if(r !== role) {
-          const targetId = "anikous-room-" + room + "-" + r;
-          connectAndCall(targetId, stream);
-          connectData(targetId);
-        }
-      });
-    });
+  peer.on("connection", connection => setupDataConnection(connection));
+}
 
-    peer.on("error", err => {
-      console.error("PeerJS Error:", err);
-      status("Network Error / Connection Failed", "error");
-    });
+function connectAllPeers(room, role){
+  if(!peer) return;
+  const allRoles = ["teacher", "student", "extra1", "extra2"];
+  allRoles.forEach(r => {
+    if(r !== role) {
+      const targetId = "anikous-ultra-" + room + "-" + r;
+      if(!activeCalls[targetId] && !connectedPeersMap.has(targetId)) {
+        connectAndCall(targetId);
+        connectData(targetId);
+      }
+    }
+  });
+}
 
-    peer.on("call", call => {
-      activeCalls[call.peer] = call;
-      call.answer(stream);
-      
-      call.on("stream", remoteStream => {
-        assignRemoteStream(call.peer, remoteStream);
-        status("Live HD Video Stream Connected!", "connected");
-      });
-      
-      call.on("close", () => { 
-        removeRemoteStream(call.peer); 
-        status("Participant Disconnected", "error"); 
-      });
-    });
-
-    peer.on("connection", connection => setupDataConnection(connection));
-
-  } catch(e) {
-    return;
+function connectAndCall(targetPeerId){
+  if(!peer) return;
+  const call = peer.call(targetPeerId, localStream);
+  if(call){
+    activeCalls[targetPeerId] = call;
+    call.peerConnection.oniceconnectionstatechange = () => {
+      if(call.peerConnection.iceConnectionState === "connected") {
+        enforceHighBitrate(call);
+        status("Live Stream Connected!", "connected");
+      }
+    };
+    call.on("stream", remoteStream => assignRemoteStream(targetPeerId, remoteStream));
+    call.on("close", () => removeRemoteStream(targetPeerId));
   }
 }
 
-function connectAndCall(targetPeerId, stream){
-  setTimeout(() => {
-    if(!peer) return;
-    if(activeCalls[targetPeerId]) return;
-
-    const call = peer.call(targetPeerId, stream);
-    if(call){
-      activeCalls[targetPeerId] = call;
-      call.on("stream", remoteStream => {
-        assignRemoteStream(targetPeerId, remoteStream);
-        status("Live HD Video Stream Connected!", "connected");
-      });
-      call.on("close", () => removeRemoteStream(targetPeerId));
-      call.on("error", (err) => console.log("Call error with", targetPeerId, err));
-    }
-  }, 1500);
+function enforceHighBitrate(call) {
+  try {
+    const pc = call.peerConnection;
+    if (!pc) return;
+    pc.getSenders().forEach(sender => {
+      if (sender.track && sender.track.kind === 'video') {
+        const parameters = sender.getParameters();
+        if (!parameters.encodings) parameters.encodings = [{}];
+        parameters.encodings.forEach(encoding => {
+          encoding.maxBitrate = 4000000;
+          encoding.maxFramerate = 30;
+          encoding.scaleResolutionDownBy = 1.0;
+        });
+        sender.setParameters(parameters).catch(e => {});
+      }
+    });
+  } catch (err) {}
 }
 
 function connectData(id){
@@ -1750,15 +1767,22 @@ function setupDataConnection(connection){
   connection.on("open", () => {
     dataConnections[connection.peer] = connection;
     status("Studio Sync Connected!", "connected");
-    if(isHandRaised) {
-      connection.send({ type: "raiseHand", role: currentRole, raised: true });
-    }
+    
+    connection.send({
+      type: "fullStateSync",
+      youtubeVideo: currentYoutubeVideoId,
+      notes: recordedMidiNotes,
+      keySig: currentKeySignature,
+      transpose: transposeSemitones,
+      voice: currentVoice,
+      dualVoice: currentDualVoice,
+      sustain: sustainMode,
+      sustainDuration: sustainDuration,
+      metro: { playing: metroPlaying, bpm: bpm }
+    });
   });
   connection.on("data", data => handleRemoteData(data));
-  connection.on("close", () => {
-    delete dataConnections[connection.peer];
-    removeRemoteStream(connection.peer);
-  });
+  connection.on("close", () => delete dataConnections[connection.peer]);
 }
 
 function broadcastData(data){
@@ -1770,13 +1794,23 @@ function broadcastData(data){
 function assignRemoteStream(peerId, stream){
   connectedPeersMap.set(peerId, stream);
   updateRemoteVideoUI();
+  setTimeout(() => {
+    remoteVideoSlots.forEach(slot => {
+      if(slot.video.srcObject === stream) {
+        slot.video.muted = false;
+        slot.video.play().catch(e => {});
+      }
+      if(slot.fsVideo.srcObject === stream) {
+        slot.fsVideo.muted = false;
+        slot.fsVideo.play().catch(e => {});
+      }
+    });
+  }, 100);
 }
 
 function removeRemoteStream(peerId){
   connectedPeersMap.delete(peerId);
   delete activeCalls[peerId];
-  delete dataConnections[peerId];
-  peerHandStates.delete(peerId);
   updateRemoteVideoUI();
 }
 
@@ -1785,119 +1819,105 @@ function updateRemoteVideoUI(){
   connectedPeersMap.forEach((stream, peerId) => {
     if(index < remoteVideoSlots.length){
       let slot = remoteVideoSlots[index];
-      
-      if (slot.video.srcObject !== stream) {
-        slot.video.srcObject = stream;
-        slot.fsVideo.srcObject = stream;
-      }
-
+      slot.video.srcObject = stream;
+      slot.fsVideo.srcObject = stream;
       let parts = peerId.split("-");
       let roleName = parts[parts.length - 1];
       slot.nameEl.textContent = roleName.toUpperCase() + " (1080p HD)";
       slot.fsNameEl.textContent = roleName.toUpperCase() + " (1080p HD)";
       
-      if(slot.card) slot.card.classList.remove("hidden-card");
-      if(slot.fsCard) slot.fsCard.classList.remove("hidden-card");
-
-      if(peerHandStates.get(peerId)) {
-        if(slot.badge) slot.badge.style.display = "flex";
-      } else {
-        if(slot.badge) slot.badge.style.display = "none";
+      if(slot.card) {
+        slot.card.classList.remove("hidden-card");
+        slot.card.setAttribute("data-streaming", "true");
       }
-
+      if(slot.fsCard) {
+        slot.fsCard.classList.remove("hidden-card");
+        slot.fsCard.setAttribute("data-streaming", "true");
+      }
       index++;
     }
   });
 
   for(let i = index; i < remoteVideoSlots.length; i++){
     let slot = remoteVideoSlots[i];
-    if(slot.video.srcObject) {
-      slot.video.srcObject = null;
-      slot.fsVideo.srcObject = null;
-    }
+    slot.video.srcObject = null;
+    slot.fsVideo.srcObject = null;
     slot.nameEl.textContent = "Waiting...";
     slot.fsNameEl.textContent = "Waiting...";
     
-    if(slot.card) slot.card.classList.add("hidden-card");
-    if(slot.fsCard) slot.fsCard.classList.add("hidden-card");
-    if(slot.badge) slot.badge.style.display = "none";
+    if(slot.card) {
+      slot.card.removeAttribute("data-streaming");
+      if(i === 1 && !extra1Visible) slot.card.classList.add("hidden-card");
+      if(i === 2 && !extra2Visible) slot.card.classList.add("hidden-card");
+      if(i === 0) slot.card.classList.add("hidden-card");
+    }
+    if(slot.fsCard) {
+      slot.fsCard.removeAttribute("data-streaming");
+      if(i === 1 && !extra1Visible) slot.fsCard.classList.add("hidden-card");
+      if(i === 2 && !extra2Visible) slot.fsCard.classList.add("hidden-card");
+      if(i === 0) slot.fsCard.classList.add("hidden-card");
+    }
   }
 }
 
 function handleRemoteData(data){
   if(!data || !data.type) return;
-  if(data.type==="changeVoice"){ 
-    currentVoice = data.voice; 
-    document.getElementById("voiceSelect").value = data.voice; 
+
+  if(data.type === "fullStateSync"){
+    if(data.youtubeVideo) loadYoutubeVideo(data.youtubeVideo, true);
+    if(data.notes) { recordedMidiNotes = [...data.notes]; renderStaffNotation(recordedMidiNotes); }
+    if(data.keySig) changeKeySignature(data.keySig, true);
+    if(data.transpose !== undefined) changeTranspose(data.transpose, true);
+    if(data.voice) changeVoice(data.voice, true);
+    if(data.dualVoice) changeDualVoice(data.dualVoice, true);
+    if(data.sustain !== undefined) toggleSustain(true, data.sustain, data.sustainDuration);
+    if(data.metro) toggleMetronome(true, data.metro.playing, data.metro.bpm);
   }
-  if(data.type==="changeDualVoice"){ 
-    currentDualVoice = data.dual; 
-    document.getElementById("dualVoiceSelect").value = data.dual; 
+
+  if(data.type === "youtube"){
+    loadYoutubeVideo(data.video, true);
   }
-  if(data.type==="toggleSustain"){
-    sustainMode = data.sustain;
-    sustainDuration = data.duration || sustainDuration;
-    const btn = document.getElementById("sustainBtn");
-    btn.textContent = sustainMode ? "SUSTAIN ON" : "SUSTAIN OFF";
-    btn.classList.toggle("active", sustainMode);
+  if(data.type === "changeVoice"){ 
+    changeVoice(data.voice, true); 
   }
-  if(data.type==="changeSustainTime"){
-    sustainDuration = data.duration;
-    document.getElementById("sustainTimeLabel").textContent = `${sustainDuration.toFixed(1)}s`;
+  if(data.type === "changeDualVoice"){ 
+    changeDualVoice(data.dual, true); 
   }
-  if(data.type==="changeReverb"){ 
-    reverbLevel = data.reverb; 
-    document.getElementById("reverbRange").value = reverbLevel;
+  if(data.type === "toggleSustain"){
+    toggleSustain(true, data.sustain, data.duration);
   }
-  if(data.type==="changeTranspose"){ 
-    transposeSemitones = data.transpose; 
-    document.getElementById("transposeSelect").value = data.transpose;
-    renderStaffNotation(recordedMidiNotes); 
+  if(data.type === "changeSustainTime"){
+    changeSustainTime(data.duration, true);
   }
-  if(data.type==="changeKeySignature"){
-    currentKeySignature = data.keySig;
-    document.getElementById("keySigSelect").value = data.keySig;
-    renderStaffNotation(recordedMidiNotes);
+  if(data.type === "changeReverb"){ changeReverb(data.reverb, true); }
+  if(data.type === "changeTranspose"){ changeTranspose(data.transpose, true); }
+  if(data.type === "changeKeySignature"){ changeKeySignature(data.keySig, true); }
+  
+  if(data.type === "loadPresetSong"){
+    loadPresetSong(data.songKey, true);
   }
-  if(data.type==="toggleMetronome"){
-    metroPlaying = data.playing;
-    bpm = data.bpm;
-    document.getElementById("bpmLabel").textContent = bpm + " BPM";
-    document.getElementById("bpmRange").value = bpm;
-    const btn = document.getElementById("metroToggle");
-    btn.textContent = metroPlaying ? "Stop" : "Start";
-    btn.classList.toggle("active", metroPlaying);
-    clearInterval(metroTimer);
-    if(metroPlaying) metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
+
+  if(data.type === "metronome"){
+    toggleMetronome(true, data.playing, data.bpm);
   }
-  if(data.type==="changeBPM"){
-    bpm = data.bpm;
-    document.getElementById("bpmLabel").textContent = bpm + " BPM";
-    document.getElementById("bpmRange").value = bpm;
-    if(metroPlaying){ clearInterval(metroTimer); metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000); }
+
+  if(data.type === "toggleExtra1"){
+    toggleExtra1(true, data.visible);
   }
-  if(data.type==="clearNotation"){
+  if(data.type === "toggleExtra2"){
+    toggleExtra2(true, data.visible);
+  }
+  if(data.type === "clearNotation"){
     recordedMidiNotes = [];
     renderStaffNotation([]);
   }
-  if(data.type==="raiseHand") {
-    connectedPeersMap.forEach((stream, peerId) => {
-      if(peerId.endsWith("-" + data.role)) {
-        peerHandStates.set(peerId, data.raised);
-      }
-    });
-    updateRemoteVideoUI();
-  }
-  if(data.type==="chatMessage") appendChatMsg(data.role.toUpperCase() + ": " + data.text, "#38bdf8");
-  if(data.type==="reaction") appendChatMsg(data.role.toUpperCase() + " reacted: " + data.emoji, "#ffd54f");
-  if(data.type==="loadYouTube") {
-    document.getElementById("ytUrlInput").value = data.videoId;
-    playAndSyncYouTube(data.videoId, false);
-  }
-  if(data.type==="keyDown"){
+  if(data.type === "raiseHand") alert(`✋ ${data.role.toUpperCase()} raised hand!`);
+  if(data.type === "chatMessage") appendChatMsg(data.role.toUpperCase() + ": " + data.text, "#38bdf8");
+  if(data.type === "reaction") appendChatMsg(data.role.toUpperCase() + " reacted: " + data.emoji, "#ffd54f");
+  if(data.type === "keyDown"){
     document.querySelectorAll(`[data-note="${data.note}"]`).forEach(key => pressRemoteKey(data.note, key));
   }
-  if(data.type==="keyUp"){
+  if(data.type === "keyUp"){
     document.querySelectorAll(`[data-note="${data.note}"]`).forEach(key => releaseRemoteKey(data.note, key));
   }
 }
@@ -1962,67 +1982,47 @@ function toggleVideoFullscreen(){
 async function switchCamera(){
   if(!localStream) return;
   useFrontCamera = !useFrontCamera;
-  localStream.getVideoTracks().forEach(track => track.stop());
   try{
-    localStream = await navigator.mediaDevices.getUserMedia({
+    const oldVideoTrack = localStream.getVideoTracks()[0];
+    if(oldVideoTrack) oldVideoTrack.stop();
+
+    const newStream = await navigator.mediaDevices.getUserMedia({
       video: { 
         facingMode: useFrontCamera ? "user" : "environment", 
         width: { ideal: 1920, min: 1280, max: 1920 }, 
         height: { ideal: 1080, min: 720, max: 1080 },
         frameRate: { ideal: 30, max: 60 }
       },
-      audio: true
+      audio: false
     });
+
+    const newVideoTrack = newStream.getVideoTracks()[0];
+    localStream.removeTrack(oldVideoTrack);
+    localStream.addTrack(newVideoTrack);
+
     localVideo.srcObject = localStream;
     fsLocalVideo.srcObject = localStream;
     updateVideoMirror();
-    cameraOn = true; micOn = true; updateMediaButtons();
+    cameraOn = true; updateMediaButtons();
 
     Object.values(activeCalls).forEach(call => {
       const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-      if(sender && localStream.getVideoTracks()[0]) {
-        sender.replaceTrack(localStream.getVideoTracks()[0]);
+      if(sender && newVideoTrack) {
+        sender.replaceTrack(newVideoTrack);
       }
     });
 
-    status("Studio 1080p HD Camera Switched!", "connected");
-  }catch(err){ useFrontCamera = !useFrontCamera; alert("Camera மாற்ற இயலவில்லை."); }
+    status("Studio 1080p Camera Switched!", "connected");
+  }catch(err){ 
+    useFrontCamera = !useFrontCamera; 
+    alert("Camera மாற்ற இயலவில்லை: " + err.message); 
+  }
 }
 
 function openJitsiMeet() {
   const room = document.getElementById("roomId").value.trim();
   if(!room) { alert("Room ID enter செய்யவும்!"); return; }
   window.open(`https://meet.jit.si/AnikousUltraStudio_${room}`, '_blank');
-}
-
-/* YOUTUBE PLAYER & SYNC LOGIC */
-function loadYouTubeVideo() {
-  const input = document.getElementById("ytUrlInput").value.trim();
-  if(!input) { alert("YouTube URL அல்லது Video ID-ஐ உள்ளிடவும்!"); return; }
-  let videoId = input;
-  if(input.includes("youtube.com") || input.includes("youtu.be")) {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = input.match(regExp);
-    if(match && match[2].length === 11) {
-      videoId = match[2];
-    }
-  }
-  if(videoId.length !== 11 && !input.match(/^[a-zA-Z0-9_-]{11}$/)) {
-    alert("Valid YouTube URL அல்லது Video ID-ஐ உள்ளிடவும்!");
-    return;
-  }
-  playAndSyncYouTube(videoId, true);
-}
-
-function playAndSyncYouTube(videoId, shouldBroadcast = true) {
-  const container = document.getElementById("ytPlayerContainer");
-  const iframe = document.getElementById("ytIframe");
-  container.style.display = "block";
-  iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1`;
-  document.getElementById("ytStatusText").textContent = "Playing: " + videoId;
-  if(shouldBroadcast) {
-    broadcastData({ type: "loadYouTube", videoId: videoId });
-  }
 }
 
 const NOTE_NAMES_SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -2033,7 +2033,7 @@ function midiToVexNote(midiNote) {
   const nameIdx = transposed % 12;
   let rawName = NOTE_NAMES_SHARP[nameIdx];
   let vexName = rawName.replace("#", "#").toLowerCase();
-  return `${vexName}/${octave}`;
+  return `${vexName || vexName}/${octave}`;
 }
 
 let recordedMidiNotes = [];
@@ -2155,349 +2155,6 @@ function renderStaffToContainer(containerEl, noteArray, svgHeight, svgWidth) {
   }
 }
 
-/* AUDIO SYNTHESIS & PIANO CONTROL LOGIC */
-const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-let audioContext = null;
-let masterGainNode = null;
-let sounds = {};
-
-function initAudio() {
-  if(!audioContext) {
-    audioContext = new AudioContextClass();
-    masterGainNode = audioContext.createGain();
-    masterGainNode.gain.setValueAtTime(masterVolume, audioContext.currentTime);
-    masterGainNode.connect(audioContext.destination);
-  }
-  if(audioContext.state === 'suspended') {
-    audioContext.resume();
-  }
-}
-
-function getFreq(note) {
-  return 440 * Math.pow(2, (note - 69) / 12);
-}
-
-function playMultiSound(note, voice, dualVoice, soundStore, dur) {
-  initAudio();
-  if(soundStore[note]) stopMultiSound(note, soundStore);
-
-  const freq = getFreq(note);
-  const now = audioContext.currentTime;
-
-  const osc1 = audioContext.createOscillator();
-  const gain1 = audioContext.createGain();
-  
-  setupVoiceParams(osc1, gain1, voice, freq, now);
-
-  osc1.connect(gain1);
-  gain1.connect(masterGainNode);
-  osc1.start(now);
-
-  let osc2 = null, gain2 = null;
-  if(dualVoice && dualVoice !== "none") {
-    osc2 = audioContext.createOscillator();
-    gain2 = audioContext.createGain();
-    setupVoiceParams(osc2, gain2, dualVoice, freq, now);
-    gain2.gain.setValueAtTime(gain2.gain.value * 0.6, now);
-    osc2.connect(gain2);
-    gain2.connect(masterGainNode);
-    osc2.start(now);
-  }
-
-  soundStore[note] = { osc1, gain1, osc2, gain2, startTime: now, duration: dur };
-}
-
-function setupVoiceParams(osc, gainNode, voice, freq, now) {
-  osc.frequency.setValueAtTime(freq, now);
-
-  switch(voice) {
-    case "bright":
-      osc.type = "sawtooth";
-      gainNode.gain.setValueAtTime(0.4, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
-      break;
-    case "electric":
-      osc.type = "sine";
-      gainNode.gain.setValueAtTime(0.6, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
-      break;
-    case "organ":
-    case "jazzorgan":
-      osc.type = "square";
-      gainNode.gain.setValueAtTime(0.3, now);
-      break;
-    case "strings":
-    case "synthpad":
-    case "choir":
-      osc.type = "sawtooth";
-      gainNode.gain.setValueAtTime(0.01, now);
-      gainNode.gain.linearRampToValueAtTime(0.4, now + 0.3);
-      break;
-    case "flute":
-    case "panflute":
-      osc.type = "sine";
-      gainNode.gain.setValueAtTime(0.01, now);
-      gainNode.gain.linearRampToValueAtTime(0.5, now + 0.1);
-      break;
-    case "guitar":
-    case "pluck":
-      osc.type = "triangle";
-      gainNode.gain.setValueAtTime(0.7, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
-      break;
-    case "synthbass":
-    case "acousticbass":
-      osc.type = "sawtooth";
-      gainNode.gain.setValueAtTime(0.6, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
-      break;
-    case "marimba":
-    case "xylophone":
-      osc.type = "sine";
-      gainNode.gain.setValueAtTime(0.8, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-      break;
-    default: // grand
-      osc.type = "triangle";
-      gainNode.gain.setValueAtTime(0.5, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
-      break;
-  }
-}
-
-function stopMultiSound(note, soundStore) {
-  if(!soundStore[note] || !audioContext) return;
-  const { osc1, gain1, osc2, gain2, startTime, duration } = soundStore[note];
-  const now = audioContext.currentTime;
-  const releaseTime = sustainMode ? Math.max(0.2, duration) : 0.1;
-
-  try {
-    gain1.gain.cancelScheduledValues(now);
-    gain1.gain.setValueAtTime(gain1.gain.value, now);
-    gain1.gain.exponentialRampToValueAtTime(0.0001, now + releaseTime);
-    osc1.stop(now + releaseTime);
-
-    if(osc2 && gain2) {
-      gain2.gain.cancelScheduledValues(now);
-      gain2.gain.setValueAtTime(gain2.gain.value, now);
-      gain2.gain.exponentialRampToValueAtTime(0.0001, now + releaseTime);
-      osc2.stop(now + releaseTime);
-    }
-  } catch(e) {}
-
-  delete soundStore[note];
-}
-
-/* PIANO KEYBOARD GENERATION & UI INTERACTIONS */
-let activeLocalKeys = new Set();
-let showKeyLabels = true;
-let holdMode = false;
-
-function createPianoKeys() {
-  const pianoEl = document.getElementById("piano");
-  const fsPianoEl = document.getElementById("fsPiano");
-  if(!pianoEl) return;
-
-  pianoEl.innerHTML = "";
-  if(fsPianoEl) fsPianoEl.innerHTML = "";
-
-  const startOctave = 1;
-  const totalOctaves = 7;
-  let whiteKeyIndex = 0;
-
-  const keyWidth = 32;
-  const blackWidth = 20;
-
-  for(let oct = startOctave; oct < startOctave + totalOctaves; oct++) {
-    for(let i = 0; i < 12; i++) {
-      const note = oct * 12 + i;
-      const noteInOct = i;
-      const isBlack = [1, 3, 6, 8, 10].includes(noteInOct);
-
-      const key = document.createElement("div");
-      key.dataset.note = note;
-
-      const noteName = NOTE_NAMES_SHARP[noteInOct] + oct;
-
-      if(!isBlack) {
-        key.className = "white";
-        key.style.left = (whiteKeyIndex * keyWidth) + "px";
-        if(showKeyLabels) key.textContent = noteName;
-
-        key.addEventListener("pointerdown", (e) => {
-          e.preventDefault();
-          handleKeyPress(note, key);
-        });
-        key.addEventListener("pointerup", (e) => {
-          e.preventDefault();
-          if(!holdMode) handleKeyRelease(note, key);
-        });
-        key.addEventListener("pointerleave", (e) => {
-          if(!holdMode && activeLocalKeys.has(note)) handleKeyRelease(note, key);
-        });
-
-        pianoEl.appendChild(key);
-        if(fsPianoEl) fsPianoEl.appendChild(key.cloneNode(true));
-
-        whiteKeyIndex++;
-      } else {
-        key.className = "black";
-        key.style.left = ((whiteKeyIndex - 1) * keyWidth + (keyWidth - blackWidth / 2)) + "px";
-        if(showKeyLabels) key.textContent = noteName;
-
-        key.addEventListener("pointerdown", (e) => {
-          e.preventDefault();
-          handleKeyPress(note, key);
-        });
-        key.addEventListener("pointerup", (e) => {
-          e.preventDefault();
-          if(!holdMode) handleKeyRelease(note, key);
-        });
-        key.addEventListener("pointerleave", (e) => {
-          if(!holdMode && activeLocalKeys.has(note)) handleKeyRelease(note, key);
-        });
-
-        pianoEl.appendChild(key);
-        if(fsPianoEl) fsPianoEl.appendChild(key.cloneNode(true));
-      }
-    }
-  }
-
-  const totalWidth = whiteKeyIndex * keyWidth;
-  pianoEl.style.width = totalWidth + "px";
-  if(fsPianoEl) fsPianoEl.style.width = totalWidth + "px";
-
-  renderOctaveButtons(startOctave, totalOctaves, keyWidth);
-}
-
-function renderOctaveButtons(startOct, totalOct, keyWidth) {
-  const container = document.getElementById("octaveButtons");
-  if(!container) return;
-  container.innerHTML = "";
-
-  for(let o = startOct; o < startOct + totalOct; o++) {
-    const btn = document.createElement("button");
-    btn.textContent = `C${o}`;
-    btn.onclick = () => {
-      const pScroll = document.getElementById("pianoScroll");
-      if(pScroll) {
-        const whiteKeysPerOctave = 7;
-        const targetScroll = (o - startOct) * whiteKeysPerOctave * keyWidth;
-        pScroll.scrollTo({ left: targetScroll, behavior: 'smooth' });
-      }
-    };
-    container.appendChild(btn);
-  }
-}
-
-function handleKeyPress(note, keyEl) {
-  if(activeLocalKeys.has(note)) return;
-  activeLocalKeys.add(note);
-
-  document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.add("local-active"));
-
-  playMultiSound(note + transposeSemitones, currentVoice, currentDualVoice, sounds, sustainMode ? sustainDuration : 3.0);
-  recordedMidiNotes.push(note);
-  renderStaffNotation(recordedMidiNotes);
-  updateDisplay();
-
-  broadcastData({ type: "keyDown", note: note });
-}
-
-function handleKeyRelease(note, keyEl) {
-  activeLocalKeys.delete(note);
-  document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.remove("local-active"));
-
-  stopMultiSound(note + transposeSemitones, sounds);
-  updateDisplay();
-
-  broadcastData({ type: "keyUp", note: note });
-}
-
-function updateDisplay() {
-  const keyShow = document.getElementById("keyShow");
-  const chordShow = document.getElementById("chordShow");
-
-  const allNotes = Array.from(new Set([...activeLocalKeys, ...remoteKeys])).sort((a, b) => a - b);
-
-  if(allNotes.length === 0) {
-    if(keyShow) keyShow.textContent = "-";
-    if(chordShow) chordShow.textContent = "-";
-    return;
-  }
-
-  const noteNames = allNotes.map(n => NOTE_NAMES_SHARP[(n + transposeSemitones) % 12]);
-  if(keyShow) keyShow.textContent = noteNames.join(", ");
-
-  if(chordShow) chordShow.textContent = detectChord(allNotes);
-}
-
-function detectChord(notes) {
-  if(notes.length < 2) return NOTE_NAMES_SHARP[(notes[0] + transposeSemitones) % 12];
-
-  const root = notes[0] + transposeSemitones;
-  const rootName = NOTE_NAMES_SHARP[root % 12];
-  const intervals = notes.map(n => (n + transposeSemitones - root) % 12).sort((a, b) => a - b);
-
-  if(intervals.includes(4) && intervals.includes(7)) return rootName + " Major";
-  if(intervals.includes(3) && intervals.includes(7)) return rootName + " Minor";
-  if(intervals.includes(3) && intervals.includes(6)) return rootName + " Diminished";
-  if(intervals.includes(4) && intervals.includes(8)) return rootName + " Augmented";
-  if(intervals.includes(2) && intervals.includes(7)) return rootName + " Sus2";
-  if(intervals.includes(5) && intervals.includes(7)) return rootName + " Sus4";
-  if(intervals.includes(4) && intervals.includes(7) && intervals.includes(10)) return rootName + "7";
-
-  return rootName + " Chord";
-}
-
-function toggleKeyNames() {
-  showKeyLabels = !showKeyLabels;
-  const btn = document.getElementById("keyToggle");
-  if(btn) btn.classList.toggle("active", showKeyLabels);
-
-  document.querySelectorAll("#piano .white, #piano .black, #fsPiano .white, #fsPiano .black").forEach(key => {
-    const note = parseInt(key.dataset.note);
-    if(showKeyLabels) {
-      const oct = Math.floor(note / 12);
-      key.textContent = NOTE_NAMES_SHARP[note % 12] + oct;
-    } else {
-      key.textContent = "";
-    }
-  });
-}
-
-function toggleHold() {
-  holdMode = !holdMode;
-  const btn = document.getElementById("holdBtn");
-  const fsBtn = document.getElementById("fsHoldBtn");
-
-  if(btn) btn.classList.toggle("active", holdMode);
-  if(fsBtn) fsBtn.classList.toggle("active", holdMode);
-
-  if(!holdMode) {
-    activeLocalKeys.forEach(note => {
-      stopMultiSound(note + transposeSemitones, sounds);
-      document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.remove("local-active"));
-    });
-    activeLocalKeys.clear();
-    updateDisplay();
-  }
-}
-
-function centerPiano() {
-  const pScroll = document.getElementById("pianoScroll");
-  if(pScroll) pScroll.scrollLeft = (pScroll.scrollWidth - pScroll.clientWidth) / 2;
-}
-
-function togglePianoFullscreen() {
-  const container = document.getElementById("pianoFullscreenContainer");
-  container.classList.toggle("active");
-  if(container.classList.contains("active")) {
-    renderStaffNotation(recordedMidiNotes);
-  }
-}
-
-/* A4 SHEET MODAL & PDF EXPORT */
 function openA4SheetModal() {
   const modal = document.getElementById("a4SheetModal");
   modal.classList.add("active");
@@ -2513,181 +2170,1666 @@ function closeA4SheetModal() {
   document.getElementById("a4SheetModal").classList.remove("active");
 }
 
-function downloadSheetPDF() {
-  const element = document.getElementById("a4PaperPrintArea");
-  if(typeof html2pdf === 'undefined') {
-    alert("PDF library load ஆகவில்லை. Print விருப்பத்தை பயன்படுத்தவும்.");
-    return;
-  }
-  const opt = {
-    margin:       10,
-    filename:     'Anikous_Music_Score.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2 },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(element).save();
-}
-
-function printOrExportPNG() {
-  window.print();
-}
-
-/* METRONOME LOGIC */
-let metroPlaying = false;
-let bpm = 120;
-let metroTimer = null;
-
-function toggleMetronome() {
-  metroPlaying = !metroPlaying;
-  const btn = document.getElementById("metroToggle");
-  btn.textContent = metroPlaying ? "Stop" : "Start";
-  btn.classList.toggle("active", metroPlaying);
-
-  clearInterval(metroTimer);
-  if(metroPlaying) {
-    metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
-  }
-  broadcastData({ type: "toggleMetronome", playing: metroPlaying, bpm: bpm });
-}
-
-function changeBPM(val) {
-  bpm = parseInt(val);
-  document.getElementById("bpmLabel").textContent = bpm + " BPM";
-  if(metroPlaying) {
-    clearInterval(metroTimer);
-    metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
-  }
-  broadcastData({ type: "changeBPM", bpm: bpm });
-}
-
-function metronomeTick() {
-  initAudio();
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  const now = audioContext.currentTime;
-
-  osc.frequency.setValueAtTime(1000, now);
-  gain.gain.setValueAtTime(0.3, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-
-  osc.connect(gain);
-  gain.connect(masterGainNode);
-  osc.start(now);
-  osc.stop(now + 0.05);
-
-  const ind = document.getElementById("beatIndicator");
-  if(ind) {
-    ind.style.color = "#ffd54f";
-    setTimeout(() => ind.style.color = "#16a34a", 100);
-  }
-}
-
-/* RECORDING & LOOPER LOGIC */
-let isRecording = false;
-let recordedEvents = [];
-let recordStartTime = 0;
-let recTimer = null;
-
-function toggleRecording() {
-  isRecording = !isRecording;
-  const btn = document.getElementById("recBtn");
-  const statusTxt = document.getElementById("recStatusText");
-
-  if(isRecording) {
-    recordedEvents = [];
-    recordStartTime = Date.now();
-    btn.textContent = "Stop Rec";
-    statusTxt.textContent = "Recording...";
-    statusTxt.style.color = "#ef4444";
-  } else {
-    btn.textContent = "Record";
-    statusTxt.textContent = `Recorded (${recordedEvents.length} notes)`;
-    statusTxt.style.color = "#10b981";
-    document.getElementById("playRecBtn").disabled = recordedEvents.length === 0;
-    document.getElementById("downloadAudioBtn").disabled = recordedEvents.length === 0;
-  }
-}
-
-function playRecording() {
-  if(recordedEvents.length === 0) return;
-  recordedEvents.forEach(evt => {
-    setTimeout(() => {
-      playMultiSound(evt.note + transposeSemitones, currentVoice, currentDualVoice, sounds, 1.5);
-      document.querySelectorAll(`[data-note="${evt.note}"]`).forEach(k => {
-        k.classList.add("local-active");
-        setTimeout(() => k.classList.remove("local-active"), 300);
-      });
-    }, evt.time);
-  });
-}
-
-function downloadAudioRecording() {
-  alert("WAV file export ready.");
-}
-
-/* PRESET LESSON SONGS */
 const PRESET_SONGS = {
-  furelise: [76, 75, 76, 75, 76, 71, 74, 72, 69],
+  furelise: [64, 63, 64, 63, 64, 59, 62, 60, 57],
   twinkle: [60, 60, 67, 67, 69, 69, 67, 65, 65, 64, 64, 62, 62, 60],
-  joy: [72, 71, 69, 67, 65, 64, 62, 60]
+  joy: [72, 71, 69, 68, 67, 65, 64, 65, 67, 69, 72]
 };
 
-function loadPresetSong(songKey) {
+function loadPresetSong(songKey, isRemote = false) {
   if(!songKey || !PRESET_SONGS[songKey]) return;
   recordedMidiNotes = [...PRESET_SONGS[songKey]];
+  document.getElementById("presetSongSelect").value = songKey;
   renderStaffNotation(recordedMidiNotes);
+  if(!isRemote) {
+    broadcastData({ type: "loadPresetSong", songKey: songKey });
+    alert("Practice lesson loaded & synced to all students!");
+  }
 }
 
 function playRecordedScore() {
-  if(recordedMidiNotes.length === 0) return;
-  recordedMidiNotes.forEach((note, idx) => {
+  if (recordedMidiNotes.length === 0) {
+    alert("Play panna notes எதுவும் இல்லை!");
+    return;
+  }
+  initAudio();
+  let delay = 0;
+  recordedMidiNotes.forEach((note) => {
     setTimeout(() => {
-      playMultiSound(note + transposeSemitones, currentVoice, currentDualVoice, sounds, 1.0);
-      document.querySelectorAll(`[data-note="${note}"]`).forEach(k => {
-        k.classList.add("local-active");
-        setTimeout(() => k.classList.remove("local-active"), 250);
-      });
-    }, idx * 400);
+      playMultiSound(note + transposeSemitones, currentVoice, currentDualVoice, sounds, 0.4);
+      document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.add("local-active"));
+      setTimeout(() => {
+        stopMultiSound(note + transposeSemitones, sounds);
+        document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.remove("local-active"));
+      }, 300);
+    }, delay);
+    delay += 350;
   });
 }
 
-function downloadMIDIFile() { alert("MIDI export complete."); }
-function downloadMusicXML() { alert("MusicXML export complete."); }
+function downloadMIDIFile() {
+  if (recordedMidiNotes.length === 0) { return; }
+  let midiHeader = [0x4d, 0x54, 0x68, 0x64, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x01, 0x00, 0x80];
+  let trackEvents = [];
+  recordedMidiNotes.forEach(note => {
+    trackEvents.push(0x00, 0x90, note, 0x64);
+    trackEvents.push(0x40, 0x80, note, 0x40);
+  });
+  let trackHeader = [0x4d, 0x54, 0x72, 0x6b];
+  let trackLength = [0x00, 0x00, 0x00, trackEvents.length];
+  let midiData = new Uint8Array([...midiHeader, ...trackHeader, ...trackLength, ...trackEvents]);
+  let blob = new Blob([midiData], { type: 'audio/midi' });
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement('a');
+  a.href = url;
+  a.download = 'Anikous_Studio_Score.mid';
+  a.click();
+}
 
-/* WEB MIDI SUPPORT */
-function connectMIDI() {
-  if(navigator.requestMIDIAccess) {
-    navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+function downloadMusicXML() {
+  if (recordedMidiNotes.length === 0) { return; }
+  let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 3.1 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+<score-partwise version="3.1">
+  <part-list><score-part id="P1"><part-name>Piano</part-name></score-part></part-list>
+  <part id="P1"><measure number="1"><attributes><divisions>1</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time><clef><sign>G</sign><line>2</line></clef></attributes>`;
+  recordedMidiNotes.slice(-16).forEach((note) => {
+    let vStr = midiToVexNote(note);
+    let step = vStr[0].toUpperCase();
+    let octave = vStr.slice(-1);
+    xmlContent += `<note><pitch><step>${step}</step><octave>${octave}</octave></pitch><duration>1</duration><type>quarter</type></note>`;
+  });
+  xmlContent += `</measure></part></score-partwise>`;
+  let blob = new Blob([xmlContent], { type: 'application/vnd.recordare.musicxml+xml' });
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement('a'); a.href = url; a.download = 'Anikous_Master_Score.musicxml'; a.click();
+}
+
+function downloadSheetPDF() {
+  const element = document.getElementById("a4PaperPrintArea");
+  if (recordedMidiNotes.length === 0) { alert("நோட்ஸ் எதுவும் இல்லை!"); return; }
+  
+  const modal = document.getElementById("a4SheetModal");
+  const wasActive = modal.classList.contains("active");
+  if(!wasActive) openA4SheetModal();
+
+  setTimeout(() => {
+    html2pdf().from(element).set({ 
+      margin: 10, 
+      filename: 'Anikous_Master_Grand_Score.pdf', 
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+    }).save().then(() => {
+      if(!wasActive) closeA4SheetModal();
+    });
+  }, 300);
+}
+
+function printOrExportPNG() { window.print(); }
+
+let metroPlaying = false, bpm = 120, metroTimer = null;
+
+function toggleMetronome(isRemote = false, remoteState = null, remoteBpm = null){
+  initAudio();
+  if(remoteState !== null) metroPlaying = remoteState;
+  else metroPlaying = !metroPlaying;
+
+  if(remoteBpm) bpm = remoteBpm;
+
+  document.getElementById("bpmSlider").value = bpm;
+  document.getElementById("bpmLabel").textContent = bpm + " BPM";
+
+  const btn = document.getElementById("metroToggle");
+  btn.textContent = metroPlaying ? "Stop" : "Start";
+  btn.classList.toggle("active", metroPlaying);
+  
+  if(metroPlaying) {
+    clearInterval(metroTimer);
+    metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000);
   } else {
-    alert("Browser Web MIDI Support இல்லை.");
+    clearInterval(metroTimer);
+  }
+
+  if(!isRemote) {
+    broadcastData({ type: "metronome", playing: metroPlaying, bpm: bpm });
   }
 }
 
-function onMIDISuccess(midiAccess) {
-  const inputs = midiAccess.inputs.values();
-  for(let input of inputs) {
-    input.onmidimessage = handleMIDIMessage;
+function changeBPM(val, isRemote = false){
+  bpm = parseInt(val);
+  document.getElementById("bpmLabel").textContent = bpm + " BPM";
+  if(metroPlaying){ 
+    clearInterval(metroTimer); 
+    metroTimer = setInterval(metronomeTick, (60 / bpm) * 1000); 
   }
-  alert("Web MIDI Device Connected!");
-}
-
-function onMIDIFailure() { alert("MIDI Device Connection Failed."); }
-
-function handleMIDIMessage(event) {
-  const [command, note, velocity] = event.data;
-  if(command === 144 && velocity > 0) {
-    document.querySelectorAll(`[data-note="${note}"]`).forEach(k => handleKeyPress(note, k));
-  } else if(command === 128 || (command === 144 && velocity === 0)) {
-    document.querySelectorAll(`[data-note="${note}"]`).forceAll ? document.querySelectorAll(`[data-note="${note}"]`).forEach(k => handleKeyRelease(note, k)) : document.querySelectorAll(`[data-note="${note}"]`).forEach(k => handleKeyRelease(note, k));
+  if(!isRemote) {
+    broadcastData({ type: "metronome", playing: metroPlaying, bpm: bpm });
   }
 }
 
-/* INITIALIZATION ON WINDOW LOAD */
-window.addEventListener("DOMContentLoaded", () => {
-  createPianoKeys();
-  renderStaffNotation([]);
+function metronomeTick(){
+  const osc = audioContext.createOscillator(), gain = audioContext.createGain();
+  osc.frequency.value = 1000;
+  gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
+  osc.connect(gain); gain.connect(audioContext.destination);
+  osc.start(); osc.stop(audioContext.currentTime + 0.05);
+}
+
+let mediaRecorder = null, audioChunks = [], recordedAudioBlob = null;
+function toggleRecording(){
+  if(!localStream) { alert("Class start ஆன பின்னரே Record செய்ய முடியும்!"); return; }
+  const btn = document.getElementById("recBtn");
+  if(mediaRecorder && mediaRecorder.state === "recording"){
+    mediaRecorder.stop();
+    btn.textContent = "Record"; btn.classList.remove("active");
+    document.getElementById("recStatusText").textContent = "Saved!";
+  } else {
+    audioChunks = [];
+    try {
+      mediaRecorder = new MediaRecorder(localStream);
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        document.getElementById("playRecBtn").disabled = false;
+        document.getElementById("downloadAudioBtn").disabled = false;
+      };
+      mediaRecorder.start();
+      btn.textContent = "Stop"; btn.classList.add("active");
+      document.getElementById("recStatusText").textContent = "Recording...";
+    } catch(e) { alert("Error: " + e.message); }
+  }
+}
+function playRecording(){
+  if(!recordedAudioBlob) return;
+  const audio = new Audio(URL.createObjectURL(recordedAudioBlob));
+  audio.loop = true; audio.play();
+  alert("Studio Loop playback started!");
+}
+function downloadAudioRecording() {
+  if(!recordedAudioBlob) return;
+  const url = URL.createObjectURL(recordedAudioBlob);
+  const a = document.createElement('a'); a.href = url; a.download = 'Anikous_Studio_Recording.webm'; a.click();
+}
+
+const NOTE_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const BLACK_KEYS = [1,3,6,8,10];
+let activeKeys = new Set(), holdMode = false, showKeyNames = true;
+let audioContext = null, masterGainNode = null, sounds = {};
+const piano = document.getElementById("piano"), fsPiano = document.getElementById("fsPiano");
+
+function initAudio(){
+  if(!audioContext){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    audioContext = new AC();
+    masterGainNode = audioContext.createGain();
+    masterGainNode.gain.value = masterVolume;
+    masterGainNode.connect(audioContext.destination);
+  }
+  if(audioContext.state==="suspended") audioContext.resume();
+}
+
+function frequency(note){ return 440 * Math.pow(2, ((note + transposeSemitones) - 69)/12); }
+
+function createVoiceChain(voiceType, freq, now){
+  const oscs = [];
+  const gain = audioContext.createGain();
+  const filter = audioContext.createBiquadFilter();
+
+  let waveType = "triangle", attack = 0.005, sustainLevel = 0.2;
+  if(voiceType === "bright") { waveType = "sawtooth"; sustainLevel = 0.25; }
+  else if(voiceType === "organ") { waveType = "square"; sustainLevel = 0.4; }
+  else if(voiceType === "strings" || voiceType === "synthpad") { waveType = "sawtooth"; attack = 0.3; sustainLevel = 0.35; }
+
+  const o1 = audioContext.createOscillator();
+  o1.type = waveType; o1.frequency.value = freq; oscs.push(o1);
+
+  filter.type = "lowpass"; filter.frequency.setValueAtTime(4000, now);
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.3, now + attack);
+  gain.gain.exponentialRampToValueAtTime(sustainLevel, now + attack + 0.1);
+
+  oscs.forEach(o => { o.connect(filter); o.start(now); });
+  filter.connect(gain);
+  gain.connect(masterGainNode);
+
+  return { oscs, gain };
+}
+
+function playMultiSound(note, primaryVoice, dualVoice, soundStore, decay){
+  initAudio();
+  if(soundStore[note]) return;
+  const freq = frequency(note), now = audioContext.currentTime;
+  const primary = createVoiceChain(primaryVoice, freq, now);
+  let chains = [primary];
+  if(dualVoice && dualVoice !== "none") {
+    const dual = createVoiceChain(dualVoice, freq * 1.002, now);
+    chains.push(dual);
+  }
+  soundStore[note] = { chains: chains };
+}
+
+function stopMultiSound(note, soundStore){
+  const sound = soundStore[note];
+  if(!sound) return;
+  const now = audioContext.currentTime;
+  const actualRelease = sustainMode ? (sustainDuration || 1.0) : 0.08;
+
+  sound.chains.forEach(chain => {
+    chain.gain.gain.cancelScheduledValues(now);
+    chain.gain.gain.setValueAtTime(chain.gain.gain.value, now);
+    chain.gain.gain.exponentialRampToValueAtTime(0.0001, now + actualRelease);
+    setTimeout(() => { try { chain.oscs.forEach(o => o.stop()); } catch(e){} }, (actualRelease + 0.05) * 1000);
+  });
+  delete soundStore[note];
+}
+
+function noteName(note){
+  const transposed = note + transposeSemitones;
+  return NOTE_NAMES[transposed%12] + (Math.floor(transposed/12)-1);
+}
+
+function pressKey(note, key){
+  if(activeKeys.has(note)) return;
+  activeKeys.add(note);
+  document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.add("local-active"));
+  playMultiSound(note, currentVoice, currentDualVoice, sounds, sustainMode ? sustainDuration : 3.0);
+  recordedMidiNotes.push(note);
+  renderStaffNotation(recordedMidiNotes);
+  broadcastData({ type:"keyDown", note:note });
+  updateDisplay();
+}
+
+function releaseKey(note, key){
+  if(holdMode) return;
+  activeKeys.delete(note);
+  document.querySelectorAll(`[data-note="${note}"]`).forEach(k => k.classList.remove("local-active"));
+  stopMultiSound(note, sounds);
+  broadcastData({ type:"keyUp", note:note });
+  updateDisplay();
+}
+
+let selectedOctaves = new Set();
+let currentKeyWidth = 32;
+
+function zoomIn(){ if(currentKeyWidth < 70){ currentKeyWidth += 5; updateKeyZoom(true); } }
+function zoomOut(){ if(currentKeyWidth > 15){ currentKeyWidth -= 5; updateKeyZoom(true); } }
+
+function updateKeyZoom(send = false){
+  const root = document.documentElement;
+  root.style.setProperty('--key-width', currentKeyWidth + 'px');
+  root.style.setProperty('--key-height', (currentKeyWidth * 4.5) + 'px');
+  root.style.setProperty('--black-width', (currentKeyWidth * 0.6) + 'px');
+  root.style.setProperty('--black-height', (currentKeyWidth * 2.8) + 'px');
+  createPiano(); createFullscreenPiano();
+  if(send) broadcastData({ type:"zoomChange", width: currentKeyWidth });
+}
+
+function createOctaveButtons(){
+  const box = document.getElementById("octaveButtons");
+  if(!box) return;
+  box.innerHTML = "";
+  for(let o=1; o<=7; o++){
+    const btn = document.createElement("button");
+    btn.textContent = "Oct "+o; btn.dataset.octave = o;
+    if(selectedOctaves.has(o)) btn.classList.add("active");
+    btn.onclick = function(){
+      const octaveNum = parseInt(this.dataset.octave);
+      if(selectedOctaves.has(octaveNum)){ selectedOctaves.delete(octaveNum); btn.classList.remove("active"); }
+      else { selectedOctaves.add(octaveNum); btn.classList.add("active"); }
+      createPiano(); createFullscreenPiano();
+    };
+    box.appendChild(btn);
+  }
+}
+
+function buildPianoDOM(containerTarget, isFullscreen = false){
+  if(!containerTarget) return;
+  containerTarget.innerHTML="";
+  const start = 24, end = 108;
+  let whiteIndex = 0, whitePositions = {};
+
+  for(let n=start; n<=end; n++){
+    const pc = n%12, octaveNum = Math.floor((n - 12) / 12);
+    if(selectedOctaves.size > 0 && !selectedOctaves.has(octaveNum)) continue;
+    if(!BLACK_KEYS.includes(pc)){
+      whitePositions[n] = whiteIndex;
+      const key = document.createElement("div");
+      key.className = "white"; key.dataset.note = n;
+      if(activeKeys.has(n)) key.classList.add("local-active");
+      if(remoteKeys.has(n)) key.classList.add("remote-active");
+      key.style.left = (whiteIndex * currentKeyWidth) + "px";
+      if(isFullscreen) key.style.height = "135px";
+      key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
+      addKeyEvents(key, n);
+      containerTarget.appendChild(key);
+      whiteIndex++;
+    }
+  }
+
+  for(let n=start; n<=end; n++){
+    const pc = n%12, octaveNum = Math.floor((n - 12) / 12);
+    if(selectedOctaves.size > 0 && !selectedOctaves.has(octaveNum)) continue;
+    if(BLACK_KEYS.includes(pc)){
+      let previous = n-1;
+      while(previous>=start && BLACK_KEYS.includes(previous%12)) previous--;
+      const leftWhite = whitePositions[previous];
+      if(leftWhite!==undefined){
+        const key = document.createElement("div");
+        key.className = "black"; key.dataset.note = n;
+        if(activeKeys.has(n)) key.classList.add("local-active");
+        if(remoteKeys.has(n)) key.classList.add("remote-active");
+        const blackWidth = currentKeyWidth * 0.6;
+        key.style.left = (leftWhite * currentKeyWidth + (currentKeyWidth - blackWidth / 2) - (blackWidth / 2)) + "px";
+        if(isFullscreen) key.style.height = "85px";
+        key.innerHTML = `<span style="display: ${showKeyNames ? 'block' : 'none'};">${noteName(n)}</span>`;
+        addKeyEvents(key, n);
+        containerTarget.appendChild(key);
+      }
+    }
+  }
+  containerTarget.style.width = (whiteIndex * currentKeyWidth) + "px";
+}
+
+function createPiano(){ buildPianoDOM(piano, false); createOctaveButtons(); }
+function createFullscreenPiano(){ buildPianoDOM(fsPiano, true); }
+
+function togglePianoFullscreen(){
+  const container = document.getElementById("pianoFullscreenContainer");
+  container.classList.toggle("active");
+  if(container.classList.contains("active")) {
+    setTimeout(() => { createFullscreenPiano(); renderStaffNotation(recordedMidiNotes); }, 50);
+  }
+}
+
+function addKeyEvents(key, note){
+  key.addEventListener("pointerdown", e => { e.preventDefault(); key.setPointerCapture(e.pointerId); pressKey(note, key); });
+  key.addEventListener("pointerup", e => { e.preventDefault(); releaseKey(note, key); });
+  key.addEventListener("pointercancel", e => { releaseKey(note, key); });
+}
+
+const keyMap = { "a": 60, "w": 61, "s": 62, "e": 63, "d": 64, "f": 65, "t": 66, "g": 67, "y": 68, "h": 69, "u": 70, "j": 71, "k": 72 };
+window.addEventListener("keydown", e => {
+  if(e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  const note = keyMap[e.key.toLowerCase()];
+  if(note !== undefined && !activeKeys.has(note)) document.querySelectorAll(`[data-note="${note}"]`).forEach(k => pressKey(note, k));
 });
+window.addEventListener("keyup", e => {
+  if(e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  const note = keyMap[e.key.toLowerCase()];
+  if(note !== undefined) document.querySelectorAll(`[data-note="${note}"]`).forEach(k => releaseKey(note, k));
+});
+
+function centerPiano(){
+  const box = document.getElementById("pianoScroll");
+  if(box) box.scrollLeft = (box.scrollWidth - box.clientWidth)/2;
+}
+
+function toggleHold(){
+  holdMode = !holdMode;
+  const txt = holdMode ? "HOLD ON" : "HOLD OFF";
+  document.querySelectorAll("#holdBtn, #fsHoldBtn").forEach(b => { b.textContent = txt; b.classList.toggle("active", holdMode); });
+}
+
+function toggleKeyNames(){
+  showKeyNames = !showKeyNames;
+  document.querySelectorAll(".white span,.black span").forEach(el => el.style.display = showKeyNames ? "block" : "none");
+}
+
+function updateDisplay(){
+  const all = [...new Set([...activeKeys, ...remoteKeys])].sort((a,b)=>a-b);
+  document.getElementById("keyShow").textContent = all.length ? all.map(noteName).join(" ") : "-";
+  const chordText = all.length>=3 ? findChord(all) : "-";
+  document.getElementById("chordShow").textContent = chordText;
+}
+
+const CHORDS = { "0,4,7":"Major", "0,3,7":"Minor", "0,3,6":"Diminished", "0,4,8":"Augmented" };
+function findChord(notes){
+  const pcs = [...new Set(notes.map(n=>(n + transposeSemitones)%12))].sort((a,b)=>a-b);
+  for(const root of pcs){
+    const intervals = pcs.map(n=>(n-root+12)%12).sort((a,b)=>a-b).join(",");
+    if(CHORDS[intervals]) return NOTE_NAMES[root] + " " + CHORDS[intervals];
+  }
+  return "-";
+}
+
+async function connectMIDI(){
+  if(!navigator.requestMIDIAccess){ alert("Web MIDI not supported."); return; }
+  try{
+    const midiAccess = await navigator.requestMIDIAccess();
+    midiAccess.inputs.forEach(input => { input.onmidimessage = handleMIDI; });
+    alert("MIDI Connected Successfully");
+  }catch(e){ alert("MIDI error."); }
+}
+
+function handleMIDI(event){
+  if(!event || !event.data) return;
+  const [command, note, velocity] = event.data;
+  if(command===0x90 && velocity>0) document.querySelectorAll(`[data-note="${note}"]`).forEach(k => pressKey(note, k));
+  else if(command===0x80 || (command===0x90 && velocity===0)) document.querySelectorAll(`[data-note="${note}"]`).forEach(k => releaseKey(note, k));
+}
+
+updateKeyZoom(false);
+</script>
+<!-- =========================================================
+     ANIKOUS MUSIC INSTITUTE - MASTER PRO ADD-ON v2
+     NOTHING ABOVE IS REMOVED
+     ========================================================= -->
+
+<style>
+/* ================= PRO DASHBOARD ================= */
+
+#amiProDashboard{
+  width:min(1150px,96%);
+  margin:10px auto;
+  background:#0b0f19;
+  border:1px solid #1f2937;
+  border-radius:16px;
+  padding:12px;
+}
+
+.amiDashTitle{
+  color:#ffd54f;
+  font-size:15px;
+  font-weight:bold;
+  text-align:center;
+  margin-bottom:10px;
+}
+
+.amiDashGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.amiDashCard{
+  background:#030712;
+  border:1px solid #1f2937;
+  border-radius:10px;
+  padding:10px;
+  text-align:center;
+}
+
+.amiDashCard small{
+  display:block;
+  color:#9ca3af;
+  font-size:10px;
+  margin-bottom:5px;
+}
+
+.amiDashCard strong{
+  color:#a7f3d0;
+  font-size:17px;
+}
+
+.amiDashButtons{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:6px;
+  margin-top:10px;
+}
+
+.amiDashButtons button{
+  font-size:11px;
+  padding:8px 10px;
+}
+
+#amiPracticePanel{
+  display:none;
+  margin-top:10px;
+  background:#030712;
+  border:1px solid #1f2937;
+  border-radius:10px;
+  padding:12px;
+}
+
+#amiPracticeTimer{
+  font-size:28px;
+  color:#ffd54f;
+  font-weight:bold;
+  text-align:center;
+  margin:8px 0;
+}
+
+.amiSaveList{
+  max-height:180px;
+  overflow-y:auto;
+  margin-top:8px;
+}
+
+.amiSaveItem{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  background:#111827;
+  border:1px solid #374151;
+  border-radius:7px;
+  padding:7px;
+  margin-bottom:5px;
+  font-size:11px;
+}
+
+.amiSaveItem button{
+  padding:4px 7px;
+  font-size:9px;
+}
+
+#amiNotesPanel{
+  display:none;
+  margin-top:10px;
+  background:#030712;
+  border:1px solid #1f2937;
+  border-radius:10px;
+  padding:10px;
+}
+
+#amiClassNotes{
+  width:100%;
+  min-height:110px;
+  resize:vertical;
+  background:#000;
+  color:white;
+  border:1px solid #374151;
+  border-radius:8px;
+  padding:10px;
+  outline:none;
+  font-size:12px;
+}
+
+.amiNotification{
+  position:fixed;
+  right:15px;
+  bottom:15px;
+  max-width:320px;
+  background:#111827;
+  border:1px solid #ffd54f;
+  color:white;
+  padding:12px 15px;
+  border-radius:10px;
+  box-shadow:0 0 20px rgba(0,0,0,.5);
+  z-index:1000000;
+  display:none;
+  font-size:12px;
+}
+
+#amiScreenShareVideo{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  object-fit:contain;
+  background:#000;
+  z-index:999998;
+  display:none;
+}
+
+#amiScreenShareBar{
+  position:fixed;
+  left:0;
+  right:0;
+  top:0;
+  z-index:999999;
+  background:rgba(3,7,18,.95);
+  padding:8px;
+  display:none;
+  justify-content:center;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+#amiScreenShareBar button{
+  font-size:11px;
+  padding:7px 10px;
+}
+
+@media(max-width:800px){
+  .amiDashGrid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:450px){
+  .amiDashGrid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .amiDashCard strong{
+    font-size:15px;
+  }
+}
+</style>
+
+
+<!-- ================= PRO DASHBOARD UI ================= -->
+
+<div id="amiProDashboard">
+
+  <div class="amiDashTitle">
+    🎓 ANIKOUS MASTER PRO CLASS DASHBOARD
+  </div>
+
+  <div class="amiDashGrid">
+
+    <div class="amiDashCard">
+      <small>CLASS STATUS</small>
+      <strong id="amiClassStatus">READY</strong>
+    </div>
+
+    <div class="amiDashCard">
+      <small>PARTICIPANTS</small>
+      <strong id="amiParticipantCount">0</strong>
+    </div>
+
+    <div class="amiDashCard">
+      <small>CLASS TIME</small>
+      <strong id="amiClassClock">00:00:00</strong>
+    </div>
+
+    <div class="amiDashCard">
+      <small>NOTES PLAYED</small>
+      <strong id="amiNotesCount">0</strong>
+    </div>
+
+  </div>
+
+  <div class="amiDashButtons">
+
+    <button onclick="amiToggleScreenShare()" style="background:#7c3aed;">
+      📺 Screen Share
+    </button>
+
+    <button onclick="amiTogglePractice()" style="background:#0284c7;">
+      ⏱️ Practice Timer
+    </button>
+
+    <button onclick="amiToggleNotes()" style="background:#2563eb;">
+      📝 Class Notes
+    </button>
+
+    <button onclick="amiSaveCurrentScore()" style="background:#16a34a;">
+      💾 Save Score
+    </button>
+
+    <button onclick="amiShowSavedScores()" style="background:#ca8a04;color:#000;">
+      📂 Saved Scores
+    </button>
+
+    <button onclick="amiClearSavedScores()" style="background:#dc2626;">
+      🗑️ Clear Saves
+    </button>
+
+  </div>
+
+
+  <!-- PRACTICE TIMER -->
+
+  <div id="amiPracticePanel">
+
+    <div style="text-align:center;color:#ffd54f;font-weight:bold;">
+      ⏱️ STUDENT PRACTICE TIMER
+    </div>
+
+    <div id="amiPracticeTimer">
+      00:00:00
+    </div>
+
+    <div class="amiDashButtons">
+
+      <button onclick="amiStartPractice()" style="background:#16a34a;">
+        ▶ Start
+      </button>
+
+      <button onclick="amiPausePractice()" style="background:#ca8a04;color:#000;">
+        ⏸ Pause
+      </button>
+
+      <button onclick="amiResetPractice()" style="background:#dc2626;">
+        ↻ Reset
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- CLASS NOTES -->
+
+  <div id="amiNotesPanel">
+
+    <div style="color:#ffd54f;font-weight:bold;margin-bottom:7px;">
+      📝 CLASS NOTES
+    </div>
+
+    <textarea
+      id="amiClassNotes"
+      placeholder="Teacher can write lesson notes, homework, student progress, practice instructions..."
+    ></textarea>
+
+    <div class="amiDashButtons">
+
+      <button onclick="amiSaveNotes()" style="background:#16a34a;">
+        💾 Save Notes
+      </button>
+
+      <button onclick="amiLoadNotes()" style="background:#0284c7;">
+        📂 Load Notes
+      </button>
+
+      <button onclick="amiClearNotes()" style="background:#dc2626;">
+        Clear
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- SAVED SCORES -->
+
+  <div id="amiSavedScoresPanel"
+       style="display:none;margin-top:10px;background:#030712;border:1px solid #1f2937;border-radius:10px;padding:10px;">
+
+    <div style="color:#ffd54f;font-weight:bold;">
+      📂 SAVED PIANO SCORES
+    </div>
+
+    <div id="amiSavedScoresList" class="amiSaveList"></div>
+
+  </div>
+
+</div>
+
+
+<!-- SCREEN SHARE -->
+
+<video
+  id="amiScreenShareVideo"
+  autoplay
+  playsinline
+></video>
+
+<div id="amiScreenShareBar">
+
+  <span style="color:#a7f3d0;font-weight:bold;font-size:11px;">
+    📺 Screen Sharing
+  </span>
+
+  <button onclick="amiStopScreenShare()" style="background:#dc2626;">
+    ✕ Stop Share
+  </button>
+
+</div>
+
+
+<!-- NOTIFICATION -->
+
+<div id="amiNotification"></div>
+
+
+<script>
+
+/* =========================================================
+   ANIKOUS MASTER PRO ADD-ON LOGIC
+   ========================================================= */
+
+
+/* ================= GLOBAL VARIABLES ================= */
+
+let amiClassStartedAt = null;
+let amiClassClockTimer = null;
+
+let amiPracticeSeconds = 0;
+let amiPracticeTimer = null;
+let amiPracticeRunning = false;
+
+let amiScreenStream = null;
+let amiOriginalVideoTrack = null;
+
+const amiNotification =
+  document.getElementById("amiNotification");
+
+
+/* ================= NOTIFICATION ================= */
+
+function amiNotify(message){
+
+  if(!amiNotification) return;
+
+  amiNotification.textContent = message;
+  amiNotification.style.display = "block";
+
+  clearTimeout(amiNotification._timer);
+
+  amiNotification._timer = setTimeout(()=>{
+    amiNotification.style.display = "none";
+  },3000);
+}
+
+
+/* ================= PARTICIPANT COUNT ================= */
+
+function amiUpdateParticipantCount(){
+
+  let count = 0;
+
+  try{
+
+    if(typeof connectedPeersMap !== "undefined"){
+      count = connectedPeersMap.size;
+    }
+
+  }catch(e){}
+
+  const el =
+    document.getElementById("amiParticipantCount");
+
+  if(el){
+
+    /*
+      +1 = current user
+    */
+
+    el.textContent = count + 1;
+  }
+}
+
+
+/* ================= CLASS CLOCK ================= */
+
+function amiStartClassClock(){
+
+  if(amiClassStartedAt) return;
+
+  amiClassStartedAt = Date.now();
+
+  clearInterval(amiClassClockTimer);
+
+  amiClassClockTimer = setInterval(()=>{
+
+    if(!amiClassStartedAt) return;
+
+    const elapsed =
+      Math.floor((Date.now() - amiClassStartedAt) / 1000);
+
+    const h =
+      Math.floor(elapsed / 3600);
+
+    const m =
+      Math.floor((elapsed % 3600) / 60);
+
+    const s =
+      elapsed % 60;
+
+    const el =
+      document.getElementById("amiClassClock");
+
+    if(el){
+
+      el.textContent =
+        String(h).padStart(2,"0") + ":" +
+        String(m).padStart(2,"0") + ":" +
+        String(s).padStart(2,"0");
+    }
+
+  },1000);
+}
+
+
+/* ================= PRACTICE TIMER ================= */
+
+function amiUpdatePracticeDisplay(){
+
+  const h =
+    Math.floor(amiPracticeSeconds / 3600);
+
+  const m =
+    Math.floor((amiPracticeSeconds % 3600) / 60);
+
+  const s =
+    amiPracticeSeconds % 60;
+
+  const el =
+    document.getElementById("amiPracticeTimer");
+
+  if(el){
+
+    el.textContent =
+      String(h).padStart(2,"0") + ":" +
+      String(m).padStart(2,"0") + ":" +
+      String(s).padStart(2,"0");
+  }
+}
+
+
+function amiStartPractice(){
+
+  if(amiPracticeRunning) return;
+
+  amiPracticeRunning = true;
+
+  clearInterval(amiPracticeTimer);
+
+  amiPracticeTimer = setInterval(()=>{
+
+    amiPracticeSeconds++;
+
+    amiUpdatePracticeDisplay();
+
+  },1000);
+
+  amiNotify("⏱️ Practice session started");
+}
+
+
+function amiPausePractice(){
+
+  amiPracticeRunning = false;
+
+  clearInterval(amiPracticeTimer);
+
+  amiNotify("⏸ Practice session paused");
+}
+
+
+function amiResetPractice(){
+
+  amiPracticeRunning = false;
+
+  clearInterval(amiPracticeTimer);
+
+  amiPracticeSeconds = 0;
+
+  amiUpdatePracticeDisplay();
+
+  amiNotify("↻ Practice timer reset");
+}
+
+
+function amiTogglePractice(){
+
+  const panel =
+    document.getElementById("amiPracticePanel");
+
+  if(!panel) return;
+
+  panel.style.display =
+    panel.style.display === "block"
+      ? "none"
+      : "block";
+}
+
+
+/* ================= CLASS NOTES ================= */
+
+function amiToggleNotes(){
+
+  const panel =
+    document.getElementById("amiNotesPanel");
+
+  if(!panel) return;
+
+  panel.style.display =
+    panel.style.display === "block"
+      ? "none"
+      : "block";
+}
+
+
+function amiSaveNotes(){
+
+  const notes =
+    document.getElementById("amiClassNotes").value;
+
+  localStorage.setItem(
+    "AMI_CLASS_NOTES",
+    notes
+  );
+
+  amiNotify("📝 Class notes saved");
+}
+
+
+function amiLoadNotes(){
+
+  const notes =
+    localStorage.getItem("AMI_CLASS_NOTES") || "";
+
+  document.getElementById("amiClassNotes").value =
+    notes;
+
+  amiNotify("📂 Class notes loaded");
+}
+
+
+function amiClearNotes(){
+
+  if(!confirm("Clear class notes?")) return;
+
+  document.getElementById("amiClassNotes").value = "";
+
+  localStorage.removeItem("AMI_CLASS_NOTES");
+
+  amiNotify("🗑️ Class notes cleared");
+}
+
+
+/* ================= SCORE SAVE ================= */
+
+function amiGetScores(){
+
+  try{
+
+    return JSON.parse(
+      localStorage.getItem("AMI_SAVED_SCORES") || "[]"
+    );
+
+  }catch(e){
+
+    return [];
+  }
+}
+
+
+function amiSaveCurrentScore(){
+
+  if(
+    typeof recordedMidiNotes === "undefined" ||
+    recordedMidiNotes.length === 0
+  ){
+
+    alert("Score-ல் notes இல்லை.");
+    return;
+  }
+
+  const scores = amiGetScores();
+
+  const name =
+    prompt(
+      "Score name enter செய்யவும்:",
+      "My Piano Lesson " +
+      new Date().toLocaleDateString()
+    );
+
+  if(!name) return;
+
+  scores.push({
+
+    id: Date.now(),
+
+    name: name,
+
+    notes: [...recordedMidiNotes],
+
+    voice:
+      typeof currentVoice !== "undefined"
+        ? currentVoice
+        : "grand",
+
+    key:
+      typeof currentKeySignature !== "undefined"
+        ? currentKeySignature
+        : "C",
+
+    transpose:
+      typeof transposeSemitones !== "undefined"
+        ? transposeSemitones
+        : 0,
+
+    created:
+      new Date().toLocaleString()
+
+  });
+
+  localStorage.setItem(
+    "AMI_SAVED_SCORES",
+    JSON.stringify(scores)
+  );
+
+  amiNotify("💾 Score saved successfully");
+
+  amiShowSavedScores();
+}
+
+
+function amiShowSavedScores(){
+
+  const panel =
+    document.getElementById("amiSavedScoresPanel");
+
+  const list =
+    document.getElementById("amiSavedScoresList");
+
+  if(!panel || !list) return;
+
+  panel.style.display =
+    panel.style.display === "block"
+      ? "none"
+      : "block";
+
+  const scores = amiGetScores();
+
+  list.innerHTML = "";
+
+  if(scores.length === 0){
+
+    list.innerHTML =
+      `<div style="color:#9ca3af;padding:10px;">
+        No saved scores yet.
+      </div>`;
+
+    return;
+  }
+
+  [...scores].reverse().forEach(score=>{
+
+    const item =
+      document.createElement("div");
+
+    item.className = "amiSaveItem";
+
+    item.innerHTML = `
+
+      <div style="flex:1;">
+        <strong style="color:#ffd54f;">
+          ${amiEscapeHTML(score.name)}
+        </strong>
+
+        <div style="color:#9ca3af;margin-top:3px;">
+          ${score.notes.length} notes •
+          ${amiEscapeHTML(score.created)}
+        </div>
+      </div>
+
+      <button
+        onclick="amiLoadScore(${score.id})"
+        style="background:#16a34a;">
+        Load
+      </button>
+
+      <button
+        onclick="amiDeleteScore(${score.id})"
+        style="background:#dc2626;">
+        Delete
+      </button>
+    `;
+
+    list.appendChild(item);
+
+  });
+}
+
+
+function amiLoadScore(id){
+
+  const scores = amiGetScores();
+
+  const score =
+    scores.find(s => s.id === id);
+
+  if(!score) return;
+
+  if(typeof recordedMidiNotes !== "undefined"){
+
+    recordedMidiNotes =
+      [...score.notes];
+
+  }
+
+  if(
+    typeof currentVoice !== "undefined" &&
+    score.voice
+  ){
+
+    currentVoice = score.voice;
+
+    const voiceSelect =
+      document.getElementById("voiceSelect");
+
+    if(voiceSelect)
+      voiceSelect.value = score.voice;
+  }
+
+  if(
+    typeof currentKeySignature !== "undefined" &&
+    score.key
+  ){
+
+    currentKeySignature = score.key;
+
+    const keySelect =
+      document.getElementById("keySigSelect");
+
+    if(keySelect)
+      keySelect.value = score.key;
+  }
+
+  if(
+    typeof transposeSemitones !== "undefined" &&
+    score.transpose !== undefined
+  ){
+
+    transposeSemitones =
+      parseInt(score.transpose);
+
+    const transposeSelect =
+      document.getElementById("transposeSelect");
+
+    if(transposeSelect)
+      transposeSelect.value =
+        score.transpose;
+  }
+
+  if(typeof renderStaffNotation === "function"){
+
+    renderStaffNotation(
+      recordedMidiNotes
+    );
+  }
+
+  amiUpdateNotesCount();
+
+  amiNotify(
+    "🎼 Score loaded: " + score.name
+  );
+}
+
+
+function amiDeleteScore(id){
+
+  let scores = amiGetScores();
+
+  scores =
+    scores.filter(s => s.id !== id);
+
+  localStorage.setItem(
+    "AMI_SAVED_SCORES",
+    JSON.stringify(scores)
+  );
+
+  amiShowSavedScores();
+
+  amiNotify("🗑️ Score deleted");
+}
+
+
+function amiClearSavedScores(){
+
+  if(
+    !confirm(
+      "All saved scores delete செய்ய வேண்டுமா?"
+    )
+  ) return;
+
+  localStorage.removeItem(
+    "AMI_SAVED_SCORES"
+  );
+
+  amiShowSavedScores();
+
+  amiNotify("🗑️ All saved scores cleared");
+}
+
+
+function amiEscapeHTML(text){
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    String(text);
+
+  return div.innerHTML;
+}
+
+
+/* ================= NOTES COUNTER ================= */
+
+function amiUpdateNotesCount(){
+
+  const el =
+    document.getElementById("amiNotesCount");
+
+  if(!el) return;
+
+  try{
+
+    el.textContent =
+      typeof recordedMidiNotes !== "undefined"
+        ? recordedMidiNotes.length
+        : 0;
+
+  }catch(e){
+
+    el.textContent = "0";
+  }
+}
+
+
+/* ================= SCREEN SHARE ================= */
+
+async function amiToggleScreenShare(){
+
+  if(amiScreenStream){
+
+    amiStopScreenShare();
+
+    return;
+  }
+
+  if(!navigator.mediaDevices ||
+     !navigator.mediaDevices.getDisplayMedia){
+
+    alert(
+      "இந்த browser Screen Share-ஐ support செய்யவில்லை."
+    );
+
+    return;
+  }
+
+  try{
+
+    amiScreenStream =
+      await navigator.mediaDevices.getDisplayMedia({
+
+        video:{
+          cursor:"always"
+        },
+
+        audio:true
+
+      });
+
+    const screenTrack =
+      amiScreenStream.getVideoTracks()[0];
+
+    const screenVideo =
+      document.getElementById(
+        "amiScreenShareVideo"
+      );
+
+    const screenBar =
+      document.getElementById(
+        "amiScreenShareBar"
+      );
+
+    screenVideo.srcObject =
+      amiScreenStream;
+
+    screenVideo.style.display =
+      "block";
+
+    screenBar.style.display =
+      "flex";
+
+    amiOriginalVideoTrack =
+      localStream
+        ? localStream.getVideoTracks()[0]
+        : null;
+
+
+    /*
+      Replace camera track
+      in all existing PeerJS calls.
+    */
+
+    if(typeof activeCalls !== "undefined"){
+
+      Object.values(activeCalls)
+      .forEach(call=>{
+
+        try{
+
+          const sender =
+            call.peerConnection
+              .getSenders()
+              .find(
+                s =>
+                  s.track &&
+                  s.track.kind === "video"
+              );
+
+          if(sender){
+
+            sender.replaceTrack(
+              screenTrack
+            );
+
+          }
+
+        }catch(e){}
+      });
+    }
+
+
+    screenTrack.onended = ()=>{
+
+      amiStopScreenShare();
+
+    };
+
+    amiNotify(
+      "📺 Screen sharing started"
+    );
+
+  }catch(error){
+
+    amiScreenStream = null;
+
+    if(error.name !== "AbortError"){
+
+      alert(
+        "Screen Share Error: " +
+        error.message
+      );
+
+    }
+  }
+}
+
+
+async function amiStopScreenShare(){
+
+  if(!amiScreenStream) return;
+
+  const cameraTrack =
+    amiOriginalVideoTrack ||
+    (
+      localStream
+        ? localStream.getVideoTracks()[0]
+        : null
+    );
+
+  if(cameraTrack &&
+     typeof activeCalls !== "undefined"){
+
+    Object.values(activeCalls)
+    .forEach(call=>{
+
+      try{
+
+        const sender =
+          call.peerConnection
+            .getSenders()
+            .find(
+              s =>
+                s.track &&
+                s.track.kind === "video"
+            );
+
+        if(sender){
+
+          sender.replaceTrack(
+            cameraTrack
+          );
+
+        }
+
+      }catch(e){}
+    });
+  }
+
+
+  amiScreenStream
+    .getTracks()
+    .forEach(track => track.stop());
+
+  amiScreenStream = null;
+
+  const screenVideo =
+    document.getElementById(
+      "amiScreenShareVideo"
+    );
+
+  const screenBar =
+    document.getElementById(
+      "amiScreenShareBar"
+    );
+
+  screenVideo.srcObject = null;
+
+  screenVideo.style.display =
+    "none";
+
+  screenBar.style.display =
+    "none";
+
+  amiNotify(
+    "📷 Camera restored"
+  );
+}
+
+
+/* ================= MONITOR EXISTING FUNCTIONS ================= */
+
+
+/*
+  Existing startClass() function-ஐ remove செய்யாமல்
+  wrap செய்கிறோம்.
+*/
+
+if(typeof window.startClass === "function"){
+
+  const originalStartClass =
+    window.startClass;
+
+  window.startClass =
+    async function(){
+
+      const result =
+        await originalStartClass.apply(
+          this,
+          arguments
+        );
+
+      amiStartClassClock();
+
+      const statusEl =
+        document.getElementById(
+          "amiClassStatus"
+        );
+
+      if(statusEl)
+        statusEl.textContent =
+          "LIVE";
+
+      amiNotify(
+        "🎓 Anikous Studio Class Started"
+      );
+
+      return result;
+    };
+}
+
+
+/* ================= MONITOR SCORE ================= */
+
+setInterval(()=>{
+
+  amiUpdateNotesCount();
+
+  amiUpdateParticipantCount();
+
+},1000);
+
+
+/* ================= FIREBASE LOGOUT MONITOR ================= */
+
+if(typeof window.logoutUser === "function"){
+
+  const originalLogout =
+    window.logoutUser;
+
+  window.logoutUser =
+    function(){
+
+      if(amiScreenStream){
+
+        try{
+          amiStopScreenShare();
+        }catch(e){}
+
+      }
+
+      amiPracticeRunning = false;
+
+      clearInterval(
+        amiPracticeTimer
+      );
+
+      clearInterval(
+        amiClassClockTimer
+      );
+
+      amiClassStartedAt = null;
+
+      const result =
+        originalLogout.apply(
+          this,
+          arguments
+        );
+
+      const statusEl =
+        document.getElementById(
+          "amiClassStatus"
+        );
+
+      if(statusEl)
+        statusEl.textContent =
+          "READY";
+
+      return result;
+    };
+}
+
+
+/* ================= LOAD NOTES ================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  ()=>{
+
+    amiLoadNotes();
+
+    amiUpdateNotesCount();
+
+    amiUpdateParticipantCount();
+
+  }
+);
+
+
+/* ================= INITIAL STATE ================= */
+
+amiUpdatePracticeDisplay();
+amiUpdateNotesCount();
+amiUpdateParticipantCount();
+
+
+console.log(
+  "ANIKOUS MASTER PRO ADD-ON v2 Loaded Successfully"
+);
+
 </script>
 </body>
 </html>
